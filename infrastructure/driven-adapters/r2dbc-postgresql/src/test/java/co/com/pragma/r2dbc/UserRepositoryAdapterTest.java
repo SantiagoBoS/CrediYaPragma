@@ -45,34 +45,23 @@ class UserRepositoryAdapterTest {
         userEntity.setBaseSalary(new BigDecimal("2500000"));
 
         user = new User(
-                "1", "Santiago", "Test",
+                "1", "123456789", "Santiago", "Test",
                 LocalDate.parse("1990-05-15"), "Calle 3",
                 "3102000000", "test@test.com", new BigDecimal("2500000")
         );
     }
 
     @Test
-    void mustFindByEmail() {
-        when(repository.findByEmail("test@test.com")).thenReturn(Mono.just(userEntity));
+    void mustFindByEmailAndDocumentNumber() {
+        when(repository.findByEmailAndDocumentNumber("test@test.com", "123456789"))
+                .thenReturn(Mono.just(userEntity));
         when(mapper.map(userEntity, User.class)).thenReturn(user);
 
-        Mono<User> result = repositoryAdapter.findByEmail("test@test.com");
+        Mono<User> result = repositoryAdapter.findByEmailAndDocumentNumber("test@test.com", "123456789");
 
         StepVerifier.create(result)
                 .expectNext(user)
                 .verifyComplete();
-    }
-
-    @Test
-    void mustFindAll() {
-        when(repository.findAll()).thenReturn(Flux.just(userEntity));
-        when(mapper.map(userEntity, User.class)).thenReturn(user);
-
-        Flux<User> result = repositoryAdapter.findAll();
-
-        StepVerifier.create(result)
-            .expectNext(user)
-            .verifyComplete();
     }
 
     @Test

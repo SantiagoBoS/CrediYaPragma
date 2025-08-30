@@ -6,6 +6,7 @@ import co.com.pragma.r2dbc.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -14,13 +15,9 @@ import reactor.core.publisher.Mono;
 public class UserRepositoryAdapter implements UserRepository {
     private final UserReactiveRepository repository;
     private final ObjectMapper mapper;
+    //Transtion operation
 
-    @Override
-    public Flux<User> findAll() {
-        return repository.findAll()
-                .map(entity -> mapper.map(entity, User.class));
-    }
-
+    @Transactional  // transacción reactiva
     @Override
     public Mono<User> save(User user) {
         return repository.save(mapper.map(user, UserEntity.class))
@@ -28,8 +25,8 @@ public class UserRepositoryAdapter implements UserRepository {
     }
 
     @Override
-    public Mono<User> findByEmail(String email) {
-        return repository.findByEmail(email)
+    public Mono<User> findByEmailAndDocumentNumber(String email, String documentNumber) {
+        return repository.findByEmailAndDocumentNumber(email, documentNumber)
                 .map(entity -> mapper.map(entity, User.class));
     }
 }

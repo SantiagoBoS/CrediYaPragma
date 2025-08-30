@@ -35,6 +35,7 @@ class UserRouterTest {
     void setup() {
         validUser = User.builder()
                 .id("1")
+                .documentNumber("123456789")
                 .name("Santiago")
                 .lastName("Test")
                 .birthDate(LocalDate.of(1990, 1, 1))
@@ -44,7 +45,7 @@ class UserRouterTest {
                 .baseSalary(new BigDecimal("1000000"))
                 .build();
 
-        invalidUser = new User("", "", "", null, "", "", "bad-email", null);
+        invalidUser = new User("", "", "", "", null, "", "", "bad-email", null);
     }
 
     @Test

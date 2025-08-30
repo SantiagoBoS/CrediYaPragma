@@ -1,0 +1,180 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > UserRouter</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">co.com.pragma.api</a>
+</div>
+
+<h1>Coverage Summary for Class: UserRouter (co.com.pragma.api)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserRouter</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">UserRouter$$SpringCGLIB$$0</td>
+  </tr>
+  <tr>
+    <td class="name">UserRouter$$SpringCGLIB$$FastClass$$0</td>
+  </tr>
+  <tr>
+    <td class="name">UserRouter$$SpringCGLIB$$FastClass$$1</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package co.com.pragma.api;
+&nbsp;
+&nbsp;import co.com.pragma.api.dto.UserRequestDTO;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.media.Content;
+&nbsp;import io.swagger.v3.oas.annotations.media.Schema;
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponse;
+&nbsp;import org.springdoc.core.annotations.RouterOperation;
+&nbsp;import org.springframework.context.annotation.Bean;
+&nbsp;import org.springframework.context.annotation.Configuration;
+&nbsp;import org.springframework.web.reactive.function.server.RouterFunction;
+&nbsp;import org.springframework.web.reactive.function.server.ServerResponse;
+&nbsp;
+&nbsp;import static org.springframework.web.bind.annotation.RequestMethod.POST;
+&nbsp;import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
+&nbsp;import static org.springframework.web.reactive.function.server.RouterFunctions.route;
+&nbsp;
+&nbsp;@Configuration
+<b class="fc">&nbsp;public class UserRouter {</b>
+&nbsp;    @Bean
+&nbsp;    @RouterOperation(
+&nbsp;        path = &quot;/api/v1/usuarios&quot;,
+&nbsp;        beanClass = UserHandler.class,
+&nbsp;        beanMethod = &quot;registerUser&quot;,
+&nbsp;        method = POST,
+&nbsp;        operation = @Operation(
+&nbsp;            operationId = &quot;registerUser&quot;,
+&nbsp;            summary = &quot;Registrar un nuevo usuario&quot;,
+&nbsp;            description = &quot;Permite registrar un nuevo solicitante proporcionando sus datos personales&quot;,
+&nbsp;            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+&nbsp;                content = @Content(schema = @Schema(implementation = UserRequestDTO.class))
+&nbsp;            ),
+&nbsp;            responses = {
+&nbsp;                @ApiResponse(
+&nbsp;                    responseCode = &quot;201&quot;,
+&nbsp;                    description = &quot;Usuario registrado exitosamente&quot;,
+&nbsp;                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+&nbsp;                ),
+&nbsp;                @ApiResponse(
+&nbsp;                    responseCode = &quot;400&quot;,
+&nbsp;                    description = &quot;Datos inválidos&quot;,
+&nbsp;                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+&nbsp;                ),
+&nbsp;                @ApiResponse(
+&nbsp;                    responseCode = &quot;409&quot;,
+&nbsp;                    description = &quot;Correo ya registrado&quot;,
+&nbsp;                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+&nbsp;                ),
+&nbsp;                @ApiResponse(
+&nbsp;                    responseCode = &quot;500&quot;,
+&nbsp;                    description = &quot;Error interno del servidor&quot;,
+&nbsp;                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+&nbsp;                )
+&nbsp;            }
+&nbsp;        )
+&nbsp;    )
+&nbsp;    public RouterFunction&lt;ServerResponse&gt; userRoutes(UserHandler handler) {
+<b class="fc">&nbsp;        return route(POST(&quot;/api/v1/usuarios&quot;), handler::registerUser);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-08-30 16:01</div>
+</div>
+</body>
+</html>

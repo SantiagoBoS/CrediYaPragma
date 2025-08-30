@@ -13,7 +13,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class UserResponseDTO {
-    private String id;
     private String name;
     private String lastName;
     private LocalDate birthDate;

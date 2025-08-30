@@ -34,7 +34,7 @@ class ConfigTest {
 
     @Test
     void shouldRegisterUserSuccessfully() {
-        User user = new User("", "Santiago","Borrero",
+        User user = new User("", "123456789", "Santiago","Borrero",
                 LocalDate.parse("1990-12-12"), "Cra 8 # 45-67", "3001234567",
                 "santi@example.com", BigDecimal.valueOf(5000000));
 
@@ -54,7 +54,7 @@ class ConfigTest {
 
     @Test
     void shouldReturnBadRequestWhenBusinessExceptionThrown() {
-        User invalidUser = new User("", "", "", null,"", "", "bad-email", null);
+        User invalidUser = new User("", "", "", "", null,"", "", "bad-email", null);
 
         given(registerUserUseCase.registerUser(any(User.class)))
                 .willReturn(Mono.error(new BusinessException("Rellena todos los campos obligatorios")));

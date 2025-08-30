@@ -6,7 +6,8 @@ import co.com.pragma.r2dbc.entity.UserEntity;
 public class UserMapper {
     public static UserEntity toEntity(User user) {
         return new UserEntity(
-                user.getId(),
+                null,
+                user.getDocumentNumber(),
                 user.getName(),
                 user.getLastName(),
                 user.getBirthDate(),
@@ -19,7 +20,7 @@ public class UserMapper {
 
     public static User toModel(UserEntity entity) {
         return new User(
-                entity.getId(),
+                entity.getDocumentNumber(),
                 entity.getName(),
                 entity.getLastName(),
                 entity.getBirthDate(),

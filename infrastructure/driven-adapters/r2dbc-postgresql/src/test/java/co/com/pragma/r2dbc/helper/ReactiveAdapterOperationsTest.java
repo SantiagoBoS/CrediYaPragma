@@ -97,8 +97,6 @@ class ReactiveAdapterOperationsTest {
                 .verifyComplete();
     }
 
-    // --- Clases Dummy ---
-
     static class DummyEntity {
         private String id;
         private String name;

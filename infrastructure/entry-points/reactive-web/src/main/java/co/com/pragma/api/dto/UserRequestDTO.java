@@ -14,6 +14,9 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class UserRequestDTO {
+    @NotBlank(message = "El documento no puede estar vacío")
+    private String documentNumber;
+
     @NotBlank(message = "El nombre no puede estar vacío")
     private String name;
 

@@ -1,6 +1,7 @@
 package co.com.pragma.usecase.registeruser;
 
 import co.com.pragma.model.user.User;
+import co.com.pragma.model.user.exceptions.BusinessException;
 import co.com.pragma.model.user.gateways.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,8 @@ import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+
+import static org.mockito.Mockito.*;
 
 public class RegisterUserUseCaseTest {
 
@@ -22,28 +25,78 @@ public class RegisterUserUseCaseTest {
         registerUserUseCase = new RegisterUserUseCase(userRepository);
     }
 
-    @Test
-    void shouldRegisterUserSuccessfully() {
-        // Arrange
-        User user = new User(
+    private User buildUser() {
+        return new User(
             null,
-            "Juan",
-            "Pérez",
+            "123456",
+            "Santiago",
+            "Test",
             LocalDate.parse("1990-05-15"),
             "Calle 123",
             "3102567890",
-            "juan.perez@example.com",
+            "sbs@example.com",
             new BigDecimal("2000000")
         );
+    }
 
-        // mockeamos que no existe el usuario y que al guardar devuelve el mismo
-        Mockito.when(userRepository.findByEmail(user.getEmail())).thenReturn(Mono.empty());
-        Mockito.when(userRepository.save(user)).thenReturn(Mono.just(user));
+    @Test
+    void shouldRegisterUserSuccessfully() {
+        User user = buildUser();
 
-        // Act & Assert
+        when(userRepository.findByEmailAndDocumentNumber(user.getEmail(), user.getDocumentNumber()))
+                .thenReturn(Mono.empty());
+        when(userRepository.save(user)).thenReturn(Mono.just(user));
+
         StepVerifier.create(registerUserUseCase.registerUser(user))
                 .expectNext(user)
                 .verifyComplete();
+
+        verify(userRepository).findByEmailAndDocumentNumber(user.getEmail(), user.getDocumentNumber());
+        verify(userRepository).save(user);
     }
 
+    @Test
+    void shouldThrowBusinessExceptionWhenUserAlreadyExistsByEmailOrDocument() {
+        User user = buildUser();
+
+        when(userRepository.findByEmailAndDocumentNumber(user.getEmail(), user.getDocumentNumber()))
+                .thenReturn(Mono.just(user));
+
+        StepVerifier.create(registerUserUseCase.registerUser(user))
+                .expectError(BusinessException.class)
+                .verify();
+
+        verify(userRepository).findByEmailAndDocumentNumber(user.getEmail(), user.getDocumentNumber());
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void shouldPropagateErrorWhenRepositoryFailsOnSave() {
+        User user = buildUser();
+
+        when(userRepository.findByEmailAndDocumentNumber(user.getEmail(), user.getDocumentNumber()))
+                .thenReturn(Mono.empty());
+        when(userRepository.save(user)).thenReturn(Mono.error(new RuntimeException("DB error")));
+
+        StepVerifier.create(registerUserUseCase.registerUser(user))
+                .expectErrorMatches(throwable -> throwable instanceof RuntimeException &&
+                        throwable.getMessage().equals("DB error"))
+                .verify();
+
+        verify(userRepository).findByEmailAndDocumentNumber(user.getEmail(), user.getDocumentNumber());
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void shouldThrowBusinessExceptionWhenEmailOrDocumentIsNull() {
+        User user = buildUser();
+        user.setEmail(null);
+
+        StepVerifier.create(registerUserUseCase.registerUser(user))
+                .expectError(BusinessException.class)
+                .verify();
+
+        verify(userRepository, never()).findByEmailAndDocumentNumber(anyString(), anyString());
+        verify(userRepository, never()).save(any(User.class));
+    }
 }
