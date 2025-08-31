@@ -45,7 +45,7 @@ class UserRepositoryAdapterTest {
         userEntity.setBaseSalary(new BigDecimal("2500000"));
 
         user = new User(
-                "1", "123456789", "Santiago", "Test",
+                "123456789", "Santiago", "Test",
                 LocalDate.parse("1990-05-15"), "Calle 3",
                 "3102000000", "test@test.com", new BigDecimal("2500000")
         );

@@ -3,7 +3,6 @@ package co.com.pragma.api;
 import co.com.pragma.model.user.User;
 import co.com.pragma.model.user.exceptions.BusinessException;
 import co.com.pragma.usecase.registeruser.RegisterUserUseCase;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -13,7 +12,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
@@ -34,7 +32,6 @@ class UserRouterTest {
     @BeforeEach
     void setup() {
         validUser = User.builder()
-                .id("1")
                 .documentNumber("123456789")
                 .name("Santiago")
                 .lastName("Test")
@@ -45,7 +42,7 @@ class UserRouterTest {
                 .baseSalary(new BigDecimal("1000000"))
                 .build();
 
-        invalidUser = new User("", "", "", "", null, "", "", "bad-email", null);
+        invalidUser = new User("", "", "", null, "", "", "bad-email", null);
     }
 
     @Test
@@ -61,7 +58,7 @@ class UserRouterTest {
             .expectStatus().isCreated()
             .expectBody()
             .jsonPath("$.data.email").isEqualTo("santiago@example.com")
-            .jsonPath("$.status").isEqualTo("OK");
+            .jsonPath("$.code").isEqualTo("200.01");
     }
 
     @Test
@@ -77,7 +74,7 @@ class UserRouterTest {
             .expectStatus().isBadRequest()
             .expectBody()
             .jsonPath("$.message").isEqualTo("Rellena todos los campos obligatorios")
-            .jsonPath("$.status").isEqualTo("BAD_REQUEST");
+            .jsonPath("$.code").isEqualTo("400.01");
     }
 
     @Test
@@ -93,6 +90,6 @@ class UserRouterTest {
             .expectStatus().isBadRequest()
             .expectBody()
             .jsonPath("$.message").isEqualTo("El correo electrónico ya se encuentra registrado")
-            .jsonPath("$.status").isEqualTo("BAD_REQUEST");
+            .jsonPath("$.code").isEqualTo("400.01");
     }
 }

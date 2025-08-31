@@ -27,7 +27,6 @@ public class RegisterUserUseCaseTest {
 
     private User buildUser() {
         return new User(
-            null,
             "123456",
             "Santiago",
             "Test",
