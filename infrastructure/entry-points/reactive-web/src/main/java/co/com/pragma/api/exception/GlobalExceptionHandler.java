@@ -1,7 +1,8 @@
 package co.com.pragma.api.exception;
 
-import co.com.pragma.api.dto.ErrorResponse;
+import co.com.pragma.api.dto.ApiResponse;
 import co.com.pragma.api.dto.FieldErrorDTO;
+import co.com.pragma.model.user.exceptions.BusinessException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.ConstraintViolationException;
@@ -15,59 +16,80 @@ import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @Component
 @Order(-2)
-public class GlobalExceptionHandler  implements ErrorWebExceptionHandler {
+public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
+
+    private final ObjectMapper objectMapper;
+
+    public GlobalExceptionHandler(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
-        ErrorResponse response;
+        ApiResponse<Object> response;
+        HttpStatus status;
 
         if (ex instanceof WebExchangeBindException webEx) {
-            var errors = webEx.getFieldErrors().stream()
+            // Errores de binding de DTOs
+            List<FieldErrorDTO> errors = webEx.getFieldErrors().stream()
                     .map(err -> new FieldErrorDTO(err.getField(), err.getDefaultMessage()))
                     .toList();
 
-            response = ErrorResponse.builder()
-                    .code("400.01")
-                    .message("Error de validación en los datos de entrada.")
+            response = ApiResponse.builder()
+                    .code(ErrorCatalog.VALIDATION_CODE)
+                    .message(ErrorCatalog.VALIDATION_MESSAGE)
                     .errors(errors)
                     .build();
 
-            exchange.getResponse().setStatusCode(HttpStatus.BAD_REQUEST);
-        }
-        else if (ex instanceof ConstraintViolationException cvEx) {
-            var errors = cvEx.getConstraintViolations().stream()
-                    .map(v -> new FieldErrorDTO(
-                            v.getPropertyPath().toString(),
-                            v.getMessage()))
+            status = HttpStatus.BAD_REQUEST;
+
+        } else if (ex instanceof ConstraintViolationException cvEx) {
+            // Errores de validación manual (validator)
+            List<FieldErrorDTO> errors = cvEx.getConstraintViolations().stream()
+                    .map(v -> new FieldErrorDTO(v.getPropertyPath().toString(), v.getMessage()))
                     .toList();
 
-            response = ErrorResponse.builder()
-                    .code("400.01")
-                    .message("Error de validación en los datos de entrada.")
+            response = ApiResponse.builder()
+                    .code(ErrorCatalog.VALIDATION_CODE_GENERAL)
+                    .message(ErrorCatalog.VALIDATION_MESSAGE)
                     .errors(errors)
                     .build();
 
-            exchange.getResponse().setStatusCode(HttpStatus.BAD_REQUEST);
-        }
-        else {
-            response = ErrorResponse.builder()
-                    .code("500.01")
-                    .message("Error interno del servidor")
+            status = HttpStatus.BAD_REQUEST;
+
+        } else if (ex instanceof BusinessException be) {
+            // Excepciones de negocio personalizadas
+            response = ApiResponse.builder()
+                    .code(ErrorCatalog.CONFLICT_CODE)
+                    .message(be.getMessage() != null ? be.getMessage() : ErrorCatalog.CONFLICT_MESSAGE)
                     .build();
 
-            exchange.getResponse().setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+            status = HttpStatus.CONFLICT;
+
+        } else {
+            // Errores genéricos / no controlados
+            response = ApiResponse.builder()
+                    .code(ErrorCatalog.INTERNAL_ERROR_CODE)
+                    .message(ErrorCatalog.INTERNAL_ERROR_MESSAGE)
+                    .build();
+
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
+        exchange.getResponse().setStatusCode(status);
         exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
-        DataBuffer dataBuffer = null;
+
+        DataBuffer dataBuffer;
         try {
             dataBuffer = exchange.getResponse()
                     .bufferFactory()
-                    .wrap(new ObjectMapper().writeValueAsBytes(response));
+                    .wrap(objectMapper.writeValueAsBytes(response));
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            return Mono.error(e);
         }
 
         return exchange.getResponse().writeWith(Mono.just(dataBuffer));

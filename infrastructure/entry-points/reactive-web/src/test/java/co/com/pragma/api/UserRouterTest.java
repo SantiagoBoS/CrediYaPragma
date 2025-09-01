@@ -58,13 +58,13 @@ class UserRouterTest {
             .expectStatus().isCreated()
             .expectBody()
             .jsonPath("$.data.email").isEqualTo("santiago@example.com")
-            .jsonPath("$.code").isEqualTo("200.01");
+            .jsonPath("$.code").isEqualTo("201.01");
     }
 
     @Test
     void shouldReturnBadRequestWhenValidationFails() {
         Mockito.when(registerUserUseCase.registerUser(Mockito.any(User.class)))
-            .thenReturn(Mono.error(new BusinessException("Rellena todos los campos obligatorios")));
+            .thenReturn(Mono.error(new BusinessException("Error de validación en los datos de entrada.")));
 
         webTestClient.post()
             .uri("/api/v1/usuarios")
@@ -73,7 +73,7 @@ class UserRouterTest {
             .exchange()
             .expectStatus().isBadRequest()
             .expectBody()
-            .jsonPath("$.message").isEqualTo("Rellena todos los campos obligatorios")
+            .jsonPath("$.message").isEqualTo("Error de validación en los datos de entrada.")
             .jsonPath("$.code").isEqualTo("400.01");
     }
 
@@ -90,6 +90,6 @@ class UserRouterTest {
             .expectStatus().isBadRequest()
             .expectBody()
             .jsonPath("$.message").isEqualTo("El correo electrónico ya se encuentra registrado")
-            .jsonPath("$.code").isEqualTo("400.01");
+            .jsonPath("$.code").isEqualTo("400.02");
     }
 }

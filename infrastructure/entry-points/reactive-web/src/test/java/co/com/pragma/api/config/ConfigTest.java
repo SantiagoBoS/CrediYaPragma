@@ -56,8 +56,7 @@ class ConfigTest {
     void shouldReturnBadRequestWhenBusinessExceptionThrown() {
         User invalidUser = new User("", "", "", null,"", "", "bad-email", null);
 
-        given(registerUserUseCase.registerUser(any(User.class)))
-                .willReturn(Mono.error(new BusinessException("Rellena todos los campos obligatorios")));
+        given(registerUserUseCase.registerUser(any(User.class))).willReturn(Mono.error(new BusinessException("Error de validación en los datos de entrada.")));
 
         webTestClient.post()
                 .uri("/api/v1/usuarios")
@@ -66,6 +65,6 @@ class ConfigTest {
                 .exchange()
                 .expectStatus().isBadRequest()
                 .expectBody()
-                .jsonPath("$.message").isEqualTo("Rellena todos los campos obligatorios");
+                .jsonPath("$.message").isEqualTo("Error de validación en los datos de entrada.");
     }
 }

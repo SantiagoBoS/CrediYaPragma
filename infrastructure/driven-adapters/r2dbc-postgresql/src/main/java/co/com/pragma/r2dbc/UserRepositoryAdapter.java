@@ -14,9 +14,8 @@ import reactor.core.publisher.Mono;
 public class UserRepositoryAdapter implements UserRepository {
     private final UserReactiveRepository repository;
     private final ObjectMapper mapper;
-    //Transtion operation
 
-    @Transactional  // transacción reactiva
+    @Transactional
     @Override
     public Mono<User> save(User user) {
         return repository.save(mapper.map(user, UserEntity.class))

@@ -20,12 +20,12 @@ public class PostgreSQLConnectionPool {
 	@Bean
 	public ConnectionPool getConnectionConfig(PostgresqlConnectionProperties properties) {
 		PostgresqlConnectionConfiguration dbConfiguration = PostgresqlConnectionConfiguration.builder()
-                .host("localhost")//.host(properties.host())
-                .port(5432)//.port(properties.port())
-                .database("crediya")//.database(properties.database())
-                .schema("public")//.schema(properties.schema())
-                .username("postgres")//.username(properties.username())
-                .password("123456789")//.password(properties.password())
+                .host("localhost")
+                .port(5432)
+                .database("crediya")
+                .schema("public")
+                .username("postgres")
+                .password("123456789")
                 .build();
 
         ConnectionPoolConfiguration poolConfiguration = ConnectionPoolConfiguration.builder()
