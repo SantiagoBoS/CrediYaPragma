@@ -21,7 +21,7 @@ public class PostgreSQLConnectionPool {
 	public ConnectionPool getConnectionConfig(PostgresqlConnectionProperties properties) {
 		PostgresqlConnectionConfiguration dbConfiguration = PostgresqlConnectionConfiguration.builder()
                 .host("localhost")
-                .port(5432)
+                .port(DEFAULT_PORT)
                 .database("crediya")
                 .schema("public")
                 .username("postgres")
