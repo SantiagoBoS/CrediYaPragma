@@ -1,6 +1,7 @@
 package co.com.pragma.api;
 
 import co.com.pragma.api.dto.UserRequestDTO;
+import co.com.pragma.api.dto.UserResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,7 +18,7 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 
 @Configuration
 public class UserRouter {
-    @Bean
+    /*@Bean
     @RouterOperation(
         path = "/api/v1/usuarios",
         beanClass = UserHandler.class,
@@ -53,6 +54,43 @@ public class UserRouter {
                 )
             }
         )
+    )*/
+    @Bean
+    @RouterOperation(
+            path = "/api/v1/usuarios",
+            beanClass = UserHandler.class,
+            beanMethod = "registerUser",
+            operation = @Operation(
+                    operationId = "registerUser",
+                    summary = "Registrar un nuevo usuario",
+                    description = "Permite registrar un nuevo solicitante proporcionando sus datos personales",
+                    requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                            content = @Content(schema = @Schema(implementation = UserRequestDTO.class))
+                    ),
+                    responses = {
+                            @ApiResponse(
+                                    responseCode = "201",
+                                    description = "Usuario registrado exitosamente",
+                                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+                            ),
+                            @ApiResponse(
+                                    responseCode = "400",
+                                    description = "Datos inválidos",
+                                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+                            ),
+                            @ApiResponse(
+                                    responseCode = "409",
+                                    description = "Correo ya registrado",
+                                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+                            ),
+                            @ApiResponse(
+                                    responseCode = "500",
+                                    description = "Error interno del servidor",
+                                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+                            )
+
+                    }
+            )
     )
     public RouterFunction<ServerResponse> userRoutes(UserHandler handler) {
         return route(POST("/api/v1/usuarios"), handler::registerUser);
