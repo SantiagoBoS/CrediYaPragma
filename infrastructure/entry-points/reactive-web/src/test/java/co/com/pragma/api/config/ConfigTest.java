@@ -2,9 +2,9 @@ package co.com.pragma.api.config;
 
 import co.com.pragma.api.UserHandler;
 import co.com.pragma.api.UserRouter;
-import co.com.pragma.usecase.registeruser.RegisterUserUseCase;
 import co.com.pragma.model.user.User;
 import co.com.pragma.model.user.exceptions.BusinessException;
+import co.com.pragma.usecase.registeruser.RegisterUserUseCase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;

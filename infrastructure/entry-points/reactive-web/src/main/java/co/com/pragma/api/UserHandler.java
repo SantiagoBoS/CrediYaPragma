@@ -6,6 +6,7 @@ import co.com.pragma.api.exception.ErrorCatalog;
 import co.com.pragma.model.user.User;
 import co.com.pragma.model.user.exceptions.BusinessException;
 import co.com.pragma.usecase.registeruser.RegisterUserUseCase;
+import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
-import jakarta.validation.Validator;
 
 import java.util.List;
 import java.util.Map;
