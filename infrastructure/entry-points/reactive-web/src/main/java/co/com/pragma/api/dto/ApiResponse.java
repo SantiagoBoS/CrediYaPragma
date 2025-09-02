@@ -16,7 +16,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Schema(description = "Estructura estándar de respuesta de la API")
 public class ApiResponse<T> {
-    @Schema(description = "Código de negocio definido en ErrorCatalog", example = "201.01")
+    @Schema(description = "Código de negocio definido en UserUtils", example = "201.01")
     private String code;
 
     @Schema(description = "Mensaje asociado al código de negocio", example = "Usuario registrado exitosamente")

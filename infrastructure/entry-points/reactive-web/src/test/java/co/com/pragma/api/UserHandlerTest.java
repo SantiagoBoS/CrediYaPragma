@@ -1,7 +1,7 @@
 package co.com.pragma.api;
 
 import co.com.pragma.api.dto.UserRequestDTO;
-import co.com.pragma.api.exception.ErrorCatalog;
+import co.com.pragma.api.exception.UserUtils;
 import co.com.pragma.model.user.User;
 import co.com.pragma.model.user.exceptions.BusinessException;
 import co.com.pragma.usecase.registeruser.RegisterUserUseCase;
@@ -75,8 +75,8 @@ class UserHandlerTest {
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody()
-                .jsonPath("$.code").isEqualTo(ErrorCatalog.CREATE_CODE)
-                .jsonPath("$.message").isEqualTo(ErrorCatalog.CREATE_MESSAGE)
+                .jsonPath("$.code").isEqualTo(UserUtils.CREATE_CODE)
+                .jsonPath("$.message").isEqualTo(UserUtils.CREATE_MESSAGE)
                 .jsonPath("$.data.name").isEqualTo("Santiago");
 
         verify(registerUserUseCase, times(1)).registerUser(any(User.class));
@@ -95,8 +95,8 @@ class UserHandlerTest {
                 .exchange()
                 .expectStatus().isBadRequest()
                 .expectBody()
-                .jsonPath("$.code").isEqualTo(ErrorCatalog.VALIDATION_CODE)
-                .jsonPath("$.message").isEqualTo(ErrorCatalog.VALIDATION_MESSAGE)
+                .jsonPath("$.code").isEqualTo(UserUtils.VALIDATION_CODE)
+                .jsonPath("$.message").isEqualTo(UserUtils.VALIDATION_MESSAGE)
                 .jsonPath("$.errors").isArray();
     }
 
@@ -124,7 +124,7 @@ class UserHandlerTest {
                 .exchange()
                 .expectStatus().isBadRequest()
                 .expectBody()
-                .jsonPath("$.code").isEqualTo(ErrorCatalog.VALIDATION_CODE_GENERAL)
+                .jsonPath("$.code").isEqualTo(UserUtils.VALIDATION_CODE_GENERAL)
                 .jsonPath("$.message").isEqualTo("Usuario ya existe");
     }
 }

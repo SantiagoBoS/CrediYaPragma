@@ -40,8 +40,8 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
                     .toList();
 
             response = ApiResponse.builder()
-                    .code(ErrorCatalog.VALIDATION_CODE)
-                    .message(ErrorCatalog.VALIDATION_MESSAGE)
+                    .code(UserUtils.VALIDATION_CODE)
+                    .message(UserUtils.VALIDATION_MESSAGE)
                     .errors(errors)
                     .build();
 
@@ -54,8 +54,8 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
                     .toList();
 
             response = ApiResponse.builder()
-                    .code(ErrorCatalog.VALIDATION_CODE_GENERAL)
-                    .message(ErrorCatalog.VALIDATION_MESSAGE)
+                    .code(UserUtils.VALIDATION_CODE_GENERAL)
+                    .message(UserUtils.VALIDATION_MESSAGE)
                     .errors(errors)
                     .build();
 
@@ -64,8 +64,8 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
         } else if (ex instanceof BusinessException be) {
             // Excepciones de negocio personalizadas
             response = ApiResponse.builder()
-                    .code(ErrorCatalog.CONFLICT_CODE)
-                    .message(be.getMessage() != null ? be.getMessage() : ErrorCatalog.CONFLICT_MESSAGE)
+                    .code(UserUtils.CONFLICT_CODE)
+                    .message(be.getMessage() != null ? be.getMessage() : UserUtils.CONFLICT_MESSAGE)
                     .build();
 
             status = HttpStatus.CONFLICT;
@@ -73,8 +73,8 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
         } else {
             // Errores genéricos / no controlados
             response = ApiResponse.builder()
-                    .code(ErrorCatalog.INTERNAL_ERROR_CODE)
-                    .message(ErrorCatalog.INTERNAL_ERROR_MESSAGE)
+                    .code(UserUtils.INTERNAL_ERROR_CODE)
+                    .message(UserUtils.INTERNAL_ERROR_MESSAGE)
                     .build();
 
             status = HttpStatus.INTERNAL_SERVER_ERROR;
