@@ -10,5 +10,5 @@ import lombok.Setter;
 //@NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class Loan {
+public class LoanRequest {
 }
