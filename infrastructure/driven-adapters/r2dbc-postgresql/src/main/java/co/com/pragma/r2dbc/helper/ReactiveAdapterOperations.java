@@ -42,7 +42,7 @@ public abstract class ReactiveAdapterOperations<E, D, I, R extends ReactiveCrudR
         return saveData(entities.map(this::toData))
                 .map(this::toEntity);
     }
-    //ASDASDASDDASDASASD
+
     protected Mono<D> saveData(D data) {
         return repository.save(data);
     }
