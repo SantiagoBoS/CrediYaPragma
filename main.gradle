@@ -87,7 +87,7 @@ tasks.withType(JavaCompile).configureEach {
     ]
 }
 
-pitestReportAggregate {
+tasks.register('pitestReportAggregate') {
     doLast {
         def reportDir = layout.buildDirectory.dir("reports/pitest").get().asFile
         def consolidatedReport = new File(reportDir, 'mutations.xml')
