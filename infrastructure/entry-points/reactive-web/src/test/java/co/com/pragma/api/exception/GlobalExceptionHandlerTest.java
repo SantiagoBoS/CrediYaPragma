@@ -19,7 +19,6 @@ import org.springframework.web.bind.support.WebExchangeBindException;
 import reactor.test.StepVerifier;
 
 import java.util.Set;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GlobalExceptionHandlerTest {
@@ -33,23 +32,37 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void shouldHandleWebExchangeBindException() {
+        //Validacion de campos
         BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(new Object(), "user");
         bindingResult.addError(new FieldError("user", "email", "must not be blank"));
-
         WebExchangeBindException ex = new WebExchangeBindException(null, bindingResult);
         MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test").build());
-
-        // when
         StepVerifier.create(handler.handle(exchange, ex)).verifyComplete();
-
-        // then
         ServerHttpResponse response = exchange.getResponse();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test
+    void shouldHandleBusinessException() {
+        //Excepcion de negocio personalizada
+        BusinessException ex = new BusinessException("Usuario ya existe");
+        MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test").build());
+        StepVerifier.create(handler.handle(exchange, ex)).verifyComplete();
+        assertThat(exchange.getResponse().getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+    }
+
+    @Test
+    void shouldHandleGenericException() {
+        //Excepcion generica no controlada
+        RuntimeException ex = new RuntimeException("Unexpected error");
+        MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test").build());
+        StepVerifier.create(handler.handle(exchange, ex)).verifyComplete();
+        assertThat(exchange.getResponse().getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Test
     void shouldHandleConstraintViolationException() {
-        // given
+        //Validacion de restricciones
         ConstraintViolation<?> violation = new ConstraintViolation<>() {
             @Override public String getMessage() { return "Invalid value"; }
             @Override public String getMessageTemplate() { return null; }
@@ -82,36 +95,7 @@ class GlobalExceptionHandlerTest {
         ConstraintViolationException ex = new ConstraintViolationException(Set.of(violation));
         MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test").build());
 
-        // when
         StepVerifier.create(handler.handle(exchange, ex)).verifyComplete();
-
-        // then
         assertThat(exchange.getResponse().getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-    }
-
-    @Test
-    void shouldHandleBusinessException() {
-        // given
-        BusinessException ex = new BusinessException("Usuario ya existe");
-        MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test").build());
-
-        // when
-        StepVerifier.create(handler.handle(exchange, ex)).verifyComplete();
-
-        // then
-        assertThat(exchange.getResponse().getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
-    }
-
-    @Test
-    void shouldHandleGenericException() {
-        // given
-        RuntimeException ex = new RuntimeException("Unexpected error");
-        MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test").build());
-
-        // when
-        StepVerifier.create(handler.handle(exchange, ex)).verifyComplete();
-
-        // then
-        assertThat(exchange.getResponse().getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
