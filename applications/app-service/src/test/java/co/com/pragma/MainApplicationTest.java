@@ -6,7 +6,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class MainApplicationTest {
     @Test
-    void contextLoads() {
-        MainApplication.main(new String[]{});
+    void contextLoads() {}
+
+    @Test
+    void mainMethodRunsWithoutErrors() {
+        String[] args = {};
+        MainApplication.main(args);
     }
 }
