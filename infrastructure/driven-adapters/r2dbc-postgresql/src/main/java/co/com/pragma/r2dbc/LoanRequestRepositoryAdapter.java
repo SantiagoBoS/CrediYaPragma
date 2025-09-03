@@ -5,7 +5,10 @@ import co.com.pragma.model.loan.gateways.LoanRequestRepository;
 import co.com.pragma.r2dbc.entity.LoanRequestEntity;
 import co.com.pragma.r2dbc.helper.ReactiveAdapterOperations;
 import org.reactivecommons.utils.ObjectMapper;
+import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Mono;
 
+@Repository
 public class LoanRequestRepositoryAdapter extends ReactiveAdapterOperations<LoanRequest, LoanRequestEntity, String, LoanRequestReactiveRepository> implements LoanRequestRepository {
     private final LoanRequestReactiveRepository repository;
     private final ObjectMapper mapper;
@@ -14,5 +17,10 @@ public class LoanRequestRepositoryAdapter extends ReactiveAdapterOperations<Loan
         super(repository, mapper, d -> mapper.map(d, LoanRequest.class));
         this.repository = repository;
         this.mapper = mapper;
+    }
+
+    @Override
+    public Mono<LoanRequest> findByClientDocumentAndStatus(String clientDocument, String status) {
+        return repository.findByClientDocumentAndStatus(clientDocument, status).map(this::toEntity);
     }
 }
