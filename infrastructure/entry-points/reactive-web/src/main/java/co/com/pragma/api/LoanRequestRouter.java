@@ -11,7 +11,9 @@ import org.springdoc.core.annotations.RouterOperation;
 import org.springdoc.core.annotations.RouterOperations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
@@ -35,6 +37,8 @@ public class LoanRequestRouter {
     })
 
     public RouterFunction<ServerResponse> loanRequestRoutes(LoanRequestHandler handler) {
-        return route(POST("/api/v1/solicitud"), handler::createLoanRequest);
+        return RouterFunctions
+                .route(POST("/api/v1/solicitud"), handler::createLoanRequest)
+                .andRoute(RequestPredicates.GET("/api/v1/solicitud"), handler::getAllLoanRequests);
     }
 }

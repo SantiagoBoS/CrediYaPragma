@@ -1,11 +1,13 @@
 package co.com.pragma.r2dbc;
 
 import co.com.pragma.model.loan.LoanRequest;
+import co.com.pragma.model.loan.RequestStatus;
 import co.com.pragma.model.loan.gateways.LoanRequestRepository;
 import co.com.pragma.r2dbc.entity.LoanRequestEntity;
 import co.com.pragma.r2dbc.helper.ReactiveAdapterOperations;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
@@ -22,5 +24,18 @@ public class LoanRequestRepositoryAdapter extends ReactiveAdapterOperations<Loan
     @Override
     public Mono<LoanRequest> findByClientDocumentAndStatus(String clientDocument, String status) {
         return repository.findByClientDocumentAndStatus(clientDocument, status).map(this::toEntity);
+    }
+
+    @Override
+    public Flux<LoanRequest> findAll() {
+        return repository.findAll()
+            .map(entity -> LoanRequest.builder()
+                .clientDocument(entity.getClientDocument())
+                .amount(entity.getAmount())
+                .termMonths(entity.getTermMonths())
+                .loanType(entity.getLoanType())
+                .status(RequestStatus.valueOf(entity.getStatus()))
+                .createdAt(entity.getCreatedAt())
+                .build());
     }
 }

@@ -5,6 +5,7 @@ import co.com.pragma.model.loan.RequestStatus;
 import co.com.pragma.model.loan.exceptions.BusinessException;
 import co.com.pragma.model.loan.gateways.LoanRequestRepository;
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
@@ -24,5 +25,9 @@ public class RegisterLoanRequestUseCase {
                 }
                 return Mono.error(new BusinessException("Error interno al registrar solicitud"));
             })));
+    }
+
+    public Flux<LoanRequest> getAllLoanRequests() {
+        return loanRequestRepository.findAll();
     }
 }

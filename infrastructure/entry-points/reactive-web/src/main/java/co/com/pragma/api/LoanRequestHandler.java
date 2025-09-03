@@ -57,4 +57,8 @@ public class LoanRequestHandler {
             return ServerResponse.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).bodyValue(response);
         });
     }
+
+    public Mono<ServerResponse> getAllLoanRequests(ServerRequest request) {
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(loanRequestUseCase.getAllLoanRequests(), LoanRequest.class);
+    }
 }
