@@ -12,9 +12,12 @@ public class RegisterLoanRequestUseCase {
     private final LoanRequestRepository loanRequestRepository;
 
     public Mono<LoanRequest> registerLoanRequest(LoanRequest loanRequest) {
+        if (loanRequest.getStatus() == null) {
+            loanRequest.setStatus(RequestStatus.valueOf(RequestStatus.PENDING_REVIEW.toString()));
+        }
         return loanRequestRepository.findByClientDocumentAndStatus(loanRequest.getClientDocument(), RequestStatus.PENDING_REVIEW.toString())
             .flatMap(existing -> Mono.<LoanRequest>error(new BusinessException("El cliente ya tiene una solicitud en proceso")))
-            .switchIfEmpty(Mono.defer(() -> loanRequestRepository.save(loanRequest).onErrorResume(throwable -> {
+            .switchIfEmpty(Mono.defer(() -> loanRequestRepository.save(loanRequest).doOnError(e -> e.printStackTrace()).onErrorResume(throwable -> {
                 String msg = throwable.getMessage();
                 if (msg != null && msg.contains("duplicate")) {
                     return Mono.error(new BusinessException("Ya existe una solicitud duplicada para este cliente"));

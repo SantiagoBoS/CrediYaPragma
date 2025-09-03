@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Table("loan_requests")
 public class LoanRequestEntity {
     @Id
-    private String id;
+    private Long id;
 
     @Column(name = "client_document")
     private String clientDocument;

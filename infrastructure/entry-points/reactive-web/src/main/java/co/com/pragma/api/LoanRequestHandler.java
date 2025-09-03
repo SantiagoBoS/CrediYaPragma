@@ -15,6 +15,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,7 +41,7 @@ public class LoanRequestHandler {
 
             LoanRequest requestEntity = LoanRequest.builder()
                     .clientDocument(dto.getClientDocument())
-                    .amount(dto.getAmount() != null ? java.math.BigDecimal.valueOf(dto.getAmount()) : null)
+                    .amount(BigDecimal.valueOf(dto.getAmount()))
                     .termMonths(dto.getTermMonths())
                     .loanType(dto.getLoanType())
                     .status(dto.getStatus())

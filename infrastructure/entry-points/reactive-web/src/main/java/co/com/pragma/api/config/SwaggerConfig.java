@@ -13,6 +13,6 @@ public class SwaggerConfig {
                 .info(new Info()
                         .title("API de Pragma")
                         .version("1.0")
-                        .description("Documentación de la API de usuarios"));
+                        .description("Documentación de la API de solicitudes de préstamo"));
     }
 }
