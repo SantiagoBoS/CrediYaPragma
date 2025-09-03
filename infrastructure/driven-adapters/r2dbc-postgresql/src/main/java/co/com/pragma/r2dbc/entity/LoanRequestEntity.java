@@ -16,13 +16,13 @@ import java.time.LocalDateTime;
 @Table("loan_requests")
 public class LoanRequestEntity {
     @Id
-    private Long id;
+    private String id;
 
     @Column(name = "client_document")
     private String clientDocument;
 
     @Column(name = "amount")
-    private BigDecimal amount;
+    private Double amount;
 
     @Column(name = "term_months")
     private Integer termMonths;

@@ -38,12 +38,7 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
                     .map(err -> new FieldErrorDTO(err.getField(), err.getDefaultMessage()))
                     .toList();
 
-            response = ApiResponse.builder()
-                    .code(LoanRequestUtils.VALIDATION_CODE)
-                    .message(LoanRequestUtils.VALIDATION_MESSAGE)
-                    .errors(errors)
-                    .build();
-
+            response = ApiResponse.builder().code(LoanRequestUtils.VALIDATION_CODE).message(LoanRequestUtils.VALIDATION_MESSAGE).errors(errors).build();
             status = HttpStatus.BAD_REQUEST;
 
         } else if (ex instanceof ConstraintViolationException cvEx) {
@@ -52,30 +47,17 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
                     .map(v -> new FieldErrorDTO(v.getPropertyPath().toString(), v.getMessage()))
                     .toList();
 
-            response = ApiResponse.builder()
-                    .code(LoanRequestUtils.VALIDATION_CODE_GENERAL)
-                    .message(LoanRequestUtils.VALIDATION_MESSAGE)
-                    .errors(errors)
-                    .build();
-
+            response = ApiResponse.builder().code(LoanRequestUtils.VALIDATION_CODE_GENERAL).message(LoanRequestUtils.VALIDATION_MESSAGE).errors(errors).build();
             status = HttpStatus.BAD_REQUEST;
 
         } else if (ex instanceof BusinessException be) {
             // Excepciones de negocio personalizadas
-            response = ApiResponse.builder()
-                    .code(LoanRequestUtils.CONFLICT_CODE)
-                    .message(be.getMessage() != null ? be.getMessage() : LoanRequestUtils.CONFLICT_MESSAGE)
-                    .build();
-
+            response = ApiResponse.builder().code(LoanRequestUtils.CONFLICT_CODE).message(be.getMessage() != null ? be.getMessage() : LoanRequestUtils.CONFLICT_MESSAGE).build();
             status = HttpStatus.CONFLICT;
 
         } else {
             // Errores genéricos / no controlados
-            response = ApiResponse.builder()
-                    .code(LoanRequestUtils.INTERNAL_ERROR_CODE)
-                    .message(LoanRequestUtils.INTERNAL_ERROR_MESSAGE)
-                    .build();
-
+            response = ApiResponse.builder().code(LoanRequestUtils.INTERNAL_ERROR_CODE).message(LoanRequestUtils.INTERNAL_ERROR_MESSAGE).build();
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
@@ -84,14 +66,10 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
 
         DataBuffer dataBuffer;
         try {
-            dataBuffer = exchange.getResponse()
-                    .bufferFactory()
-                    .wrap(objectMapper.writeValueAsBytes(response));
+            dataBuffer = exchange.getResponse().bufferFactory().wrap(objectMapper.writeValueAsBytes(response));
         } catch (JsonProcessingException e) {
             return Mono.error(e);
         }
-
         return exchange.getResponse().writeWith(Mono.just(dataBuffer));
     }
-
 }

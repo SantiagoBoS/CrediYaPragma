@@ -18,7 +18,7 @@ public class RegisterLoanRequestUseCase {
         }
         return loanRequestRepository.findByClientDocumentAndStatus(loanRequest.getClientDocument(), RequestStatus.PENDING_REVIEW.toString())
             .flatMap(existing -> Mono.<LoanRequest>error(new BusinessException("El cliente ya tiene una solicitud en proceso")))
-            .switchIfEmpty(Mono.defer(() -> loanRequestRepository.save(loanRequest).doOnError(e -> e.printStackTrace()).onErrorResume(throwable -> {
+            .switchIfEmpty(Mono.defer(() -> loanRequestRepository.save(loanRequest).onErrorResume(throwable -> {
                 String msg = throwable.getMessage();
                 if (msg != null && msg.contains("duplicate")) {
                     return Mono.error(new BusinessException("Ya existe una solicitud duplicada para este cliente"));
