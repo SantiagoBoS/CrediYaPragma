@@ -33,24 +33,20 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
         HttpStatus status;
 
         if (ex instanceof WebExchangeBindException webEx) {
-            // Errores de binding de DTOs
             List<FieldErrorDTO> errors = webEx.getFieldErrors().stream().map(err -> new FieldErrorDTO(err.getField(), err.getDefaultMessage())).toList();
             response = ApiResponse.builder().code(AuthUtils.VALIDATION_CODE).message(AuthUtils.VALIDATION_MESSAGE).errors(errors).build();
             status = HttpStatus.BAD_REQUEST;
 
         } else if (ex instanceof ConstraintViolationException cvEx) {
-            // Errores de validación manual (validator)
             List<FieldErrorDTO> errors = cvEx.getConstraintViolations().stream().map(v -> new FieldErrorDTO(v.getPropertyPath().toString(), v.getMessage())).toList();
             response = ApiResponse.builder().code(AuthUtils.VALIDATION_CODE_GENERAL).message(AuthUtils.VALIDATION_MESSAGE).errors(errors).build();
             status = HttpStatus.BAD_REQUEST;
 
         } else if (ex instanceof BusinessException be) {
-            // Excepciones de negocio personalizadas
             response = ApiResponse.builder().code(AuthUtils.CONFLICT_CODE).message(be.getMessage() != null ? be.getMessage() : AuthUtils.CONFLICT_MESSAGE).build();
             status = HttpStatus.CONFLICT;
 
         } else {
-            // Errores genéricos / no controlados
             response = ApiResponse.builder().code(AuthUtils.INTERNAL_ERROR_CODE).message(AuthUtils.INTERNAL_ERROR_MESSAGE).build();
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
