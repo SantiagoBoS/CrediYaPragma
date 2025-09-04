@@ -6,7 +6,7 @@ import co.com.pragma.model.user.constants.AppMessages;
 
 public class UserMapper {
     private UserMapper() {
-        throw new UnsupportedOperationException(String.valueOf(AppMessages.CLASS_SHOULD_NOT_BE_INSTANTIATED));
+        throw new UnsupportedOperationException(String.valueOf(AppMessages.CLASS_SHOULD_NOT_BE_INSTANTIATED.getMessage()));
     }
 
     public static User toEntity(UserRequestDTO userDto) {

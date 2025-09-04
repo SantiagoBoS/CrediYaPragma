@@ -12,7 +12,7 @@ public class RegisterUserUseCase {
     private final UserRepository userRepository;
     public Mono<User> registerUser(User user) {
         return userRepository.findByEmailAndDocumentNumber(user.getEmail(), user.getDocumentNumber())
-            .flatMap(existing -> Mono.<User>error(new BusinessException(String.valueOf(AppMessages.USER_ALREADY_EXISTS))))
+            .flatMap(existing -> Mono.<User>error(new BusinessException(AppMessages.USER_ALREADY_EXISTS)))
             .switchIfEmpty(Mono.defer(() -> userRepository.save(user)));
     }
 }

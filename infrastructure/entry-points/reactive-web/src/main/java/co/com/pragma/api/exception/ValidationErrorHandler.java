@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 public class ValidationErrorHandler {
     private ValidationErrorHandler() {
-        throw new UnsupportedOperationException(String.valueOf(AppMessages.CLASS_SHOULD_NOT_BE_INSTANTIATED));
+        throw new UnsupportedOperationException(String.valueOf(AppMessages.CLASS_SHOULD_NOT_BE_INSTANTIATED.getMessage()));
     }
 
     public static Mono<? extends ServerResponse> buildValidationErrorResponse(Set<? extends ConstraintViolation<?>> violations) {
