@@ -2,7 +2,6 @@ package co.com.pragma.r2dbc;
 
 import co.com.pragma.model.loan.LoanRequest;
 import co.com.pragma.model.loan.constants.AppMessages;
-import co.com.pragma.model.loan.constants.RequestStatus;
 import co.com.pragma.model.loan.exceptions.BusinessException;
 import co.com.pragma.model.loan.gateways.LoanRequestRepository;
 import co.com.pragma.r2dbc.entity.LoanRequestEntity;
@@ -32,8 +31,7 @@ public class LoanRequestRepositoryAdapter extends ReactiveAdapterOperations<Loan
     public Mono<LoanRequest> save(LoanRequest loanRequest) {
         return super.save(loanRequest)
             .onErrorResume(throwable -> {
-                String msg = throwable.getMessage();
-                if (msg != null && msg.contains("duplicate")) {
+                if (throwable.getMessage() != null && throwable.getMessage().contains("duplicate")) {
                     return Mono.error(new BusinessException(AppMessages.DUPLICATE_APPLICATION));
                 }
                 return Mono.error(new BusinessException(AppMessages.INTERNAL_ERROR));
@@ -42,14 +40,6 @@ public class LoanRequestRepositoryAdapter extends ReactiveAdapterOperations<Loan
 
     @Override
     public Flux<LoanRequest> findAll() {
-        return repository.findAll()
-            .map(entity -> LoanRequest.builder()
-                .clientDocument(entity.getClientDocument())
-                .amount(entity.getAmount())
-                .termMonths(entity.getTermMonths())
-                .loanType(entity.getLoanType())
-                .status(RequestStatus.valueOf(entity.getStatus()))
-                .createdAt(entity.getCreatedAt())
-                .build());
+        return repository.findAll().map(this::toEntity);
     }
 }

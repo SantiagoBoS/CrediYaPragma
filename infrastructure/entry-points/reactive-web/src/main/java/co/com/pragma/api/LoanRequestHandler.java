@@ -3,6 +3,8 @@ package co.com.pragma.api;
 import co.com.pragma.api.dto.ApiResponse;
 import co.com.pragma.api.dto.LoanRequestDTO;
 import co.com.pragma.api.exception.LoanRequestUtils;
+import co.com.pragma.api.exception.ValidationErrorHandler;
+import co.com.pragma.api.mapper.LoanRequestMapper;
 import co.com.pragma.model.loan.LoanRequest;
 import co.com.pragma.model.loan.exceptions.BusinessException;
 import co.com.pragma.usecase.loan.LoanUseCase;
@@ -15,10 +17,6 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 @Component
 @RequiredArgsConstructor
 public class LoanRequestHandler {
@@ -28,28 +26,11 @@ public class LoanRequestHandler {
     public Mono<ServerResponse> createLoanRequest(ServerRequest request) {
         return request.bodyToMono(LoanRequestDTO.class).flatMap(dto -> {
             var violations = validator.validate(dto);
-            //PASARLO A UNA CLASE
             if (!violations.isEmpty()) {
-                List<Map<String, String>> errors = violations.stream()
-                    .map(violation -> Map.of(
-                        "field", violation.getPropertyPath().toString(),
-                        "message", violation.getMessage()))
-                    .collect(Collectors.toList());
-                ApiResponse<Object> response = ApiResponse.builder().code(LoanRequestUtils.VALIDATION_CODE).message(LoanRequestUtils.VALIDATION_MESSAGE).errors(errors).build();
-                return ServerResponse.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).bodyValue(response);
+                return ValidationErrorHandler.buildValidationErrorResponse(violations);
             }
-
-            //cambiar a loan en vez con entity MAPPER
-            LoanRequest requestEntity = LoanRequest.builder()
-                    .clientDocument(dto.getClientDocument())
-                    .amount(dto.getAmount())
-                    .termMonths(dto.getTermMonths())
-                    .loanType(dto.getLoanType())
-                    .status(dto.getStatus())
-                    .createdAt(dto.getCreatedAt())
-                    .build();
-
-            return loanRequestUseCase.register(requestEntity).flatMap(savedLoanRequest ->{
+            LoanRequest loan = LoanRequestMapper.toEntity(dto);
+            return loanRequestUseCase.register(loan).flatMap(savedLoanRequest ->{
                 ApiResponse<LoanRequest> response = ApiResponse.<LoanRequest>builder().code(LoanRequestUtils.CREATE_CODE).message(LoanRequestUtils.CREATE_MESSAGE).data(savedLoanRequest).build();
                 return ServerResponse.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).bodyValue(response);
             });
