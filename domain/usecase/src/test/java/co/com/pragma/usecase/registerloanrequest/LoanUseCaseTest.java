@@ -53,7 +53,7 @@ public class LoanUseCaseTest {
     void shouldThrowExceptionWhenExistingLoanRequestPending() {
         when(loanRequestRepository.findByClientDocumentAndStatus(any(), any())).thenReturn(Mono.just(loanRequest));
         Mono<LoanRequest> result = loanUseCase.register(loanRequest);
-        StepVerifier.create(result).expectErrorMatches(ex -> ex instanceof BusinessException && ex.getMessage().contains("Ya tiene una solicitud en proceso")).verify();
+        StepVerifier.create(result).expectErrorMatches(ex -> ex instanceof BusinessException && ex.getMessage().contains("El cliente ya tiene una solicitud en proceso")).verify();
         verify(loanRequestRepository, never()).save(any());
     }
 

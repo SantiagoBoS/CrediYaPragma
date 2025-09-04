@@ -62,6 +62,7 @@ public class LoanRequestRepositoryAdapterTest {
     @Test
     void mustFindAllLoanRequests() {
         when(repository.findAll()).thenReturn(Flux.just(entity));
+        when(mapper.map(entity, LoanRequest.class)).thenReturn(domain);
         Flux<LoanRequest> result = repositoryAdapter.findAll();
         StepVerifier.create(result)
                 .expectNextMatches(loanRequest ->
