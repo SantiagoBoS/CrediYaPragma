@@ -1,6 +1,8 @@
 package co.com.pragma.r2dbc;
 
 import co.com.pragma.model.user.User;
+import co.com.pragma.model.user.constants.AppMessages;
+import co.com.pragma.model.user.exceptions.BusinessException;
 import co.com.pragma.model.user.gateways.UserRepository;
 import co.com.pragma.r2dbc.entity.UserEntity;
 import co.com.pragma.r2dbc.helper.ReactiveAdapterOperations;
@@ -17,6 +19,20 @@ public class UserRepositoryAdapter extends ReactiveAdapterOperations<User, UserE
         super(repository, mapper, d -> mapper.map(d, User.class));
         this.repository = repository;
         this.mapper = mapper;
+    }
+
+    @Override
+    public Mono<User> save(User User) {
+        return super.save(User)
+            .onErrorResume(throwable -> {
+                String mss = throwable.getMessage();
+                if (mss != null &&
+                    (mss.contains(String.valueOf(AppMessages.EMAIL_FIELD)) || mss.contains(String.valueOf(AppMessages.DOCUMENT_FIELD)))
+                ) {
+                    return Mono.error(new BusinessException(String.valueOf(AppMessages.USER_ALREADY_EXISTS)));
+                }
+                return Mono.error(new BusinessException(String.valueOf(AppMessages.ERROR_SAVING_USER)));
+            });
     }
 
     @Override

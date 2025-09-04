@@ -62,7 +62,7 @@ public class RegisterUserUseCaseTest {
         User user = buildUser();
         when(userRepository.findByEmailAndDocumentNumber(user.getEmail(), user.getDocumentNumber())).thenReturn(Mono.empty());
         when(userRepository.save(user)).thenReturn(Mono.error(new RuntimeException("DB error")));
-        StepVerifier.create(registerUserUseCase.registerUser(user)).expectErrorMatches(throwable -> throwable instanceof BusinessException && throwable.getMessage().equals("Error interno al registrar usuario")).verify();
+        StepVerifier.create(registerUserUseCase.registerUser(user)).expectErrorMatches(throwable -> throwable instanceof RuntimeException && throwable.getMessage().equals("DB error")).verify();
         verify(userRepository).findByEmailAndDocumentNumber(user.getEmail(), user.getDocumentNumber());
         verify(userRepository).save(user);
     }
