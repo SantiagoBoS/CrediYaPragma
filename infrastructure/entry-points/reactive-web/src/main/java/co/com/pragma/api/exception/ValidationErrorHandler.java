@@ -21,8 +21,8 @@ public class ValidationErrorHandler {
     public static Mono<? extends ServerResponse> buildValidationErrorResponse(Set<? extends ConstraintViolation<?>> violations) {
         List<Map<String, String>> errors = violations.stream()
                 .map(violation -> Map.of(
-                        String.valueOf(AppMessages.VALIDATOR_HANDLE_FIELD), violation.getPropertyPath().toString(),
-                        String.valueOf(AppMessages.VALIDATOR_HANDLE_MESSAGE), violation.getMessage()))
+                        "field", violation.getPropertyPath().toString(),
+                        "message", violation.getMessage()))
                 .collect(Collectors.toList());
 
         ApiResponse<Object> response = ApiResponse.builder()

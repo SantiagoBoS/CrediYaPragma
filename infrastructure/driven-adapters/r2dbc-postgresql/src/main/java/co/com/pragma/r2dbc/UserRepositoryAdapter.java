@@ -26,12 +26,10 @@ public class UserRepositoryAdapter extends ReactiveAdapterOperations<User, UserE
         return super.save(User)
             .onErrorResume(throwable -> {
                 String mss = throwable.getMessage();
-                if (mss != null &&
-                    (mss.contains(String.valueOf(AppMessages.EMAIL_FIELD)) || mss.contains(String.valueOf(AppMessages.DOCUMENT_FIELD)))
-                ) {
-                    return Mono.error(new BusinessException(String.valueOf(AppMessages.USER_ALREADY_EXISTS)));
+                if (mss != null && (mss.contains("email") || mss.contains("document_number"))) {
+                    return Mono.error(new BusinessException(AppMessages.USER_ALREADY_EXISTS));
                 }
-                return Mono.error(new BusinessException(String.valueOf(AppMessages.ERROR_SAVING_USER)));
+                return Mono.error(new BusinessException(AppMessages.ERROR_SAVING_USER));
             });
     }
 
