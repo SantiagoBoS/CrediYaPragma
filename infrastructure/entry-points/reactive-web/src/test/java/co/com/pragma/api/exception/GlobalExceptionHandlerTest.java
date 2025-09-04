@@ -32,7 +32,6 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void shouldHandleWebExchangeBindException() {
-        //Verificar que maneja correctamente las excepciones de validación
         BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(new Object(), "loanRequest");
         bindingResult.addError(new FieldError("loanRequest", "amount", "must not be blank"));
         WebExchangeBindException ex = new WebExchangeBindException(null, bindingResult);
@@ -47,7 +46,6 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void shouldHandleBusinessException() {
-        //Verificar que maneja correctamente las excepciones de negocio
         BusinessException ex = new BusinessException("Usuario ya existe");
         MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test").build());
         StepVerifier.create(handler.handle(exchange, ex)).verifyComplete();
@@ -59,7 +57,6 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void shouldHandleGenericException() {
-        //Verificar que maneja correctamente las excepciones genéricas
         RuntimeException ex = new RuntimeException("Unexpected error");
         MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test").build());
         StepVerifier.create(handler.handle(exchange, ex)).verifyComplete();
@@ -71,7 +68,6 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void shouldHandleConstraintViolationException() {
-        //Verificar que maneja correctamente las excepciones de violación de restricciones
         ConstraintViolation<?> violation = new ConstraintViolation<>() {
             @Override public String getMessage() { return "Invalid value"; }
             @Override public String getMessageTemplate() { return null; }

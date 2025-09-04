@@ -19,7 +19,6 @@ class LoanRequestRouterTest {
         handler = Mockito.mock(LoanRequestHandler.class);
         LoanRequestRouter router = new LoanRequestRouter();
 
-        // construimos un WebTestClient solo con el router
         webTestClient = WebTestClient.bindToRouterFunction(router.loanRequestRoutes(handler))
                 .configureClient()
                 .baseUrl("/api/v1")
@@ -28,7 +27,6 @@ class LoanRequestRouterTest {
 
     @Test
     void shouldRouteToCreateLoanRequest() {
-        // Verificar que la ruta POST /solicitud llama al handler
         when(handler.createLoanRequest(any())).thenReturn(ServerResponse.ok().bodyValue("created"));
         webTestClient.post()
                 .uri("/solicitud")
@@ -39,7 +37,6 @@ class LoanRequestRouterTest {
 
     @Test
     void shouldRouteToGetAllLoanRequests() {
-        // Verificar que la ruta GET /solicitud llama al handler
         when(handler.getAllLoanRequests(any())).thenReturn(ServerResponse.ok().bodyValue("all"));
         webTestClient.get()
                 .uri("/solicitud")

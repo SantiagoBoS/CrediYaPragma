@@ -1,4 +1,4 @@
-package co.com.pragma.model.loan;
+package co.com.pragma.model.loan.constants;
 
 public enum RequestStatus {
     PENDING_REVIEW,

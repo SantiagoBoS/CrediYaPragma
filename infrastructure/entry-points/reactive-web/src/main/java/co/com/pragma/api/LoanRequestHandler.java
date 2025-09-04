@@ -5,7 +5,7 @@ import co.com.pragma.api.dto.LoanRequestDTO;
 import co.com.pragma.api.exception.LoanRequestUtils;
 import co.com.pragma.model.loan.LoanRequest;
 import co.com.pragma.model.loan.exceptions.BusinessException;
-import co.com.pragma.usecase.registerloanrequest.RegisterLoanRequestUseCase;
+import co.com.pragma.usecase.loan.LoanUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,12 +22,13 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class LoanRequestHandler {
-    private final RegisterLoanRequestUseCase loanRequestUseCase;
+    private final LoanUseCase loanRequestUseCase;
     private final Validator validator;
 
     public Mono<ServerResponse> createLoanRequest(ServerRequest request) {
         return request.bodyToMono(LoanRequestDTO.class).flatMap(dto -> {
             var violations = validator.validate(dto);
+            //PASARLO A UNA CLASE
             if (!violations.isEmpty()) {
                 List<Map<String, String>> errors = violations.stream()
                     .map(violation -> Map.of(
@@ -38,6 +39,7 @@ public class LoanRequestHandler {
                 return ServerResponse.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).bodyValue(response);
             }
 
+            //cambiar a loan en vez con entity MAPPER
             LoanRequest requestEntity = LoanRequest.builder()
                     .clientDocument(dto.getClientDocument())
                     .amount(dto.getAmount())
@@ -47,7 +49,7 @@ public class LoanRequestHandler {
                     .createdAt(dto.getCreatedAt())
                     .build();
 
-            return loanRequestUseCase.registerLoanRequest(requestEntity).flatMap(savedLoanRequest ->{
+            return loanRequestUseCase.register(requestEntity).flatMap(savedLoanRequest ->{
                 ApiResponse<LoanRequest> response = ApiResponse.<LoanRequest>builder().code(LoanRequestUtils.CREATE_CODE).message(LoanRequestUtils.CREATE_MESSAGE).data(savedLoanRequest).build();
                 return ServerResponse.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).bodyValue(response);
             });

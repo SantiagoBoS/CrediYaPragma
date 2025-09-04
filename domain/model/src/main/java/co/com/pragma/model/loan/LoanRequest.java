@@ -1,5 +1,6 @@
 package co.com.pragma.model.loan;
 
+import co.com.pragma.model.loan.constants.RequestStatus;
 import lombok.*;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;

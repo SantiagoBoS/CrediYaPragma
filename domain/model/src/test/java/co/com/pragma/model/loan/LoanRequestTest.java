@@ -1,5 +1,6 @@
 package co.com.pragma.model.loan;
 
+import co.com.pragma.model.loan.constants.RequestStatus;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;

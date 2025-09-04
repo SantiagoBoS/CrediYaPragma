@@ -33,7 +33,6 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
         HttpStatus status;
 
         if (ex instanceof WebExchangeBindException webEx) {
-            // Errores de binding de DTOs
             List<FieldErrorDTO> errors = webEx.getFieldErrors().stream()
                     .map(err -> new FieldErrorDTO(err.getField(), err.getDefaultMessage()))
                     .toList();
@@ -42,7 +41,6 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
             status = HttpStatus.BAD_REQUEST;
 
         } else if (ex instanceof ConstraintViolationException cvEx) {
-            // Errores de validación manual (validator)
             List<FieldErrorDTO> errors = cvEx.getConstraintViolations().stream()
                     .map(v -> new FieldErrorDTO(v.getPropertyPath().toString(), v.getMessage()))
                     .toList();
@@ -51,12 +49,10 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
             status = HttpStatus.BAD_REQUEST;
 
         } else if (ex instanceof BusinessException be) {
-            // Excepciones de negocio personalizadas
             response = ApiResponse.builder().code(LoanRequestUtils.CONFLICT_CODE).message(be.getMessage() != null ? be.getMessage() : LoanRequestUtils.CONFLICT_MESSAGE).build();
             status = HttpStatus.CONFLICT;
 
         } else {
-            // Errores genéricos / no controlados
             response = ApiResponse.builder().code(LoanRequestUtils.INTERNAL_ERROR_CODE).message(LoanRequestUtils.INTERNAL_ERROR_MESSAGE).build();
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }

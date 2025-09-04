@@ -1,7 +1,7 @@
 package co.com.pragma.r2dbc;
 
 import co.com.pragma.model.loan.LoanRequest;
-import co.com.pragma.model.loan.RequestStatus;
+import co.com.pragma.model.loan.constants.RequestStatus;
 import co.com.pragma.r2dbc.entity.LoanRequestEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,7 +53,6 @@ public class LoanRequestRepositoryAdapterTest {
 
     @Test
     void mustFindByClientDocumentAndStatus() {
-        // Verificar que encuentra la solicitud por documento y estado
         when(repository.findByClientDocumentAndStatus("123456", "PENDING")).thenReturn(Mono.just(entity));
         when(mapper.map(entity, LoanRequest.class)).thenReturn(domain);
         Mono<LoanRequest> result = repositoryAdapter.findByClientDocumentAndStatus("123456", "PENDING");
@@ -62,7 +61,6 @@ public class LoanRequestRepositoryAdapterTest {
 
     @Test
     void mustFindAllLoanRequests() {
-        // Verificar que encuentra todas las solicitudes
         when(repository.findAll()).thenReturn(Flux.just(entity));
         Flux<LoanRequest> result = repositoryAdapter.findAll();
         StepVerifier.create(result)
