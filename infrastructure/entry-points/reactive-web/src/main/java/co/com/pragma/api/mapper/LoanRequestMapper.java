@@ -6,7 +6,7 @@ import co.com.pragma.model.loan.constants.AppMessages;
 
 public class LoanRequestMapper {
     private LoanRequestMapper() {
-        throw new UnsupportedOperationException(String.valueOf(AppMessages.CLASS_SHOULD_NOT_BE_INSTANTIATED));
+        throw new UnsupportedOperationException(String.valueOf(AppMessages.CLASS_SHOULD_NOT_BE_INSTANTIATED.getMessage()));
     }
 
     public static LoanRequest toEntity(LoanRequestDTO dto) {
