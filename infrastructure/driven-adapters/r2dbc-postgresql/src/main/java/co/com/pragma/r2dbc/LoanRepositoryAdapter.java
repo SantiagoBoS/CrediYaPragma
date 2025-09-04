@@ -3,8 +3,8 @@ package co.com.pragma.r2dbc;
 import co.com.pragma.model.loan.LoanRequest;
 import co.com.pragma.model.loan.constants.AppMessages;
 import co.com.pragma.model.loan.exceptions.BusinessException;
-import co.com.pragma.model.loan.gateways.LoanRequestRepository;
-import co.com.pragma.r2dbc.entity.LoanRequestEntity;
+import co.com.pragma.model.loan.gateways.LoanRepository;
+import co.com.pragma.r2dbc.entity.LoanEntity;
 import co.com.pragma.r2dbc.helper.ReactiveAdapterOperations;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Repository;
@@ -12,11 +12,11 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
-public class LoanRequestRepositoryAdapter extends ReactiveAdapterOperations<LoanRequest, LoanRequestEntity, String, LoanRequestReactiveRepository> implements LoanRequestRepository {
-    private final LoanRequestReactiveRepository repository;
+public class LoanRepositoryAdapter extends ReactiveAdapterOperations<LoanRequest, LoanEntity, String, LoanReactiveRepository> implements LoanRepository {
+    private final LoanReactiveRepository repository;
     private final ObjectMapper mapper;
 
-    public LoanRequestRepositoryAdapter(LoanRequestReactiveRepository repository, ObjectMapper mapper) {
+    public LoanRepositoryAdapter(LoanReactiveRepository repository, ObjectMapper mapper) {
         super(repository, mapper, d -> mapper.map(d, LoanRequest.class));
         this.repository = repository;
         this.mapper = mapper;

@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class LoanRequestDTO {
+public class LoanDTO {
     @NotBlank(message = "El documento no puede estar vacio")
     private String clientDocument;
 

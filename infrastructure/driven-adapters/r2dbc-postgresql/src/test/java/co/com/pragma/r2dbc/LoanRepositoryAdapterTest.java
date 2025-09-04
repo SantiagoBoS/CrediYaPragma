@@ -2,7 +2,7 @@ package co.com.pragma.r2dbc;
 
 import co.com.pragma.model.loan.LoanRequest;
 import co.com.pragma.model.loan.constants.RequestStatus;
-import co.com.pragma.r2dbc.entity.LoanRequestEntity;
+import co.com.pragma.r2dbc.entity.LoanEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,22 +17,22 @@ import java.time.LocalDateTime;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class LoanRequestRepositoryAdapterTest {
+public class LoanRepositoryAdapterTest {
     @InjectMocks
-    LoanRequestRepositoryAdapter repositoryAdapter;
+    LoanRepositoryAdapter repositoryAdapter;
 
     @Mock
-    LoanRequestReactiveRepository repository;
+    LoanReactiveRepository repository;
 
     @Mock
     ObjectMapper mapper;
 
-    private LoanRequestEntity entity;
+    private LoanEntity entity;
     private LoanRequest domain;
 
     @BeforeEach
     void setUp() {
-        entity = new LoanRequestEntity();
+        entity = new LoanEntity();
         entity.setId("1");
         entity.setClientDocument("123456");
         entity.setAmount(10000.0);

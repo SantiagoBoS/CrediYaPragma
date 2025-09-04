@@ -9,15 +9,15 @@ import org.springframework.web.reactive.function.server.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-class LoanRequestRouterTest {
+class LoanRouterTest {
 
-    private LoanRequestHandler handler;
+    private LoanHandler handler;
     private WebTestClient webTestClient;
 
     @BeforeEach
     void setUp() {
-        handler = Mockito.mock(LoanRequestHandler.class);
-        LoanRequestRouter router = new LoanRequestRouter();
+        handler = Mockito.mock(LoanHandler.class);
+        LoanRouter router = new LoanRouter();
 
         webTestClient = WebTestClient.bindToRouterFunction(router.loanRequestRoutes(handler))
                 .configureClient()

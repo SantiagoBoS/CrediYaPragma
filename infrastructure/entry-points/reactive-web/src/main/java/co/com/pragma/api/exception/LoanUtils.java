@@ -1,6 +1,6 @@
 package co.com.pragma.api.exception;
 
-public class LoanRequestUtils {
+public class LoanUtils {
     public static final String CREATE_CODE = "201.01";
     public static final String CREATE_MESSAGE = "Solicitud registrada correctamente";
 

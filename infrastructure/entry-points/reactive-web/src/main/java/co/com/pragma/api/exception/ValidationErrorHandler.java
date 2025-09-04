@@ -26,8 +26,8 @@ public class ValidationErrorHandler {
                 .collect(Collectors.toList());
 
         ApiResponse<Object> response = ApiResponse.builder()
-                .code(LoanRequestUtils.VALIDATION_CODE)
-                .message(LoanRequestUtils.VALIDATION_MESSAGE)
+                .code(LoanUtils.VALIDATION_CODE)
+                .message(LoanUtils.VALIDATION_MESSAGE)
                 .errors(errors)
                 .build();
 

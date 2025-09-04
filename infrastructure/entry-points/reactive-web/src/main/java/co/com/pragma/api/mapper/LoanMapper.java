@@ -1,15 +1,15 @@
 package co.com.pragma.api.mapper;
 
-import co.com.pragma.api.dto.LoanRequestDTO;
+import co.com.pragma.api.dto.LoanDTO;
 import co.com.pragma.model.loan.LoanRequest;
 import co.com.pragma.model.loan.constants.AppMessages;
 
-public class LoanRequestMapper {
-    private LoanRequestMapper() {
+public class LoanMapper {
+    private LoanMapper() {
         throw new UnsupportedOperationException(String.valueOf(AppMessages.CLASS_SHOULD_NOT_BE_INSTANTIATED.getMessage()));
     }
 
-    public static LoanRequest toEntity(LoanRequestDTO dto) {
+    public static LoanRequest toEntity(LoanDTO dto) {
         if (dto == null) {
             return null;
         }
@@ -24,11 +24,11 @@ public class LoanRequestMapper {
                 .build();
     }
 
-    public static LoanRequestDTO toDto(LoanRequest entity) {
+    public static LoanDTO toDto(LoanRequest entity) {
         if (entity == null) {
             return null;
         }
-        return LoanRequestDTO.builder()
+        return LoanDTO.builder()
                 .clientDocument(entity.getClientDocument())
                 .amount(entity.getAmount())
                 .termMonths(entity.getTermMonths())

@@ -3,7 +3,7 @@ package co.com.pragma.usecase.registerloanrequest;
 import co.com.pragma.model.loan.LoanRequest;
 import co.com.pragma.model.loan.constants.RequestStatus;
 import co.com.pragma.model.loan.exceptions.BusinessException;
-import co.com.pragma.model.loan.gateways.LoanRequestRepository;
+import co.com.pragma.model.loan.gateways.LoanRepository;
 import co.com.pragma.usecase.loan.LoanUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.*;
 
 public class LoanUseCaseTest {
     @Mock
-    private LoanRequestRepository loanRequestRepository;
+    private LoanRepository loanRepository;
 
     @InjectMocks
     private LoanUseCase loanUseCase;
@@ -42,41 +42,41 @@ public class LoanUseCaseTest {
 
     @Test
     void shouldRegisterLoanRequestSuccessfully() {
-        when(loanRequestRepository.findByClientDocumentAndStatus(any(), any())).thenReturn(Mono.empty());
-        when(loanRequestRepository.save(any())).thenAnswer(invocation -> {LoanRequest saved = invocation.getArgument(0);return Mono.just(saved.toBuilder().status(RequestStatus.PENDING_REVIEW).build());});
+        when(loanRepository.findByClientDocumentAndStatus(any(), any())).thenReturn(Mono.empty());
+        when(loanRepository.save(any())).thenAnswer(invocation -> {LoanRequest saved = invocation.getArgument(0);return Mono.just(saved.toBuilder().status(RequestStatus.PENDING_REVIEW).build());});
         Mono<LoanRequest> result = loanUseCase.register(loanRequest);
         StepVerifier.create(result).expectNextMatches(saved -> saved.getStatus() == RequestStatus.PENDING_REVIEW && saved.getClientDocument().equals("12345")).verifyComplete();
-        verify(loanRequestRepository).save(any());
+        verify(loanRepository).save(any());
     }
 
     @Test
     void shouldThrowExceptionWhenExistingLoanRequestPending() {
-        when(loanRequestRepository.findByClientDocumentAndStatus(any(), any())).thenReturn(Mono.just(loanRequest));
+        when(loanRepository.findByClientDocumentAndStatus(any(), any())).thenReturn(Mono.just(loanRequest));
         Mono<LoanRequest> result = loanUseCase.register(loanRequest);
         StepVerifier.create(result).expectErrorMatches(ex -> ex instanceof BusinessException && ex.getMessage().contains("El cliente ya tiene una solicitud en proceso")).verify();
-        verify(loanRequestRepository, never()).save(any());
+        verify(loanRepository, never()).save(any());
     }
 
     @Test
     void shouldThrowDuplicateExceptionFromRepository() {
-        when(loanRequestRepository.findByClientDocumentAndStatus(any(), any())).thenReturn(Mono.empty());
-        when(loanRequestRepository.save(any())).thenReturn(Mono.error(new BusinessException("Ya existe una solicitud duplicada para este cliente")));
+        when(loanRepository.findByClientDocumentAndStatus(any(), any())).thenReturn(Mono.empty());
+        when(loanRepository.save(any())).thenReturn(Mono.error(new BusinessException("Ya existe una solicitud duplicada para este cliente")));
         Mono<LoanRequest> result = loanUseCase.register(loanRequest);
         StepVerifier.create(result).expectErrorMatches(ex -> ex instanceof BusinessException && ex.getMessage().contains("duplicada")).verify();
     }
 
     @Test
     void shouldThrowGenericBusinessExceptionOnUnexpectedError() {
-        when(loanRequestRepository.findByClientDocumentAndStatus(any(), any())).thenReturn(Mono.empty());
-        when(loanRequestRepository.save(any())).thenReturn(Mono.error(new BusinessException("Error interno al registrar solicitud")));
+        when(loanRepository.findByClientDocumentAndStatus(any(), any())).thenReturn(Mono.empty());
+        when(loanRepository.save(any())).thenReturn(Mono.error(new BusinessException("Error interno al registrar solicitud")));
         Mono<LoanRequest> result = loanUseCase.register(loanRequest);
         StepVerifier.create(result).expectErrorMatches(ex -> ex instanceof BusinessException && ex.getMessage().contains("Error interno")).verify();
     }
     @Test
     void shouldReturnAllLoanRequests() {
-        when(loanRequestRepository.findAll()).thenReturn(Flux.just(loanRequest));
+        when(loanRepository.findAll()).thenReturn(Flux.just(loanRequest));
         Flux<LoanRequest> result = loanUseCase.getAllLoanRequests();
         StepVerifier.create(result).expectNextMatches(req -> req.getClientDocument().equals("12345")).verifyComplete();
-        verify(loanRequestRepository).findAll();
+        verify(loanRepository).findAll();
     }
 }

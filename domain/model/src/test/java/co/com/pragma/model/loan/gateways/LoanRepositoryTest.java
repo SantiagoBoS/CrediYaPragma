@@ -12,14 +12,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LoanRequestRepositoryTest {
-    private LoanRequestRepository repository;
+public class LoanRepositoryTest {
+    private LoanRepository repository;
 
     private final List<LoanRequest> database = new ArrayList<>();
 
     @BeforeEach
     void setUp() {
-        repository = new LoanRequestRepository() {
+        repository = new LoanRepository() {
             @Override
             public Mono<LoanRequest> save(LoanRequest loanRequest) {
                 database.add(loanRequest);
