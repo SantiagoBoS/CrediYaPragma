@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 public class AuthUseCase {
     private final AuthRepository authRepository;
     private final TokenProvider tokenProvider;
-    private final PasswordEncoderService passwordEncoder; // abstracción, no Spring
+    private final PasswordEncoderService passwordEncoder;
 
     public Mono<String> login(String email, String rawPassword) {
         return authRepository.findByEmail(email)

@@ -27,6 +27,7 @@ public class JwtProviderAdapter implements TokenProvider {
 
     @Override
     public String generateToken(Auth auth) {
+        // Genera un token JWT con el email y rol del usuario
         return Jwts.builder()
                 .setSubject(auth.getEmail())
                 .claim("role", auth.getRole())
@@ -48,12 +49,14 @@ public class JwtProviderAdapter implements TokenProvider {
 
     @Override
     public String getEmailFromToken(String token) {
+        // Extrae el email del usuario del token JWT
         Claims claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
         return claims.getSubject();
     }
 
     @Override
     public String getRoleFromToken(String token) {
+        // Extrae el rol del usuario del token JWT
         Claims claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
         return claims.get("role", String.class);
     }

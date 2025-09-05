@@ -1,6 +1,7 @@
 package co.com.pragma.config;
 
 import co.com.pragma.model.auth.gateways.AuthRepository;
+import co.com.pragma.model.auth.gateways.PasswordEncoderService;
 import co.com.pragma.model.auth.gateways.TokenProvider;
 import co.com.pragma.usecase.auth.AuthUseCase;
 import org.junit.jupiter.api.Test;
@@ -28,12 +29,17 @@ public class AuthUseCaseConfigTest {
 
         @Bean
         public AuthRepository authRepository() {
-            return mock(AuthRepository.class); // Mock para dependencia
+            return mock(AuthRepository.class);
         }
 
         @Bean
         public TokenProvider tokenProvider() {
-            return mock(TokenProvider.class); // Mock para dependencia
+            return mock(TokenProvider.class);
+        }
+
+        @Bean
+        public PasswordEncoderService passwordEncoderService() {
+            return mock(PasswordEncoderService.class);
         }
     }
 }

@@ -12,11 +12,13 @@ public class PasswordEncoderServiceImpl implements PasswordEncoderService {
 
     @Override
     public boolean matches(String rawPassword, String encodedPassword) {
+        // Verifica si la contraseña sin cifrar coincide con la cifrada
         return delegate.matches(rawPassword, encodedPassword);
     }
 
     @Override
     public String encode(String rawPassword) {
+        // Cifra la contraseña sin cifrar
         return delegate.encode(rawPassword);
     }
 }

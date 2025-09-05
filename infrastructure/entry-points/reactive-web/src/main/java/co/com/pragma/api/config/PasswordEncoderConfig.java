@@ -10,6 +10,7 @@ public class PasswordEncoderConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
+        //Para generar un password hasheado
         return new BCryptPasswordEncoder();
     }
 }
