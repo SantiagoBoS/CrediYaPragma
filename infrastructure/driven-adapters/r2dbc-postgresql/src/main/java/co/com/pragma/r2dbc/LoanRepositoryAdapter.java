@@ -16,13 +16,13 @@ import reactor.core.publisher.Mono;
 public class LoanRepositoryAdapter extends ReactiveAdapterOperations<LoanRequest, LoanEntity, String, LoanReactiveRepository> implements LoanRepository {
     private final LoanReactiveRepository repository;
     private final ObjectMapper mapper;
-    private final TransactionalOperator txOperator;
+    private final TransactionalOperator tsOperator;
 
-    public LoanRepositoryAdapter(LoanReactiveRepository repository, ObjectMapper mapper, TransactionalOperator txOperator) {
+    public LoanRepositoryAdapter(LoanReactiveRepository repository, ObjectMapper mapper, TransactionalOperator tsOperator) {
         super(repository, mapper, d -> mapper.map(d, LoanRequest.class));
         this.repository = repository;
         this.mapper = mapper;
-        this.txOperator = txOperator;
+        this.tsOperator = tsOperator;
     }
 
     @Override
@@ -33,7 +33,7 @@ public class LoanRepositoryAdapter extends ReactiveAdapterOperations<LoanRequest
     @Override
     public Mono<LoanRequest> save(LoanRequest loanRequest) {
         return super.save(loanRequest)
-            .as(txOperator::transactional)
+            .as(tsOperator::transactional)
             .onErrorResume(throwable -> {
                 if (throwable.getMessage() != null && throwable.getMessage().contains("duplicate")) {
                     return Mono.error(new BusinessException(AppMessages.DUPLICATE_APPLICATION));
@@ -44,6 +44,6 @@ public class LoanRepositoryAdapter extends ReactiveAdapterOperations<LoanRequest
 
     @Override
     public Flux<LoanRequest> findAll() {
-        return repository.findAll().map(this::toEntity).as(txOperator::transactional);
+        return repository.findAll().map(this::toEntity).as(tsOperator::transactional);
     }
 }
