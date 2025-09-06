@@ -9,7 +9,7 @@ public class LoanMapper {
         throw new UnsupportedOperationException(String.valueOf(AppMessages.CLASS_SHOULD_NOT_BE_INSTANTIATED.getMessage()));
     }
 
-    public static LoanRequest toEntity(LoanDTO dto) {
+    public static LoanRequest toMain(LoanDTO dto) {
         if (dto == null) {
             return null;
         }

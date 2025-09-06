@@ -22,9 +22,9 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 public class LoanRouter {
     @Bean
     @RouterOperations({
-        @RouterOperation( path = "/api/v1/solicitud", beanClass = LoanHandler.class, beanMethod = "createLoanRequest", method = POST,
-            operation = @Operation( operationId = "createLoanRequest", summary = "Registrar una nueva solicitud de préstamo", description = "Permite registrar una solicitud de préstamo proporcionando documento del cliente, monto, plazo y tipo de préstamo",
-                requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody( description = "Datos de la nueva solicitud de préstamo", required = true, content = @Content( schema = @Schema(implementation = LoanDTO.class), examples = { @ExampleObject( name = LoanUtils.TEXT_VALID_LOAN, value = LoanUtils.EXAMPLE_VALID_LOAN )})),
+        @RouterOperation( path = LoanUtils.ROUTER_BASE_PATH, beanClass = LoanHandler.class, beanMethod = LoanUtils.ROUTER_OPERATION_ID, method = POST,
+            operation = @Operation( operationId = LoanUtils.ROUTER_OPERATION_ID, summary = LoanUtils.ROUTER_SUMMARY, description = LoanUtils.ROUTER_DESCRIPTION,
+                requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody( description = LoanUtils.ROUTER_REQUEST_DESCRIPTION, required = true, content = @Content( schema = @Schema(implementation = LoanDTO.class), examples = { @ExampleObject( name = LoanUtils.TEXT_VALID_LOAN, value = LoanUtils.EXAMPLE_VALID_LOAN )})),
                 responses = {
                     @ApiResponse( responseCode = LoanUtils.CREATE_CODE, description = LoanUtils.CREATE_MESSAGE, content = @Content( schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject( name = LoanUtils.TEXT_VALIDATION_CORRECT, value = LoanUtils.EXAMPLE_VALIDATION_CORRECT)})),
                     @ApiResponse( responseCode = LoanUtils.VALIDATION_CODE, description = LoanUtils.VALIDATION_MESSAGE, content = @Content(schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject( name = LoanUtils.TEXT_ERROR_VALIDATION, value = LoanUtils.EXAMPLE_ERROR_VALIDATION)})),
@@ -37,7 +37,7 @@ public class LoanRouter {
 
     public RouterFunction<ServerResponse> loanRequestRoutes(LoanHandler handler) {
         return RouterFunctions
-                .route(POST("/api/v1/solicitud"), handler::createLoanRequest)
-                .andRoute(RequestPredicates.GET("/api/v1/solicitud"), handler::getAllLoanRequests);
+                .route(POST(LoanUtils.ROUTER_BASE_PATH), handler::createLoanRequest)
+                .andRoute(RequestPredicates.GET(LoanUtils.ROUTER_BASE_PATH), handler::getAllLoanRequests);
     }
 }

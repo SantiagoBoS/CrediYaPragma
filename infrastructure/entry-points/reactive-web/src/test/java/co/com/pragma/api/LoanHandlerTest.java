@@ -3,6 +3,7 @@ package co.com.pragma.api;
 import co.com.pragma.api.dto.LoanDTO;
 import co.com.pragma.api.exception.LoanUtils;
 import co.com.pragma.model.loan.LoanRequest;
+import co.com.pragma.model.loan.constants.AppMessages;
 import co.com.pragma.model.loan.constants.RequestStatus;
 import co.com.pragma.model.loan.exceptions.BusinessException;
 import co.com.pragma.usecase.loan.LoanUseCase;
@@ -28,36 +29,36 @@ class LoanHandlerTest {
     private Validator validator;
     private WebTestClient webTestClient;
 
+    LoanDTO dto = LoanDTO.builder()
+            .clientDocument("12345")
+            .amount(10000.0)
+            .termMonths(12)
+            .loanType(AppMessages.VALID_TYPE_LOAN_PERSONAL.getMessage())
+            .build();
+
+    LoanRequest loanTest = LoanRequest.builder()
+            .clientDocument("12345")
+            .amount(10000.0)
+            .termMonths(12)
+            .loanType(AppMessages.VALID_TYPE_LOAN_PERSONAL.getMessage())
+            .status(RequestStatus.PENDING_REVIEW)
+            .createdAt(LocalDateTime.now())
+            .build();
+
     @BeforeEach
     void setUp() {
         loanUseCase = Mockito.mock(LoanUseCase.class);
         validator = Validation.buildDefaultValidatorFactory().getValidator();
         LoanHandler handler = new LoanHandler(loanUseCase, validator);
-        RouterFunction<ServerResponse> routerFunction = RouterFunctions.route().POST("/api/v1/solicitud", handler::createLoanRequest).build();
+        RouterFunction<ServerResponse> routerFunction = RouterFunctions.route().POST(LoanUtils.ROUTER_BASE_PATH, handler::createLoanRequest).build();
         webTestClient = WebTestClient.bindToRouterFunction(routerFunction).build();
     }
 
     @Test
     void shouldRegisterLoanRequestSuccessfully() {
-        LoanDTO dto = LoanDTO.builder()
-                .clientDocument("12345")
-                .amount(10000.0)
-                .termMonths(12)
-                .loanType("PERSONAL")
-                .build();
-
-        LoanRequest savedRequest = LoanRequest.builder()
-                .clientDocument("12345")
-                .amount(10000.0)
-                .termMonths(12)
-                .loanType("PERSONAL")
-                .status(RequestStatus.PENDING_REVIEW)
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        when(loanUseCase.register(any(LoanRequest.class))).thenReturn(Mono.just(savedRequest));
+        when(loanUseCase.register(any(LoanRequest.class))).thenReturn(Mono.just(loanTest));
         webTestClient.post()
-                .uri("/api/v1/solicitud")
+                .uri(LoanUtils.ROUTER_BASE_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
                 .exchange()
@@ -75,7 +76,7 @@ class LoanHandlerTest {
     void shouldReturnBadRequestWhenValidationFails() {
         LoanDTO invalidDto = LoanDTO.builder().build();
         webTestClient.post()
-                .uri("/api/v1/solicitud")
+                .uri(LoanUtils.ROUTER_BASE_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(invalidDto)
                 .exchange()
@@ -88,22 +89,15 @@ class LoanHandlerTest {
 
     @Test
     void shouldHandleBusinessException() {
-        LoanDTO dto = LoanDTO.builder()
-                .clientDocument("12345")
-                .amount(5000.0)
-                .termMonths(6)
-                .loanType("PERSONAL")
-                .build();
-
-        when(loanUseCase.register(any(LoanRequest.class))).thenReturn(Mono.error(new BusinessException("El cliente ya tiene una solicitud en proceso")));
+        when(loanUseCase.register(any(LoanRequest.class))).thenReturn(Mono.error(new BusinessException(AppMessages.APPLICATION_IN_PROCESS.getMessage())));
         webTestClient.post()
-                .uri("/api/v1/solicitud")
+                .uri(LoanUtils.ROUTER_BASE_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
                 .exchange()
                 .expectStatus().isBadRequest()
                 .expectBody()
                 .jsonPath("$.code").isEqualTo(LoanUtils.VALIDATION_CODE_GENERAL)
-                .jsonPath("$.message").isEqualTo("El cliente ya tiene una solicitud en proceso");
+                .jsonPath("$.message").isEqualTo(AppMessages.APPLICATION_IN_PROCESS.getMessage());
     }
 }

@@ -1,6 +1,7 @@
 package co.com.pragma.r2dbc;
 
 import co.com.pragma.model.loan.LoanRequest;
+import co.com.pragma.model.loan.constants.AppMessages;
 import co.com.pragma.model.loan.constants.RequestStatus;
 import co.com.pragma.r2dbc.entity.LoanEntity;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,15 +38,15 @@ public class LoanRepositoryAdapterTest {
         entity.setClientDocument("123456");
         entity.setAmount(10000.0);
         entity.setTermMonths(12);
-        entity.setLoanType("PERSONAL");
-        entity.setStatus("PENDING_REVIEW");
+        entity.setLoanType(AppMessages.VALID_TYPE_LOAN_PERSONAL.getMessage());
+        entity.setStatus(RequestStatus.PENDING_REVIEW.name());
         entity.setCreatedAt(LocalDateTime.now());
 
         domain = LoanRequest.builder()
                 .clientDocument("123456")
                 .amount(10000.0)
                 .termMonths(12)
-                .loanType("PERSONAL")
+                .loanType(AppMessages.VALID_TYPE_LOAN_PERSONAL.getMessage())
                 .status(RequestStatus.PENDING_REVIEW)
                 .createdAt(entity.getCreatedAt())
                 .build();
@@ -53,9 +54,9 @@ public class LoanRepositoryAdapterTest {
 
     @Test
     void mustFindByClientDocumentAndStatus() {
-        when(repository.findByClientDocumentAndStatus("123456", "PENDING")).thenReturn(Mono.just(entity));
+        when(repository.findByClientDocumentAndStatus("123456", RequestStatus.PENDING_REVIEW.name())).thenReturn(Mono.just(entity));
         when(mapper.map(entity, LoanRequest.class)).thenReturn(domain);
-        Mono<LoanRequest> result = repositoryAdapter.findByClientDocumentAndStatus("123456", "PENDING");
+        Mono<LoanRequest> result = repositoryAdapter.findByClientDocumentAndStatus("123456", RequestStatus.PENDING_REVIEW.name());
         StepVerifier.create(result).expectNext(domain).verifyComplete();
     }
 

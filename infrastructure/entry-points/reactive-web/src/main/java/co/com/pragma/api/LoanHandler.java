@@ -20,17 +20,20 @@ import reactor.core.publisher.Mono;
 @Component
 @RequiredArgsConstructor
 public class LoanHandler {
-    private final LoanUseCase loanRequestUseCase;
+    private final LoanUseCase loanUseCase;
     private final Validator validator;
 
     public Mono<ServerResponse> createLoanRequest(ServerRequest request) {
         return request.bodyToMono(LoanDTO.class).flatMap(dto -> {
+            //CLASE UTIL para que quede en una sola linea
             var violations = validator.validate(dto);
             if (!violations.isEmpty()) {
                 return ValidationErrorHandler.buildValidationErrorResponse(violations);
             }
-            LoanRequest loan = LoanMapper.toEntity(dto);
-            return loanRequestUseCase.register(loan).flatMap(savedLoanRequest ->{
+            //toEntity para toMain
+            LoanRequest loan = LoanMapper.toMain(dto);
+            //RESPUESTA DEL FLUJO EL .MAP
+            return loanUseCase.register(loan).flatMap(savedLoanRequest ->{
                 ApiResponse<LoanRequest> response = ApiResponse.<LoanRequest>builder().code(LoanUtils.CREATE_CODE).message(LoanUtils.CREATE_MESSAGE).data(savedLoanRequest).build();
                 return ServerResponse.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).bodyValue(response);
             });
@@ -41,6 +44,6 @@ public class LoanHandler {
     }
 
     public Mono<ServerResponse> getAllLoanRequests(ServerRequest request) {
-        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(loanRequestUseCase.getAllLoanRequests(), LoanRequest.class);
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(loanUseCase.getAllLoanRequests(), LoanRequest.class);
     }
 }

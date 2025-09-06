@@ -1,5 +1,6 @@
 package co.com.pragma.model.loan;
 
+import co.com.pragma.model.loan.constants.AppMessages;
 import co.com.pragma.model.loan.constants.RequestStatus;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
@@ -11,12 +12,12 @@ class LoanRequestTest {
     void shouldCreateLoanRequestWithAllArgsConstructor() {
         //Valida la creación de un objeto LoanRequest usando el constructor con todos los argumentos
         LocalDateTime now = LocalDateTime.now();
-        LoanRequest loanRequest = new LoanRequest("12345", 1000.0, 12, "PERSONAL", RequestStatus.PENDING_REVIEW, now);
+        LoanRequest loanRequest = new LoanRequest("12345", 1000.0, 12, AppMessages.VALID_TYPE_LOAN_PERSONAL.getMessage(), RequestStatus.PENDING_REVIEW, now);
 
         assertEquals("12345", loanRequest.getClientDocument());
         assertEquals(1000.0, loanRequest.getAmount());
         assertEquals(12, loanRequest.getTermMonths());
-        assertEquals("PERSONAL", loanRequest.getLoanType());
+        assertEquals(AppMessages.VALID_TYPE_LOAN_PERSONAL.getMessage(), loanRequest.getLoanType());
         assertEquals(RequestStatus.PENDING_REVIEW, loanRequest.getStatus());
         assertEquals(now, loanRequest.getCreatedAt());
     }
@@ -29,7 +30,7 @@ class LoanRequestTest {
                 .clientDocument("67890")
                 .amount(2000.0)
                 .termMonths(24)
-                .loanType("MORTGAGE")
+                .loanType(AppMessages.VALID_TYPE_LOAN_MORTGAGE.getMessage())
                 .status(RequestStatus.APPROVED)
                 .createdAt(now)
                 .build();
@@ -37,7 +38,7 @@ class LoanRequestTest {
         assertEquals("67890", loanRequest.getClientDocument());
         assertEquals(2000.0, loanRequest.getAmount());
         assertEquals(24, loanRequest.getTermMonths());
-        assertEquals("MORTGAGE", loanRequest.getLoanType());
+        assertEquals(AppMessages.VALID_TYPE_LOAN_MORTGAGE.getMessage(), loanRequest.getLoanType());
         assertEquals(RequestStatus.APPROVED, loanRequest.getStatus());
         assertEquals(now, loanRequest.getCreatedAt());
     }
@@ -49,7 +50,7 @@ class LoanRequestTest {
         loanRequest.setClientDocument("11111");
         loanRequest.setAmount(1500.0);
         loanRequest.setTermMonths(36);
-        loanRequest.setLoanType("CAR");
+        loanRequest.setLoanType(AppMessages.VALID_TYPE_LOAN_CAR.getMessage());
         loanRequest.setStatus(RequestStatus.REJECTED);
         LocalDateTime now = LocalDateTime.now();
         loanRequest.setCreatedAt(now);
@@ -57,7 +58,7 @@ class LoanRequestTest {
         assertEquals("11111", loanRequest.getClientDocument());
         assertEquals(1500.0, loanRequest.getAmount());
         assertEquals(36, loanRequest.getTermMonths());
-        assertEquals("CAR", loanRequest.getLoanType());
+        assertEquals(AppMessages.VALID_TYPE_LOAN_CAR.getMessage(), loanRequest.getLoanType());
         assertEquals(RequestStatus.REJECTED, loanRequest.getStatus());
         assertEquals(now, loanRequest.getCreatedAt());
     }
@@ -69,7 +70,7 @@ class LoanRequestTest {
                 .clientDocument("12345")
                 .amount(1000.0)
                 .termMonths(12)
-                .loanType("PERSONAL")
+                .loanType(AppMessages.VALID_TYPE_LOAN_PERSONAL.getMessage())
                 .status(RequestStatus.PENDING_REVIEW)
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -82,7 +83,7 @@ class LoanRequestTest {
         assertEquals("12345", modified.getClientDocument());
         assertEquals(2000.0, modified.getAmount());
         assertEquals(12, modified.getTermMonths());
-        assertEquals("PERSONAL", modified.getLoanType());
+        assertEquals(AppMessages.VALID_TYPE_LOAN_PERSONAL.getMessage(), modified.getLoanType());
         assertEquals(RequestStatus.APPROVED, modified.getStatus());
     }
 
@@ -90,8 +91,8 @@ class LoanRequestTest {
     void shouldValidateEqualsAndHashCode() {
         //Valida que dos objetos LoanRequest con los mismos valores sean iguales y tengan el mismo hash code
         LocalDateTime now = LocalDateTime.now();
-        LoanRequest loan1 = new LoanRequest("12345", 1000.0, 12, "PERSONAL", RequestStatus.PENDING_REVIEW, now);
-        LoanRequest loan2 = new LoanRequest("12345", 1000.0, 12, "PERSONAL", RequestStatus.PENDING_REVIEW, now);
+        LoanRequest loan1 = new LoanRequest("12345", 1000.0, 12, AppMessages.VALID_TYPE_LOAN_PERSONAL.getMessage(), RequestStatus.PENDING_REVIEW, now);
+        LoanRequest loan2 = new LoanRequest("12345", 1000.0, 12, AppMessages.VALID_TYPE_LOAN_PERSONAL.getMessage(), RequestStatus.PENDING_REVIEW, now);
         assertEquals(loan1, loan2);
         assertEquals(loan1.hashCode(), loan2.hashCode());
     }

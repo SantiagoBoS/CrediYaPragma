@@ -1,6 +1,7 @@
 package co.com.pragma.model.loan.gateways;
 
 import co.com.pragma.model.loan.LoanRequest;
+import co.com.pragma.model.loan.constants.AppMessages;
 import co.com.pragma.model.loan.constants.RequestStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,14 @@ public class LoanRepositoryTest {
     private LoanRepository repository;
 
     private final List<LoanRequest> database = new ArrayList<>();
+    LoanRequest requestTest = LoanRequest.builder()
+            .clientDocument("12345")
+            .amount(1000.0)
+            .termMonths(12)
+            .loanType(AppMessages.VALID_TYPE_LOAN_PERSONAL.getMessage())
+            .status(RequestStatus.PENDING_REVIEW)
+            .createdAt(LocalDateTime.now())
+            .build();
 
     @BeforeEach
     void setUp() {
@@ -44,65 +53,34 @@ public class LoanRepositoryTest {
     @Test
     void shouldSaveLoanRequest() {
         //Valida si guarda la solicitud
-        LoanRequest request = LoanRequest.builder()
-                .clientDocument("12345")
-                .amount(1000.0)
-                .termMonths(12)
-                .loanType("PERSONAL")
-                .status(RequestStatus.PENDING_REVIEW)
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        StepVerifier.create(repository.save(request)).expectNextMatches(saved -> saved.getClientDocument().equals("12345") && saved.getAmount().equals(1000.0)).verifyComplete();
+        StepVerifier.create(repository.save(requestTest))
+                .expectNextMatches(saved ->
+                        saved.getClientDocument().equals("12345") && saved.getAmount().equals(1000.0))
+                .verifyComplete();
     }
 
     @Test
     void shouldFindByClientDocumentAndStatus() {
         //Valida si encuentra la solicitud por documento y estado
-        LoanRequest request = LoanRequest.builder()
-                .clientDocument("12345")
-                .amount(2000.0)
-                .termMonths(24)
-                .loanType("CAR")
-                .status(RequestStatus.PENDING_REVIEW)
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        repository.save(request).block();
-        StepVerifier.create(repository.findByClientDocumentAndStatus("12345", "PENDING_REVIEW"))
-                .expectNextMatches(found -> found.getLoanType().equals("CAR") && found.getTermMonths() == 24)
+        requestTest.setLoanType(AppMessages.VALID_TYPE_LOAN_CAR.getMessage());
+        repository.save(requestTest).block();
+        StepVerifier.create(repository.findByClientDocumentAndStatus("12345", RequestStatus.PENDING_REVIEW.name()))
+                .expectNextMatches(found -> found.getLoanType().equals(AppMessages.VALID_TYPE_LOAN_CAR.getMessage()) && found.getTermMonths() == 12)
                 .verifyComplete();
     }
 
     @Test
     void shouldReturnEmptyWhenNotFound() {
         //Valida si no encuentra la solicitud
-        StepVerifier.create(repository.findByClientDocumentAndStatus("99999", "APPROVED")).verifyComplete();
+        StepVerifier.create(repository.findByClientDocumentAndStatus("99999", RequestStatus.APPROVED.name())).verifyComplete();
     }
 
     @Test
     void shouldFindAllLoanRequests() {
         //Valida si encuentra todas las solicitudes
-        LoanRequest request1 = LoanRequest.builder()
-                .clientDocument("12345")
-                .amount(1000.0)
-                .termMonths(12)
-                .loanType("PERSONAL")
-                .status(RequestStatus.PENDING_REVIEW)
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        LoanRequest request2 = LoanRequest.builder()
-                .clientDocument("67890")
-                .amount(5000.0)
-                .termMonths(36)
-                .loanType("MORTGAGE")
-                .status(RequestStatus.APPROVED)
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        repository.save(request1).block();
-        repository.save(request2).block();
+        repository.save(requestTest).block();
+        requestTest.setClientDocument("67890");
+        repository.save(requestTest).block();
         StepVerifier.create(repository.findAll()).expectNextCount(2).verifyComplete();
     }
 }

@@ -1,6 +1,7 @@
 package co.com.pragma.usecase.registerloanrequest;
 
 import co.com.pragma.model.loan.LoanRequest;
+import co.com.pragma.model.loan.constants.AppMessages;
 import co.com.pragma.model.loan.constants.RequestStatus;
 import co.com.pragma.model.loan.exceptions.BusinessException;
 import co.com.pragma.model.loan.gateways.LoanRepository;
@@ -35,7 +36,7 @@ public class LoanUseCaseTest {
                 .clientDocument("12345")
                 .amount(10000.0)
                 .termMonths(12)
-                .loanType("PERSONAL")
+                .loanType(AppMessages.VALID_TYPE_LOAN_PERSONAL.getMessage())
                 .createdAt(LocalDateTime.now())
                 .build();
     }
@@ -53,24 +54,24 @@ public class LoanUseCaseTest {
     void shouldThrowExceptionWhenExistingLoanRequestPending() {
         when(loanRepository.findByClientDocumentAndStatus(any(), any())).thenReturn(Mono.just(loanRequest));
         Mono<LoanRequest> result = loanUseCase.register(loanRequest);
-        StepVerifier.create(result).expectErrorMatches(ex -> ex instanceof BusinessException && ex.getMessage().contains("El cliente ya tiene una solicitud en proceso")).verify();
+        StepVerifier.create(result).expectErrorMatches(ex -> ex instanceof BusinessException && ex.getMessage().contains(AppMessages.APPLICATION_IN_PROCESS.getMessage())).verify();
         verify(loanRepository, never()).save(any());
     }
 
     @Test
     void shouldThrowDuplicateExceptionFromRepository() {
         when(loanRepository.findByClientDocumentAndStatus(any(), any())).thenReturn(Mono.empty());
-        when(loanRepository.save(any())).thenReturn(Mono.error(new BusinessException("Ya existe una solicitud duplicada para este cliente")));
+        when(loanRepository.save(any())).thenReturn(Mono.error(new BusinessException(AppMessages.DUPLICATE_APPLICATION.getMessage())));
         Mono<LoanRequest> result = loanUseCase.register(loanRequest);
-        StepVerifier.create(result).expectErrorMatches(ex -> ex instanceof BusinessException && ex.getMessage().contains("duplicada")).verify();
+        StepVerifier.create(result).expectErrorMatches(ex -> ex instanceof BusinessException && ex.getMessage().contains(AppMessages.VALIDATION_DUPLICATE.getMessage())).verify();
     }
 
     @Test
     void shouldThrowGenericBusinessExceptionOnUnexpectedError() {
         when(loanRepository.findByClientDocumentAndStatus(any(), any())).thenReturn(Mono.empty());
-        when(loanRepository.save(any())).thenReturn(Mono.error(new BusinessException("Error interno al registrar solicitud")));
+        when(loanRepository.save(any())).thenReturn(Mono.error(new BusinessException(AppMessages.INTERNAL_ERROR.getMessage())));
         Mono<LoanRequest> result = loanUseCase.register(loanRequest);
-        StepVerifier.create(result).expectErrorMatches(ex -> ex instanceof BusinessException && ex.getMessage().contains("Error interno")).verify();
+        StepVerifier.create(result).expectErrorMatches(ex -> ex instanceof BusinessException && ex.getMessage().contains(AppMessages.VALIDATION_INTERNAL_ERROR.getMessage())).verify();
     }
     @Test
     void shouldReturnAllLoanRequests() {
