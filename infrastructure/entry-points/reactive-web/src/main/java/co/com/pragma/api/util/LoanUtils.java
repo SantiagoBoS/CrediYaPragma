@@ -1,4 +1,4 @@
-package co.com.pragma.api.exception;
+package co.com.pragma.api.util;
 
 public class LoanUtils {
     public static final String CREATE_CODE = "201.01";
@@ -25,7 +25,7 @@ public class LoanUtils {
     public static final String EXAMPLE_INTERNAL_ERROR = "{ \"code\": \"500.01\", \"message\": \"Ocurrió un error inesperado. Intente nuevamente más tarde.\" }";
 
     public static final String ROUTER_BASE_PATH = "/api/v1/solicitud";
-    public static final String ROUTER_OPERATION_ID = "createLoanRequest";
+    public static final String ROUTER_OPERATION_ID = "createLoan";
     public static final String ROUTER_SUMMARY = "Registrar una nueva solicitud de préstamo";
     public static final String ROUTER_DESCRIPTION = "Permite registrar una solicitud de préstamo proporcionando documento del cliente, monto, plazo y tipo de préstamo";
     public static final String ROUTER_REQUEST_DESCRIPTION = "Datos de la nueva solicitud de préstamo";

@@ -2,86 +2,62 @@ package co.com.pragma.model.loan;
 
 import co.com.pragma.model.loan.constants.AppMessages;
 import co.com.pragma.model.loan.constants.RequestStatus;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LoanRequestTest {
 
-    @Test
-    void shouldCreateLoanRequestWithAllArgsConstructor() {
-        //Valida la creación de un objeto LoanRequest usando el constructor con todos los argumentos
-        LocalDateTime now = LocalDateTime.now();
-        LoanRequest loanRequest = new LoanRequest("12345", 1000.0, 12, AppMessages.VALID_TYPE_LOAN_PERSONAL.getMessage(), RequestStatus.PENDING_REVIEW, now);
+    private LocalDateTime fixedDate;
+    private LoanRequest baseLoan;
 
-        assertEquals("12345", loanRequest.getClientDocument());
-        assertEquals(1000.0, loanRequest.getAmount());
-        assertEquals(12, loanRequest.getTermMonths());
-        assertEquals(AppMessages.VALID_TYPE_LOAN_PERSONAL.getMessage(), loanRequest.getLoanType());
-        assertEquals(RequestStatus.PENDING_REVIEW, loanRequest.getStatus());
-        assertEquals(now, loanRequest.getCreatedAt());
-    }
-
-    @Test
-    void shouldCreateLoanRequestWithBuilder() {
-        //Valida la creación de un objeto LoanRequest
-        LocalDateTime now = LocalDateTime.now();
-        LoanRequest loanRequest = LoanRequest.builder()
-                .clientDocument("67890")
-                .amount(2000.0)
-                .termMonths(24)
-                .loanType(AppMessages.VALID_TYPE_LOAN_MORTGAGE.getMessage())
-                .status(RequestStatus.APPROVED)
-                .createdAt(now)
-                .build();
-
-        assertEquals("67890", loanRequest.getClientDocument());
-        assertEquals(2000.0, loanRequest.getAmount());
-        assertEquals(24, loanRequest.getTermMonths());
-        assertEquals(AppMessages.VALID_TYPE_LOAN_MORTGAGE.getMessage(), loanRequest.getLoanType());
-        assertEquals(RequestStatus.APPROVED, loanRequest.getStatus());
-        assertEquals(now, loanRequest.getCreatedAt());
-    }
-
-    @Test
-    void shouldModifyFieldsWithSetters() {
-        //Valida la modificación de los campos
-        LoanRequest loanRequest = new LoanRequest();
-        loanRequest.setClientDocument("11111");
-        loanRequest.setAmount(1500.0);
-        loanRequest.setTermMonths(36);
-        loanRequest.setLoanType(AppMessages.VALID_TYPE_LOAN_CAR.getMessage());
-        loanRequest.setStatus(RequestStatus.REJECTED);
-        LocalDateTime now = LocalDateTime.now();
-        loanRequest.setCreatedAt(now);
-
-        assertEquals("11111", loanRequest.getClientDocument());
-        assertEquals(1500.0, loanRequest.getAmount());
-        assertEquals(36, loanRequest.getTermMonths());
-        assertEquals(AppMessages.VALID_TYPE_LOAN_CAR.getMessage(), loanRequest.getLoanType());
-        assertEquals(RequestStatus.REJECTED, loanRequest.getStatus());
-        assertEquals(now, loanRequest.getCreatedAt());
-    }
-
-    @Test
-    void shouldUseToBuilderToModifyLoanRequest() {
-        //Valida la creación de un nuevo objeto LoanRequest a partir de otro existente
-        LoanRequest original = LoanRequest.builder()
+    @BeforeEach
+    void setUp() {
+        fixedDate = LocalDateTime.of(2025, 1, 1, 10, 0);
+        baseLoan = LoanRequest.builder()
                 .clientDocument("12345")
                 .amount(1000.0)
                 .termMonths(12)
                 .loanType(AppMessages.VALID_TYPE_LOAN_PERSONAL.getMessage())
                 .status(RequestStatus.PENDING_REVIEW)
-                .createdAt(LocalDateTime.now())
+                .createdAt(fixedDate)
                 .build();
+    }
 
-        LoanRequest modified = original.toBuilder()
-                .amount(2000.0)
+    @Test
+    void shouldCreateLoanWithBuilder() {
+        assertEquals("12345", baseLoan.getClientDocument());
+        assertEquals(1000.0, baseLoan.getAmount());
+        assertEquals(12, baseLoan.getTermMonths());
+        assertEquals(AppMessages.VALID_TYPE_LOAN_PERSONAL.getMessage(), baseLoan.getLoanType());
+        assertEquals(RequestStatus.PENDING_REVIEW, baseLoan.getStatus());
+        assertEquals(fixedDate, baseLoan.getCreatedAt());
+    }
+
+    @Test
+    void shouldModifyUsingSetters() {
+        baseLoan.setLoanType(AppMessages.VALID_TYPE_LOAN_MORTGAGE.getMessage());
+        baseLoan.setStatus(RequestStatus.APPROVED);
+        baseLoan.setCreatedAt(fixedDate.plusDays(1));
+
+        assertEquals("12345", baseLoan.getClientDocument());
+        assertEquals(1000.0, baseLoan.getAmount());
+        assertEquals(12, baseLoan.getTermMonths());
+        assertEquals(AppMessages.VALID_TYPE_LOAN_MORTGAGE.getMessage(), baseLoan.getLoanType());
+        assertEquals(RequestStatus.APPROVED, baseLoan.getStatus());
+        assertEquals(fixedDate.plusDays(1), baseLoan.getCreatedAt());
+    }
+
+    @Test
+    void shouldUseToBuilderToCreateModifiedCopy() {
+        LoanRequest modified = baseLoan.toBuilder()
+                .amount(3000.0)
                 .status(RequestStatus.APPROVED)
                 .build();
 
         assertEquals("12345", modified.getClientDocument());
-        assertEquals(2000.0, modified.getAmount());
+        assertEquals(3000.0, modified.getAmount());
         assertEquals(12, modified.getTermMonths());
         assertEquals(AppMessages.VALID_TYPE_LOAN_PERSONAL.getMessage(), modified.getLoanType());
         assertEquals(RequestStatus.APPROVED, modified.getStatus());
@@ -89,28 +65,16 @@ class LoanRequestTest {
 
     @Test
     void shouldValidateEqualsAndHashCode() {
-        //Valida que dos objetos LoanRequest con los mismos valores sean iguales y tengan el mismo hash code
-        LocalDateTime now = LocalDateTime.now();
-        LoanRequest loan1 = new LoanRequest("12345", 1000.0, 12, AppMessages.VALID_TYPE_LOAN_PERSONAL.getMessage(), RequestStatus.PENDING_REVIEW, now);
-        LoanRequest loan2 = new LoanRequest("12345", 1000.0, 12, AppMessages.VALID_TYPE_LOAN_PERSONAL.getMessage(), RequestStatus.PENDING_REVIEW, now);
-        assertEquals(loan1, loan2);
-        assertEquals(loan1.hashCode(), loan2.hashCode());
+        LoanRequest copy = baseLoan.toBuilder().build();
+        assertEquals(baseLoan, copy);
+        assertEquals(baseLoan.hashCode(), copy.hashCode());
     }
 
     @Test
     void shouldGenerateNonNullToString() {
-        //Valida que el toString genera una representación no nula del objeto
-        LoanRequest loan = LoanRequest.builder()
-                .clientDocument("99999")
-                .amount(5000.0)
-                .termMonths(48)
-                .loanType("CAR")
-                .status(RequestStatus.APPROVED)
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        assertNotNull(loan.toString());
-        assertTrue(loan.toString().contains("99999"));
-        assertTrue(loan.toString().contains("5000.0"));
+        String toString = baseLoan.toString();
+        assertNotNull(toString);
+        assertTrue(toString.contains("12345"));
+        assertTrue(toString.contains("1000.0"));
     }
 }

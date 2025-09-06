@@ -13,6 +13,7 @@ class LoanRouterTest {
 
     private LoanHandler handler;
     private WebTestClient webTestClient;
+    private final String BASE_URL_SOLICITUD = "/solicitud";
 
     @BeforeEach
     void setUp() {
@@ -26,10 +27,10 @@ class LoanRouterTest {
     }
 
     @Test
-    void shouldRouteToCreateLoanRequest() {
-        when(handler.createLoanRequest(any())).thenReturn(ServerResponse.ok().bodyValue("created"));
+    void shouldRouteToCreateLoan() {
+        when(handler.createLoan(any())).thenReturn(ServerResponse.ok().bodyValue("created"));
         webTestClient.post()
-                .uri("/solicitud")
+                .uri(BASE_URL_SOLICITUD)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(String.class).isEqualTo("created");
@@ -39,7 +40,7 @@ class LoanRouterTest {
     void shouldRouteToGetAllLoanRequests() {
         when(handler.getAllLoanRequests(any())).thenReturn(ServerResponse.ok().bodyValue("all"));
         webTestClient.get()
-                .uri("/solicitud")
+                .uri(BASE_URL_SOLICITUD)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(String.class).isEqualTo("all");

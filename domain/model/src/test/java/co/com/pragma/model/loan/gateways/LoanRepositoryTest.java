@@ -15,19 +15,23 @@ import java.util.List;
 
 public class LoanRepositoryTest {
     private LoanRepository repository;
-
     private final List<LoanRequest> database = new ArrayList<>();
-    LoanRequest requestTest = LoanRequest.builder()
-            .clientDocument("12345")
-            .amount(1000.0)
-            .termMonths(12)
-            .loanType(AppMessages.VALID_TYPE_LOAN_PERSONAL.getMessage())
-            .status(RequestStatus.PENDING_REVIEW)
-            .createdAt(LocalDateTime.now())
-            .build();
+
+    private LoanRequest baseRequest;
+    private LocalDateTime fixedDate;
 
     @BeforeEach
     void setUp() {
+        fixedDate = LocalDateTime.of(2025, 1, 1, 10, 0);
+        baseRequest = LoanRequest.builder()
+                .clientDocument("12345")
+                .amount(1000.0)
+                .termMonths(12)
+                .loanType(AppMessages.VALID_TYPE_LOAN_PERSONAL.getMessage())
+                .status(RequestStatus.PENDING_REVIEW)
+                .createdAt(fixedDate)
+                .build();
+
         repository = new LoanRepository() {
             @Override
             public Mono<LoanRequest> save(LoanRequest loanRequest) {
@@ -37,8 +41,10 @@ public class LoanRepositoryTest {
 
             @Override
             public Mono<LoanRequest> findByClientDocumentAndStatus(String clientDocument, String status) {
-                // Simula la búsqueda en la "base de datos"
-                return Flux.fromIterable(database).filter(lr -> lr.getClientDocument().equals(clientDocument) && lr.getStatus().name().equals(status)).next();
+                return Flux.fromIterable(database)
+                        .filter(lr -> lr.getClientDocument().equals(clientDocument)
+                                && lr.getStatus().name().equals(status))
+                        .next();
             }
 
             @Override
@@ -52,35 +58,40 @@ public class LoanRepositoryTest {
 
     @Test
     void shouldSaveLoanRequest() {
-        //Valida si guarda la solicitud
-        StepVerifier.create(repository.save(requestTest))
+        StepVerifier.create(repository.save(baseRequest))
                 .expectNextMatches(saved ->
-                        saved.getClientDocument().equals("12345") && saved.getAmount().equals(1000.0))
+                        saved.getClientDocument().equals("12345")
+                                && saved.getAmount().equals(1000.0)
+                                && saved.getCreatedAt().equals(fixedDate))
                 .verifyComplete();
     }
 
     @Test
     void shouldFindByClientDocumentAndStatus() {
-        //Valida si encuentra la solicitud por documento y estado
-        requestTest.setLoanType(AppMessages.VALID_TYPE_LOAN_CAR.getMessage());
-        repository.save(requestTest).block();
+        LoanRequest modified = baseRequest.toBuilder()
+                .loanType(AppMessages.VALID_TYPE_LOAN_CAR.getMessage()).build();
+
+        repository.save(modified).block();
         StepVerifier.create(repository.findByClientDocumentAndStatus("12345", RequestStatus.PENDING_REVIEW.name()))
-                .expectNextMatches(found -> found.getLoanType().equals(AppMessages.VALID_TYPE_LOAN_CAR.getMessage()) && found.getTermMonths() == 12)
+                .expectNextMatches(found ->
+                        found.getLoanType().equals(AppMessages.VALID_TYPE_LOAN_CAR.getMessage())
+                                && found.getTermMonths() == 12)
                 .verifyComplete();
     }
 
     @Test
     void shouldReturnEmptyWhenNotFound() {
-        //Valida si no encuentra la solicitud
         StepVerifier.create(repository.findByClientDocumentAndStatus("99999", RequestStatus.APPROVED.name())).verifyComplete();
     }
 
     @Test
     void shouldFindAllLoanRequests() {
-        //Valida si encuentra todas las solicitudes
-        repository.save(requestTest).block();
-        requestTest.setClientDocument("67890");
-        repository.save(requestTest).block();
-        StepVerifier.create(repository.findAll()).expectNextCount(2).verifyComplete();
+        LoanRequest second = baseRequest.toBuilder()
+                .clientDocument("67890").build();
+        repository.save(baseRequest).block();
+        repository.save(second).block();
+        StepVerifier.create(repository.findAll())
+                .expectNextCount(2)
+                .verifyComplete();
     }
 }

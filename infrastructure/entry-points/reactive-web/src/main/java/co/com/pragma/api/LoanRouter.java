@@ -1,7 +1,7 @@
 package co.com.pragma.api;
 
 import co.com.pragma.api.dto.LoanDTO;
-import co.com.pragma.api.exception.LoanUtils;
+import co.com.pragma.api.util.LoanUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -29,7 +29,7 @@ public class LoanRouter {
                     @ApiResponse( responseCode = LoanUtils.CREATE_CODE, description = LoanUtils.CREATE_MESSAGE, content = @Content( schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject( name = LoanUtils.TEXT_VALIDATION_CORRECT, value = LoanUtils.EXAMPLE_VALIDATION_CORRECT)})),
                     @ApiResponse( responseCode = LoanUtils.VALIDATION_CODE, description = LoanUtils.VALIDATION_MESSAGE, content = @Content(schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject( name = LoanUtils.TEXT_ERROR_VALIDATION, value = LoanUtils.EXAMPLE_ERROR_VALIDATION)})),
                     @ApiResponse( responseCode = LoanUtils.CONFLICT_CODE, description = LoanUtils.CONFLICT_MESSAGE, content = @Content(schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject( name = LoanUtils.CONFLICT_MESSAGE, value = LoanUtils.EXAMPLE_VALIDATION_DUPLICATE)})),
-                    @ApiResponse(responseCode = LoanUtils.INTERNAL_ERROR_CODE, description = LoanUtils.INTERNAL_ERROR_MESSAGE, content = @Content(schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject( name = LoanUtils.INTERNAL_ERROR_MESSAGE, value = LoanUtils.EXAMPLE_INTERNAL_ERROR)}))
+                    @ApiResponse( responseCode = LoanUtils.INTERNAL_ERROR_CODE, description = LoanUtils.INTERNAL_ERROR_MESSAGE, content = @Content(schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject( name = LoanUtils.INTERNAL_ERROR_MESSAGE, value = LoanUtils.EXAMPLE_INTERNAL_ERROR)}))
                 }
             )
         )
@@ -37,7 +37,7 @@ public class LoanRouter {
 
     public RouterFunction<ServerResponse> loanRequestRoutes(LoanHandler handler) {
         return RouterFunctions
-                .route(POST(LoanUtils.ROUTER_BASE_PATH), handler::createLoanRequest)
+                .route(POST(LoanUtils.ROUTER_BASE_PATH), handler::createLoan)
                 .andRoute(RequestPredicates.GET(LoanUtils.ROUTER_BASE_PATH), handler::getAllLoanRequests);
     }
 }

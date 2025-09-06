@@ -19,7 +19,7 @@ public class ApiResponse<T> {
     @Schema(description = "Código de negocio definido en UserUtils", example = "201.01")
     private String code;
 
-    @Schema(description = "Mensaje asociado al código de negocio", example = "Usuario registrado exitosamente")
+    @Schema(description = "Mensaje asociado al código de negocio", example = "Solicitud registrada exitosamente")
     private String message;
 
     @Schema(description = "Objeto de respuesta en caso de éxito")
