@@ -3,6 +3,7 @@ package co.com.pragma.r2dbc;
 import co.com.pragma.model.loan.LoanRequest;
 import co.com.pragma.model.loan.constants.AppMessages;
 import co.com.pragma.model.loan.constants.RequestStatus;
+import co.com.pragma.model.loan.exceptions.BusinessException;
 import co.com.pragma.r2dbc.entity.LoanEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,11 +12,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.reactivecommons.utils.ObjectMapper;
+import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import java.time.LocalDateTime;
+
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
 public class LoanRepositoryAdapterTest {
@@ -28,11 +33,16 @@ public class LoanRepositoryAdapterTest {
     @Mock
     ObjectMapper mapper;
 
+    @Mock
+    TransactionalOperator tsOperator;
+
     private LoanEntity entity;
     private LoanRequest domain;
 
     @BeforeEach
     void setUp() {
+        repositoryAdapter = new LoanRepositoryAdapter(repository, mapper, tsOperator);
+
         entity = new LoanEntity();
         entity.setId("1");
         entity.setClientDocument("123456");
@@ -50,6 +60,9 @@ public class LoanRepositoryAdapterTest {
                 .status(RequestStatus.PENDING_REVIEW)
                 .createdAt(entity.getCreatedAt())
                 .build();
+
+        lenient().when(tsOperator.transactional(any(Flux.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        lenient().when(tsOperator.transactional(any(Mono.class))).thenAnswer(invocation -> invocation.getArgument(0));
     }
 
     @Test
@@ -72,5 +85,36 @@ public class LoanRepositoryAdapterTest {
                                 loanRequest.getStatus() == RequestStatus.PENDING_REVIEW
                 )
                 .verifyComplete();
+    }
+
+    @Test
+    void mustSaveLoanSuccessfully() {
+        when(mapper.map(domain, LoanEntity.class)).thenReturn(entity);
+        when(mapper.map(entity, LoanRequest.class)).thenReturn(domain);
+        when(repository.save(any())).thenReturn(Mono.just(entity));
+        Mono<LoanRequest> result = repositoryAdapter.save(domain);
+        StepVerifier.create(result)
+                .expectNext(domain)
+                .verifyComplete();
+    }
+
+    @Test
+    void mustThrowDuplicateApplicationWhenErrorContainsDuplicate() {
+        when(repository.save(any())).thenReturn(Mono.error(new RuntimeException("duplicate key")));
+        Mono<LoanRequest> result = repositoryAdapter.save(domain);
+        StepVerifier.create(result)
+                .expectErrorMatches(ex -> ex instanceof BusinessException &&
+                        ex.getMessage().equals(AppMessages.DUPLICATE_APPLICATION.getMessage()))
+                .verify();
+    }
+
+    @Test
+    void mustThrowInternalErrorWhenUnexpectedErrorOccurs() {
+        when(repository.save(any())).thenReturn(Mono.error(new RuntimeException("some other error")));
+        Mono<LoanRequest> result = repositoryAdapter.save(domain);
+        StepVerifier.create(result)
+                .expectErrorMatches(ex -> ex instanceof BusinessException &&
+                        ex.getMessage().equals(AppMessages.INTERNAL_ERROR.getMessage()))
+                .verify();
     }
 }

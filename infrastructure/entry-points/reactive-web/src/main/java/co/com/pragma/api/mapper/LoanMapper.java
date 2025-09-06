@@ -5,7 +5,7 @@ import co.com.pragma.model.loan.LoanRequest;
 import co.com.pragma.model.loan.constants.AppMessages;
 
 public class LoanMapper {
-    private LoanMapper() {
+    LoanMapper() {
         throw new UnsupportedOperationException(String.valueOf(AppMessages.CLASS_SHOULD_NOT_BE_INSTANTIATED.getMessage()));
     }
 
@@ -21,20 +21,6 @@ public class LoanMapper {
                 .loanType(dto.getLoanType())
                 .status(dto.getStatus())
                 .createdAt(dto.getCreatedAt())
-                .build();
-    }
-
-    public static LoanDTO toDto(LoanRequest entity) {
-        if (entity == null) {
-            return null;
-        }
-        return LoanDTO.builder()
-                .clientDocument(entity.getClientDocument())
-                .amount(entity.getAmount())
-                .termMonths(entity.getTermMonths())
-                .loanType(entity.getLoanType())
-                .status(entity.getStatus())
-                .createdAt(entity.getCreatedAt())
                 .build();
     }
 }
