@@ -2,6 +2,7 @@ package co.com.pragma.api.user;
 
 import co.com.pragma.api.user.dto.UserRequestDTO;
 import co.com.pragma.api.user.util.UserUtils;
+import co.com.pragma.api.util.Utils;
 import co.com.pragma.model.exceptions.BusinessException;
 import co.com.pragma.model.user.User;
 import co.com.pragma.usecase.registeruser.RegisterUserUseCase;
@@ -69,7 +70,7 @@ class UserHandlerTest {
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody()
-                .jsonPath(CODE).isEqualTo(UserUtils.CREATE_CODE)
+                .jsonPath(CODE).isEqualTo(Utils.CREATE_CODE)
                 .jsonPath(MESSAGE).isEqualTo(UserUtils.CREATE_MESSAGE)
                 .jsonPath("$.data.name").isEqualTo("Santiago");
 
@@ -79,7 +80,7 @@ class UserHandlerTest {
     @Test
     void shouldReturnBadRequestWhenValidationFails() {
         UserRequestDTO invalidDto = UserRequestDTO.builder().build();
-        when(registerUserUseCase.registerUser(any(User.class))).thenReturn(Mono.error(new BusinessException(UserUtils.VALIDATION_MESSAGE)));
+        when(registerUserUseCase.registerUser(any(User.class))).thenReturn(Mono.error(new BusinessException(Utils.VALIDATION_MESSAGE)));
         webTestClient.post()
                 .uri(UserUtils.PATH_API_USERS)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -87,8 +88,8 @@ class UserHandlerTest {
                 .exchange()
                 .expectStatus().isBadRequest()
                 .expectBody()
-                .jsonPath(CODE).isEqualTo(UserUtils.VALIDATION_CODE)
-                .jsonPath(MESSAGE).isEqualTo(UserUtils.VALIDATION_MESSAGE)
+                .jsonPath(CODE).isEqualTo(Utils.VALIDATION_CODE)
+                .jsonPath(MESSAGE).isEqualTo(Utils.VALIDATION_MESSAGE)
                 .jsonPath("$.errors").isArray();
 
         verify(registerUserUseCase, times(1)).registerUser(any(User.class));
@@ -104,7 +105,7 @@ class UserHandlerTest {
                 .exchange()
                 .expectStatus().isBadRequest()
                 .expectBody()
-                .jsonPath(CODE).isEqualTo(UserUtils.VALIDATION_CODE_GENERAL)
+                .jsonPath(CODE).isEqualTo(Utils.VALIDATION_CODE_GENERAL)
                 .jsonPath(MESSAGE).isEqualTo(UserUtils.VALIDATION_ERROR_USER_EXISTS);
     }
 }

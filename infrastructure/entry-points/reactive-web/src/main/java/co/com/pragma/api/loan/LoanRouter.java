@@ -2,6 +2,7 @@ package co.com.pragma.api.loan;
 
 import co.com.pragma.api.loan.dto.LoanDTO;
 import co.com.pragma.api.loan.util.LoanUtils;
+import co.com.pragma.api.util.Utils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -26,10 +27,10 @@ public class LoanRouter {
             operation = @Operation( operationId = LoanUtils.ROUTER_OPERATION_ID, summary = LoanUtils.ROUTER_SUMMARY, description = LoanUtils.ROUTER_DESCRIPTION,
                 requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody( description = LoanUtils.ROUTER_REQUEST_DESCRIPTION, required = true, content = @Content( schema = @Schema(implementation = LoanDTO.class), examples = { @ExampleObject( name = LoanUtils.TEXT_VALID_LOAN, value = LoanUtils.EXAMPLE_VALID_LOAN )})),
                 responses = {
-                    @ApiResponse( responseCode = LoanUtils.CREATE_CODE, description = LoanUtils.CREATE_MESSAGE, content = @Content( schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject( name = LoanUtils.TEXT_VALIDATION_CORRECT, value = LoanUtils.EXAMPLE_VALIDATION_CORRECT)})),
-                    @ApiResponse( responseCode = LoanUtils.VALIDATION_CODE, description = LoanUtils.VALIDATION_MESSAGE, content = @Content(schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject( name = LoanUtils.TEXT_ERROR_VALIDATION, value = LoanUtils.EXAMPLE_ERROR_VALIDATION)})),
-                    @ApiResponse( responseCode = LoanUtils.CONFLICT_CODE, description = LoanUtils.CONFLICT_MESSAGE, content = @Content(schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject( name = LoanUtils.CONFLICT_MESSAGE, value = LoanUtils.EXAMPLE_VALIDATION_DUPLICATE)})),
-                    @ApiResponse( responseCode = LoanUtils.INTERNAL_ERROR_CODE, description = LoanUtils.INTERNAL_ERROR_MESSAGE, content = @Content(schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject( name = LoanUtils.INTERNAL_ERROR_MESSAGE, value = LoanUtils.EXAMPLE_INTERNAL_ERROR)}))
+                    @ApiResponse( responseCode = Utils.CREATE_CODE, description = LoanUtils.CREATE_MESSAGE, content = @Content( schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject( name = LoanUtils.TEXT_VALIDATION_CORRECT, value = LoanUtils.EXAMPLE_VALIDATION_CORRECT)})),
+                    @ApiResponse( responseCode = Utils.VALIDATION_CODE, description = Utils.VALIDATION_MESSAGE, content = @Content(schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject( name = LoanUtils.TEXT_ERROR_VALIDATION, value = LoanUtils.EXAMPLE_ERROR_VALIDATION)})),
+                    @ApiResponse( responseCode = Utils.CONFLICT_CODE, description = LoanUtils.CONFLICT_MESSAGE, content = @Content(schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject( name = LoanUtils.CONFLICT_MESSAGE, value = LoanUtils.EXAMPLE_VALIDATION_DUPLICATE)})),
+                    @ApiResponse( responseCode = Utils.INTERNAL_ERROR_CODE, description = Utils.INTERNAL_ERROR_MESSAGE, content = @Content(schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject( name = Utils.INTERNAL_ERROR_MESSAGE, value = LoanUtils.EXAMPLE_INTERNAL_ERROR)}))
                 }
             )
         )

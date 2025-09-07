@@ -2,6 +2,7 @@ package co.com.pragma.api.exception;
 
 import co.com.pragma.api.dto.ApiResponse;
 import co.com.pragma.api.loan.util.LoanUtils;
+import co.com.pragma.api.util.Utils;
 import co.com.pragma.model.loan.constants.AppMessages;
 import jakarta.validation.ConstraintViolation;
 import org.springframework.http.HttpStatus;
@@ -27,8 +28,8 @@ public class ValidationErrorHandler {
                 .collect(Collectors.toList());
 
         ApiResponse<Object> response = ApiResponse.builder()
-                .code(LoanUtils.VALIDATION_CODE)
-                .message(LoanUtils.VALIDATION_MESSAGE)
+                .code(Utils.VALIDATION_CODE)
+                .message(Utils.VALIDATION_MESSAGE)
                 .errors(errors)
                 .build();
 

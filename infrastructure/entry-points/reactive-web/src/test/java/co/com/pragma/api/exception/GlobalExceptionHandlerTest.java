@@ -1,4 +1,4 @@
-package co.com.pragma.api.loan.exception;
+package co.com.pragma.api.exception;
 
 import co.com.pragma.model.exceptions.BusinessException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,7 +9,6 @@ import jakarta.validation.Path;
 import jakarta.validation.metadata.ConstraintDescriptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
@@ -22,12 +21,13 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class LoanGlobalExceptionHandlerTest {
-    private LoanGlobalExceptionHandler handler;
+class GlobalExceptionHandlerTest {
+
+    private GlobalExceptionHandler handler;
 
     @BeforeEach
     void setUp() {
-        handler = new LoanGlobalExceptionHandler(new ObjectMapper());
+        handler = new GlobalExceptionHandler(new ObjectMapper());
     }
 
     @Test
@@ -45,14 +45,25 @@ class LoanGlobalExceptionHandlerTest {
     }
 
     @Test
-    void shouldHandleBusinessException() {
-        BusinessException ex = new BusinessException("Usuario ya existe");
+    void shouldHandleBusinessExceptionWithCustomMessage() {
+        BusinessException ex = new BusinessException("Mensaje específico");
         MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test").build());
         StepVerifier.create(handler.handle(exchange, ex)).verifyComplete();
         assertThat(exchange.getResponse().getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         String json = exchange.getResponse().getBodyAsString().block();
         assertThat(json).contains("\"code\":\"409.01\"");
-        assertThat(json).contains("\"message\":\"Usuario ya existe\"");
+        assertThat(json).contains("\"message\":\"Mensaje específico\"");
+    }
+
+    @Test
+    void shouldHandleBusinessExceptionWithModuleMessage() {
+        BusinessException ex = new BusinessException((String) null);
+        MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test").build());
+        StepVerifier.create(handler.handle(exchange, ex)).verifyComplete();
+        assertThat(exchange.getResponse().getStatusCode()).isEqualTo(org.springframework.http.HttpStatus.CONFLICT);
+        String json = exchange.getResponse().getBodyAsString().block();
+        assertThat(json).contains("\"code\":\"409.01\"");
+        assertThat(json).contains("\"message\":\"Errores de validación\"");
     }
 
     @Test

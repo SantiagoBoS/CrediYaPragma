@@ -2,6 +2,7 @@ package co.com.pragma.api.user;
 
 import co.com.pragma.api.user.dto.UserRequestDTO;
 import co.com.pragma.api.user.util.UserUtils;
+import co.com.pragma.api.util.Utils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -24,10 +25,10 @@ public class UserRouter {
         operation = @Operation( operationId = UserUtils.PATH_OPERATION_ID,  summary = UserUtils.PATH_OPERATION_SUMMARY,  description = UserUtils.PATH_OPERATION_DESCRIPTION,
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody( description = UserUtils.PATH_REQUEST_BODY_DESCRIPTION, required = true, content = @Content( schema = @Schema(implementation = UserRequestDTO.class), examples = { @ExampleObject( name = UserUtils.TEXT_VALID_USER, value = UserUtils.EXAMPLE_VALID_USER)})),
             responses = {
-                @ApiResponse( responseCode = UserUtils.CREATE_CODE, description = UserUtils.CREATE_MESSAGE, content = @Content( schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject(name = UserUtils.TEXT_VALIDATION_CORRECT, value = UserUtils.EXAMPLE_VALIDATION_CORRECT )})),
-                @ApiResponse( responseCode = UserUtils.VALIDATION_CODE,  description = UserUtils.VALIDATION_MESSAGE, content = @Content( schema = @Schema(implementation = ApiResponse.class), examples = {@ExampleObject( name = UserUtils.TEXT_ERROR_VALIDATION, value = UserUtils.EXAMPLE_ERROR_VALIDATION)})),
-                @ApiResponse( responseCode = UserUtils.CONFLICT_CODE,  description = UserUtils.CONFLICT_MESSAGE, content = @Content( schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject( name = UserUtils.TEXT_VALIDATION_DUPLICATE, value = UserUtils.EXAMPLE_VALIDATION_DUPLICATE)})),
-                @ApiResponse( responseCode = UserUtils.INTERNAL_ERROR_CODE, description = UserUtils.INTERNAL_ERROR_MESSAGE, content = @Content( schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject( name = UserUtils.TEXT_INTERNAL_ERROR,  value = UserUtils.EXAMPLE_INTERNAL_ERROR)}))
+                @ApiResponse( responseCode = Utils.CREATE_CODE, description = UserUtils.CREATE_MESSAGE, content = @Content( schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject(name = UserUtils.TEXT_VALIDATION_CORRECT, value = UserUtils.EXAMPLE_VALIDATION_CORRECT )})),
+                @ApiResponse( responseCode = Utils.VALIDATION_CODE,  description = Utils.VALIDATION_MESSAGE, content = @Content( schema = @Schema(implementation = ApiResponse.class), examples = {@ExampleObject( name = UserUtils.TEXT_ERROR_VALIDATION, value = UserUtils.EXAMPLE_ERROR_VALIDATION)})),
+                @ApiResponse( responseCode = Utils.CONFLICT_CODE,  description = UserUtils.CONFLICT_MESSAGE, content = @Content( schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject( name = UserUtils.TEXT_VALIDATION_DUPLICATE, value = UserUtils.EXAMPLE_VALIDATION_DUPLICATE)})),
+                @ApiResponse( responseCode = Utils.INTERNAL_ERROR_CODE, description = Utils.INTERNAL_ERROR_MESSAGE, content = @Content( schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject( name = UserUtils.TEXT_INTERNAL_ERROR,  value = UserUtils.EXAMPLE_INTERNAL_ERROR)}))
             }
         )
     )

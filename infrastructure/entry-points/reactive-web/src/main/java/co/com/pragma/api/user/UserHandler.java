@@ -4,6 +4,7 @@ import co.com.pragma.api.dto.ApiResponse;
 import co.com.pragma.api.user.dto.UserRequestDTO;
 import co.com.pragma.api.user.mapper.UserMapper;
 import co.com.pragma.api.user.util.UserUtils;
+import co.com.pragma.api.util.Utils;
 import co.com.pragma.api.util.ValidationUtils;
 import co.com.pragma.model.exceptions.BusinessException;
 import co.com.pragma.model.user.User;
@@ -28,7 +29,7 @@ public class UserHandler {
                 ValidationUtils.validate(dto, validator).switchIfEmpty(
                         registerUserUseCase.registerUser(UserMapper.toEntity(dto)).flatMap(savedUser -> {
                             ApiResponse<User> response = ApiResponse.<User>builder()
-                                    .code(UserUtils.CREATE_CODE).message(UserUtils.CREATE_MESSAGE)
+                                    .code(Utils.CREATE_CODE).message(UserUtils.CREATE_MESSAGE)
                                     .data(savedUser).build();
                             return ServerResponse.status(HttpStatus.CREATED)
                                     .contentType(MediaType.APPLICATION_JSON).bodyValue(response);
@@ -36,7 +37,7 @@ public class UserHandler {
                 )
         ).onErrorResume(BusinessException.class, ex -> {
             ApiResponse<Object> response = ApiResponse.builder()
-                    .code(UserUtils.VALIDATION_CODE_GENERAL).message(ex.getMessage()).build();
+                    .code(Utils.VALIDATION_CODE_GENERAL).message(ex.getMessage()).build();
             return ServerResponse.status(HttpStatus.BAD_REQUEST)
                     .contentType(MediaType.APPLICATION_JSON).bodyValue(response);
         });

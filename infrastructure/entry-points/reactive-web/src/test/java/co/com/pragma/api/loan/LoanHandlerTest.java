@@ -1,6 +1,7 @@
 package co.com.pragma.api.loan;
 
 import co.com.pragma.api.loan.dto.LoanDTO;
+import co.com.pragma.api.util.Utils;
 import co.com.pragma.model.loan.LoanRequest;
 import co.com.pragma.model.loan.constants.AppMessages;
 import co.com.pragma.model.loan.constants.RequestStatus;
@@ -67,7 +68,7 @@ class LoanHandlerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
                 .exchange().expectStatus().isCreated().expectBody()
-                .jsonPath(TEST_HANDLER_CODE).isEqualTo(LoanUtils.CREATE_CODE)
+                .jsonPath(TEST_HANDLER_CODE).isEqualTo(Utils.CREATE_CODE)
                 .jsonPath(TEST_HANDLER_MESSAGE).isEqualTo(LoanUtils.CREATE_MESSAGE)
                 .jsonPath("$.data.clientDocument").isEqualTo("12345")
                 .jsonPath("$.data.status").isEqualTo(RequestStatus.PENDING_REVIEW.name());
@@ -83,8 +84,8 @@ class LoanHandlerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(invalidDto)
                 .exchange().expectStatus().isBadRequest().expectBody()
-                .jsonPath(TEST_HANDLER_CODE).isEqualTo(LoanUtils.VALIDATION_CODE)
-                .jsonPath(TEST_HANDLER_MESSAGE).isEqualTo(LoanUtils.VALIDATION_MESSAGE);
+                .jsonPath(TEST_HANDLER_CODE).isEqualTo(Utils.VALIDATION_CODE)
+                .jsonPath(TEST_HANDLER_MESSAGE).isEqualTo(Utils.VALIDATION_MESSAGE);
     }
 
     @Test
@@ -95,7 +96,7 @@ class LoanHandlerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
                 .exchange().expectStatus().isBadRequest().expectBody()
-                .jsonPath(TEST_HANDLER_CODE).isEqualTo(LoanUtils.VALIDATION_CODE_GENERAL)
+                .jsonPath(TEST_HANDLER_CODE).isEqualTo(Utils.VALIDATION_CODE_GENERAL)
                 .jsonPath(TEST_HANDLER_MESSAGE).isEqualTo(AppMessages.APPLICATION_IN_PROCESS.getMessage());
     }
 }

@@ -1,8 +1,10 @@
-package co.com.pragma.api.user.exception;
+package co.com.pragma.api.exception;
 
 import co.com.pragma.api.dto.ApiResponse;
 import co.com.pragma.api.dto.FieldErrorDTO;
+import co.com.pragma.api.loan.util.LoanUtils;
 import co.com.pragma.api.user.util.UserUtils;
+import co.com.pragma.api.util.Utils;
 import co.com.pragma.model.exceptions.BusinessException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,11 +23,11 @@ import java.util.List;
 
 @Component
 @Order(-2)
-public class UserGlobalExceptionHandler implements ErrorWebExceptionHandler {
+public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
 
     private final ObjectMapper objectMapper;
 
-    public UserGlobalExceptionHandler(ObjectMapper objectMapper) {
+    public GlobalExceptionHandler(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
@@ -39,7 +41,11 @@ public class UserGlobalExceptionHandler implements ErrorWebExceptionHandler {
                     .map(err -> new FieldErrorDTO(err.getField(), err.getDefaultMessage()))
                     .toList();
 
-            response = ApiResponse.builder().code(UserUtils.VALIDATION_CODE).message(UserUtils.VALIDATION_MESSAGE).errors(errors).build();
+            response = ApiResponse.builder()
+                    .code(Utils.VALIDATION_CODE)
+                    .message(Utils.VALIDATION_MESSAGE)
+                    .errors(errors)
+                    .build();
             status = HttpStatus.BAD_REQUEST;
 
         } else if (ex instanceof ConstraintViolationException cvEx) {
@@ -47,20 +53,32 @@ public class UserGlobalExceptionHandler implements ErrorWebExceptionHandler {
                     .map(v -> new FieldErrorDTO(v.getPropertyPath().toString(), v.getMessage()))
                     .toList();
 
-            response = ApiResponse.builder().code(UserUtils.VALIDATION_CODE_GENERAL).message(UserUtils.VALIDATION_MESSAGE).errors(errors).build();
+            response = ApiResponse.builder()
+                    .code(Utils.VALIDATION_CODE_GENERAL)
+                    .message(Utils.VALIDATION_MESSAGE)
+                    .errors(errors)
+                    .build();
             status = HttpStatus.BAD_REQUEST;
 
         } else if (ex instanceof BusinessException be) {
-            response = ApiResponse.builder().code(UserUtils.CONFLICT_CODE).message(be.getMessage() != null ? be.getMessage() : UserUtils.CONFLICT_MESSAGE).build();
+            String message = be.getMessage() != null ? be.getMessage() : determineModuleMessage(exchange);
+            response = ApiResponse.builder()
+                    .code(Utils.CONFLICT_CODE)
+                    .message(message)
+                    .build();
             status = HttpStatus.CONFLICT;
 
         } else {
-            response = ApiResponse.builder().code(UserUtils.INTERNAL_ERROR_CODE).message(UserUtils.INTERNAL_ERROR_MESSAGE).build();
+            response = ApiResponse.builder()
+                    .code(Utils.INTERNAL_ERROR_CODE)
+                    .message(Utils.INTERNAL_ERROR_MESSAGE)
+                    .build();
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
         exchange.getResponse().setStatusCode(status);
         exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
+
         DataBuffer dataBuffer;
         try {
             dataBuffer = exchange.getResponse().bufferFactory().wrap(objectMapper.writeValueAsBytes(response));
@@ -68,5 +86,17 @@ public class UserGlobalExceptionHandler implements ErrorWebExceptionHandler {
             return Mono.error(e);
         }
         return exchange.getResponse().writeWith(Mono.just(dataBuffer));
+    }
+
+
+    private String determineModuleMessage(ServerWebExchange exchange) {
+        String path = exchange.getRequest().getPath().toString();
+        if (path.startsWith(LoanUtils.ROUTER_BASE_PATH)) {
+            return LoanUtils.CONFLICT_MESSAGE;
+        } else if (path.startsWith(UserUtils.PATH_API_USERS)) {
+            return UserUtils.CONFLICT_MESSAGE;
+        }
+
+        return Utils.VALIDATION_ERROR;
     }
 }
