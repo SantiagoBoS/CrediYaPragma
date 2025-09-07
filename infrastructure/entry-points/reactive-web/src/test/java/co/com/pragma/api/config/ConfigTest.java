@@ -2,9 +2,11 @@ package co.com.pragma.api.config;
 
 import co.com.pragma.api.UserHandler;
 import co.com.pragma.api.UserRouter;
+import co.com.pragma.api.util.UserUtils;
 import co.com.pragma.model.user.User;
 import co.com.pragma.model.user.exceptions.BusinessException;
 import co.com.pragma.usecase.registeruser.RegisterUserUseCase;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
@@ -32,16 +34,30 @@ class ConfigTest {
     @MockBean
     private RegisterUserUseCase registerUserUseCase;
 
+    private User user;
+    private User invalidUser;
+
+    @BeforeEach
+    void setUp() {
+        user = new User(
+                "123456789",
+                "Santiago",
+                "Borrero",
+                LocalDate.parse("1990-12-12"),
+                "Cra 8 # 45-67",
+                "3001234567",
+                "santi@example.com",
+                BigDecimal.valueOf(5000000)
+        );
+
+        invalidUser = new User("", "", "", null,"", "", "bad-email", null);
+    }
+
     @Test
     void shouldRegisterUserSuccessfully() {
-        User user = new User("123456789", "Santiago","Borrero",
-                LocalDate.parse("1990-12-12"), "Cra 8 # 45-67", "3001234567",
-                "santi@example.com", BigDecimal.valueOf(5000000));
-
         given(registerUserUseCase.registerUser(any(User.class))).willReturn(Mono.just(user));
-
         webTestClient.post()
-                .uri("/api/v1/usuarios")
+                .uri(UserUtils.PATH_API_USERS)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(user)
                 .exchange()
@@ -54,17 +70,15 @@ class ConfigTest {
 
     @Test
     void shouldReturnBadRequestWhenBusinessExceptionThrown() {
-        User invalidUser = new User("", "", "", null,"", "", "bad-email", null);
-
-        given(registerUserUseCase.registerUser(any(User.class))).willReturn(Mono.error(new BusinessException("Error de validación en los datos de entrada.")));
+        given(registerUserUseCase.registerUser(any(User.class))).willReturn(Mono.error(new BusinessException(UserUtils.VALIDATION_MESSAGE)));
 
         webTestClient.post()
-                .uri("/api/v1/usuarios")
+                .uri(UserUtils.PATH_API_USERS)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(invalidUser)
                 .exchange()
                 .expectStatus().isBadRequest()
                 .expectBody()
-                .jsonPath("$.message").isEqualTo("Error de validación en los datos de entrada.");
+                .jsonPath("$.message").isEqualTo(UserUtils.VALIDATION_MESSAGE);
     }
 }

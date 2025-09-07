@@ -8,22 +8,26 @@ import co.com.pragma.r2dbc.entity.UserEntity;
 import co.com.pragma.r2dbc.helper.ReactiveAdapterOperations;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Mono;
 
 @Repository
 public class UserRepositoryAdapter extends ReactiveAdapterOperations<User, UserEntity, String, UserReactiveRepository> implements UserRepository {
     private final UserReactiveRepository repository;
     private final ObjectMapper mapper;
+    private final TransactionalOperator tsOperator;
 
-    public UserRepositoryAdapter(UserReactiveRepository repository, ObjectMapper mapper) {
+    public UserRepositoryAdapter(UserReactiveRepository repository, ObjectMapper mapper, TransactionalOperator tsOperator) {
         super(repository, mapper, d -> mapper.map(d, User.class));
         this.repository = repository;
         this.mapper = mapper;
+        this.tsOperator = tsOperator;
     }
 
     @Override
     public Mono<User> save(User User) {
         return super.save(User)
+            .as(tsOperator::transactional)
             .onErrorResume(throwable -> {
                 String mss = throwable.getMessage();
                 if (mss != null && (mss.contains("email") || mss.contains("document_number"))) {
@@ -35,6 +39,6 @@ public class UserRepositoryAdapter extends ReactiveAdapterOperations<User, UserE
 
     @Override
     public Mono<User> findByEmailAndDocumentNumber(String email, String documentNumber) {
-        return repository.findByEmailAndDocumentNumber(email, documentNumber).map(this::toEntity);
+        return repository.findByEmailAndDocumentNumber(email, documentNumber).map(this::toEntity).as(tsOperator::transactional);
     }
 }

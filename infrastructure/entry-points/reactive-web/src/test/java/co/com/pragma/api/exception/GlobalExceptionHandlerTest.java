@@ -1,5 +1,6 @@
 package co.com.pragma.api.exception;
 
+import co.com.pragma.api.util.UserUtils;
 import co.com.pragma.model.user.exceptions.BusinessException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.ConstraintViolation;
@@ -32,7 +33,6 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void shouldHandleWebExchangeBindException() {
-        //Validacion de campos
         BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(new Object(), "user");
         bindingResult.addError(new FieldError("user", "email", "must not be blank"));
         WebExchangeBindException ex = new WebExchangeBindException(null, bindingResult);
@@ -44,8 +44,7 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void shouldHandleBusinessException() {
-        //Excepcion de negocio personalizada
-        BusinessException ex = new BusinessException("Usuario ya existe");
+        BusinessException ex = new BusinessException(UserUtils.VALIDATION_ERROR_USER_EXISTS);
         MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test").build());
         StepVerifier.create(handler.handle(exchange, ex)).verifyComplete();
         assertThat(exchange.getResponse().getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
@@ -53,7 +52,6 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void shouldHandleGenericException() {
-        //Excepcion generica no controlada
         RuntimeException ex = new RuntimeException("Unexpected error");
         MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test").build());
         StepVerifier.create(handler.handle(exchange, ex)).verifyComplete();
@@ -62,7 +60,6 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void shouldHandleConstraintViolationException() {
-        //Validacion de restricciones
         ConstraintViolation<?> violation = new ConstraintViolation<>() {
             @Override public String getMessage() { return "Invalid value"; }
             @Override public String getMessageTemplate() { return null; }

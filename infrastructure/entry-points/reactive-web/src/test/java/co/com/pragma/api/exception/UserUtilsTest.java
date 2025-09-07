@@ -1,5 +1,6 @@
 package co.com.pragma.api.exception;
 
+import co.com.pragma.api.util.UserUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,6 +29,6 @@ class UserUtilsTest {
     @Test
     void shouldHaveCorrectInternalErrorConstants() {
         assertThat(UserUtils.INTERNAL_ERROR_CODE).isEqualTo("500.01");
-        assertThat(UserUtils.INTERNAL_ERROR_MESSAGE).isEqualTo("Error interno del servidor.");
+        assertThat(UserUtils.INTERNAL_ERROR_MESSAGE).isEqualTo("Error interno del servidor");
     }
 }

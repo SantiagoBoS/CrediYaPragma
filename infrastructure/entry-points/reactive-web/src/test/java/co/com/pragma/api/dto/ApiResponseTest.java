@@ -1,5 +1,6 @@
 package co.com.pragma.api.dto;
 
+import co.com.pragma.api.util.UserUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -14,15 +15,13 @@ class ApiResponseTest {
 
     @Test
     void shouldBuildApiResponseWithData() {
-        String code = "201.01";
-        String message = "Usuario registrado exitosamente";
+        String code = UserUtils.CREATE_CODE;
+        String message = UserUtils.CREATE_MESSAGE;
         String data = "Usuario123";
 
         ApiResponse<String> response = ApiResponse.<String>builder()
-                .code(code)
-                .message(message)
-                .data(data)
-                .build();
+                .code(code).message(message)
+                .data(data).build();
 
         assertThat(response.getCode()).isEqualTo(code);
         assertThat(response.getMessage()).isEqualTo(message);
@@ -35,8 +34,8 @@ class ApiResponseTest {
         List<String> errors = List.of("Email invalido", "name must not be blank");
 
         ApiResponse<Object> response = ApiResponse.builder()
-                .code("400.01")
-                .message("Errores de validación")
+                .code(UserUtils.VALIDATION_CODE)
+                .message(UserUtils.VALIDATION_ERROR)
                 .errors(errors)
                 .build();
 
@@ -48,8 +47,8 @@ class ApiResponseTest {
     @Test
     void shouldNotSerializeNullFields() throws JsonProcessingException {
         ApiResponse<String> response = ApiResponse.<String>builder()
-                .code("200.00")
-                .message("OK")
+                .code(UserUtils.SUCCESS_CODE)
+                .message(UserUtils.SUCCESS_MESSAGE)
                 .build();
 
         String json = objectMapper.writeValueAsString(response);
@@ -63,10 +62,10 @@ class ApiResponseTest {
     @Test
     void shouldUseSettersAndGetters() {
         ApiResponse<String> response = new ApiResponse<>();
-        response.setCode("500.01");
-        response.setMessage("Error interno");
+        response.setCode(UserUtils.INTERNAL_ERROR_CODE);
+        response.setMessage(UserUtils.INTERNAL_ERROR_MESSAGE);
 
         assertThat(response.getCode()).isEqualTo("500.01");
-        assertThat(response.getMessage()).isEqualTo("Error interno");
+        assertThat(response.getMessage()).isEqualTo("Error interno del servidor");
     }
 }

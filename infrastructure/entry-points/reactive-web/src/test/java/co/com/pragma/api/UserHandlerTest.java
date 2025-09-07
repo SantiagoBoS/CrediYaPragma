@@ -1,7 +1,7 @@
 package co.com.pragma.api;
 
 import co.com.pragma.api.dto.UserRequestDTO;
-import co.com.pragma.api.exception.UserUtils;
+import co.com.pragma.api.util.UserUtils;
 import co.com.pragma.model.user.User;
 import co.com.pragma.model.user.exceptions.BusinessException;
 import co.com.pragma.usecase.registeruser.RegisterUserUseCase;
@@ -25,26 +25,14 @@ import static org.mockito.Mockito.*;
 class UserHandlerTest {
 
     private RegisterUserUseCase registerUserUseCase;
-    private Validator validator;
     private WebTestClient webTestClient;
+    private UserRequestDTO dto;
+    private String CODE = "$.code";
+    private String MESSAGE = "$.message";
 
     @BeforeEach
     void setUp() {
-        registerUserUseCase = Mockito.mock(RegisterUserUseCase.class);
-        validator = Validation.buildDefaultValidatorFactory().getValidator();
-
-        UserHandler handler = new UserHandler(registerUserUseCase, validator);
-
-        RouterFunction<ServerResponse> routerFunction = RouterFunctions.route()
-                .POST("/api/v1/usuarios", handler::registerUser).build();
-
-        webTestClient = WebTestClient.bindToRouterFunction(routerFunction).build();
-    }
-
-    @Test
-    void shouldRegisterUserSuccessfully() {
-        // given
-        UserRequestDTO dto = UserRequestDTO.builder()
+        dto = UserRequestDTO.builder()
                 .documentNumber("12345")
                 .name("Santiago")
                 .lastName("Test")
@@ -54,6 +42,15 @@ class UserHandlerTest {
                 .baseSalary(BigDecimal.valueOf(5000.0))
                 .build();
 
+        registerUserUseCase = Mockito.mock(RegisterUserUseCase.class);
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+        UserHandler handler = new UserHandler(registerUserUseCase, validator);
+        RouterFunction<ServerResponse> routerFunction = RouterFunctions.route().POST(UserUtils.PATH_API_USERS, handler::registerUser).build();
+        webTestClient = WebTestClient.bindToRouterFunction(routerFunction).build();
+    }
+
+    @Test
+    void shouldRegisterUserSuccessfully() {
         User savedUser = User.builder()
                 .documentNumber("12345")
                 .name("Santiago")
@@ -64,19 +61,16 @@ class UserHandlerTest {
                 .baseSalary(BigDecimal.valueOf(5000.0))
                 .build();
 
-        when(registerUserUseCase.registerUser(any(User.class)))
-                .thenReturn(Mono.just(savedUser));
-
-        // when & then
+        when(registerUserUseCase.registerUser(any(User.class))).thenReturn(Mono.just(savedUser));
         webTestClient.post()
-                .uri("/api/v1/usuarios")
+                .uri(UserUtils.PATH_API_USERS)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody()
-                .jsonPath("$.code").isEqualTo(UserUtils.CREATE_CODE)
-                .jsonPath("$.message").isEqualTo(UserUtils.CREATE_MESSAGE)
+                .jsonPath(CODE).isEqualTo(UserUtils.CREATE_CODE)
+                .jsonPath(MESSAGE).isEqualTo(UserUtils.CREATE_MESSAGE)
                 .jsonPath("$.data.name").isEqualTo("Santiago");
 
         verify(registerUserUseCase, times(1)).registerUser(any(User.class));
@@ -84,47 +78,33 @@ class UserHandlerTest {
 
     @Test
     void shouldReturnBadRequestWhenValidationFails() {
-        // given → DTO vacío (falla validación con Bean Validation)
         UserRequestDTO invalidDto = UserRequestDTO.builder().build();
-
-        // when & then
+        when(registerUserUseCase.registerUser(any(User.class))).thenReturn(Mono.error(new BusinessException(UserUtils.VALIDATION_MESSAGE)));
         webTestClient.post()
-                .uri("/api/v1/usuarios")
+                .uri(UserUtils.PATH_API_USERS)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(invalidDto)
                 .exchange()
                 .expectStatus().isBadRequest()
                 .expectBody()
-                .jsonPath("$.code").isEqualTo(UserUtils.VALIDATION_CODE)
-                .jsonPath("$.message").isEqualTo(UserUtils.VALIDATION_MESSAGE)
+                .jsonPath(CODE).isEqualTo(UserUtils.VALIDATION_CODE)
+                .jsonPath(MESSAGE).isEqualTo(UserUtils.VALIDATION_MESSAGE)
                 .jsonPath("$.errors").isArray();
+
+        verify(registerUserUseCase, times(1)).registerUser(any(User.class));
     }
 
     @Test
     void shouldHandleBusinessException() {
-        // given
-        UserRequestDTO dto = UserRequestDTO.builder()
-                .documentNumber("12345")
-                .name("Santiago")
-                .lastName("Test")
-                .email("test@test.com")
-                .phone("3123456789")
-                .address("Calle 456")
-                .baseSalary(BigDecimal.valueOf(7000.0))
-                .build();
-
-        when(registerUserUseCase.registerUser(any(User.class)))
-                .thenReturn(Mono.error(new BusinessException("Usuario ya existe")));
-
-        // when & then
+        when(registerUserUseCase.registerUser(any(User.class))).thenReturn(Mono.error(new BusinessException(UserUtils.VALIDATION_ERROR_USER_EXISTS)));
         webTestClient.post()
-                .uri("/api/v1/usuarios")
+                .uri(UserUtils.PATH_API_USERS)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
                 .exchange()
                 .expectStatus().isBadRequest()
                 .expectBody()
-                .jsonPath("$.code").isEqualTo(UserUtils.VALIDATION_CODE_GENERAL)
-                .jsonPath("$.message").isEqualTo("Usuario ya existe");
+                .jsonPath(CODE).isEqualTo(UserUtils.VALIDATION_CODE_GENERAL)
+                .jsonPath(MESSAGE).isEqualTo(UserUtils.VALIDATION_ERROR_USER_EXISTS);
     }
 }

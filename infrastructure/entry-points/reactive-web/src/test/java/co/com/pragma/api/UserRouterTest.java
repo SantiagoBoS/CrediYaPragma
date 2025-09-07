@@ -1,5 +1,6 @@
 package co.com.pragma.api;
 
+import co.com.pragma.api.util.UserUtils;
 import co.com.pragma.model.user.User;
 import co.com.pragma.model.user.exceptions.BusinessException;
 import co.com.pragma.usecase.registeruser.RegisterUserUseCase;
@@ -28,6 +29,7 @@ class UserRouterTest {
 
     private User validUser;
     private User invalidUser;
+    private String CODE = "$.code";
 
     @BeforeEach
     void setup() {
@@ -51,14 +53,14 @@ class UserRouterTest {
             .thenReturn(Mono.just(validUser));
 
         webTestClient.post()
-            .uri("/api/v1/usuarios")
+            .uri(UserUtils.PATH_API_USERS)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(validUser)
             .exchange()
             .expectStatus().isCreated()
             .expectBody()
             .jsonPath("$.data.email").isEqualTo("santiago@example.com")
-            .jsonPath("$.code").isEqualTo("201.01");
+            .jsonPath(CODE).isEqualTo("201.01");
     }
 
     @Test
@@ -67,14 +69,14 @@ class UserRouterTest {
             .thenReturn(Mono.error(new BusinessException("Error de validación en los datos de entrada.")));
 
         webTestClient.post()
-            .uri("/api/v1/usuarios")
+            .uri(UserUtils.PATH_API_USERS)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(invalidUser)
             .exchange()
             .expectStatus().isBadRequest()
             .expectBody()
             .jsonPath("$.message").isEqualTo("Error de validación en los datos de entrada.")
-            .jsonPath("$.code").isEqualTo("400.01");
+            .jsonPath(CODE).isEqualTo("400.01");
     }
 
     @Test
@@ -83,13 +85,13 @@ class UserRouterTest {
             .thenReturn(Mono.error(new BusinessException("El correo electrónico ya se encuentra registrado")));
 
         webTestClient.post()
-            .uri("/api/v1/usuarios")
+            .uri(UserUtils.PATH_API_USERS)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(validUser)
             .exchange()
             .expectStatus().isBadRequest()
             .expectBody()
             .jsonPath("$.message").isEqualTo("El correo electrónico ya se encuentra registrado")
-            .jsonPath("$.code").isEqualTo("400.02");
+            .jsonPath(CODE).isEqualTo("400.02");
     }
 }

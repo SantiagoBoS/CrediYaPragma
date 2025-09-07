@@ -1,7 +1,7 @@
 package co.com.pragma.api;
 
 import co.com.pragma.api.dto.UserRequestDTO;
-import co.com.pragma.api.exception.UserUtils;
+import co.com.pragma.api.util.UserUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -20,9 +20,9 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 @Configuration
 public class UserRouter {
     @Bean
-    @RouterOperation( path = "/api/v1/usuarios", beanClass = UserHandler.class, beanMethod = "registerUser", method = POST,
-        operation = @Operation( operationId = "registerUser",  summary = "Registrar un nuevo usuario",  description = "Permite registrar un nuevo solicitante proporcionando sus datos personales",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody( description = "Datos del nuevo usuario", required = true, content = @Content( schema = @Schema(implementation = UserRequestDTO.class), examples = { @ExampleObject( name = UserUtils.TEXT_VALID_USER, value = UserUtils.EXAMPLE_VALID_USER)})),
+    @RouterOperation( path = UserUtils.PATH_API_USERS, beanClass = UserHandler.class, beanMethod = UserUtils.PATH_OPERATION_ID, method = POST,
+        operation = @Operation( operationId = UserUtils.PATH_OPERATION_ID,  summary = UserUtils.PATH_OPERATION_SUMMARY,  description = UserUtils.PATH_OPERATION_DESCRIPTION,
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody( description = UserUtils.PATH_REQUEST_BODY_DESCRIPTION, required = true, content = @Content( schema = @Schema(implementation = UserRequestDTO.class), examples = { @ExampleObject( name = UserUtils.TEXT_VALID_USER, value = UserUtils.EXAMPLE_VALID_USER)})),
             responses = {
                 @ApiResponse( responseCode = UserUtils.CREATE_CODE, description = UserUtils.CREATE_MESSAGE, content = @Content( schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject(name = UserUtils.TEXT_VALIDATION_CORRECT, value = UserUtils.EXAMPLE_VALIDATION_CORRECT )})),
                 @ApiResponse( responseCode = UserUtils.VALIDATION_CODE,  description = UserUtils.VALIDATION_MESSAGE, content = @Content( schema = @Schema(implementation = ApiResponse.class), examples = {@ExampleObject( name = UserUtils.TEXT_ERROR_VALIDATION, value = UserUtils.EXAMPLE_ERROR_VALIDATION)})),
@@ -33,6 +33,6 @@ public class UserRouter {
     )
 
     public RouterFunction<ServerResponse> userRoutes(UserHandler handler) {
-        return route(POST("/api/v1/usuarios"), handler::registerUser);
+        return route(POST(UserUtils.PATH_API_USERS), handler::registerUser);
     }
 }
