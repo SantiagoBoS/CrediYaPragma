@@ -2,8 +2,6 @@ package co.com.pragma.api.exception;
 
 import co.com.pragma.api.dto.ApiResponse;
 import co.com.pragma.api.dto.FieldErrorDTO;
-import co.com.pragma.api.loan.util.LoanUtils;
-import co.com.pragma.api.user.util.UserUtils;
 import co.com.pragma.api.util.Utils;
 import co.com.pragma.model.exceptions.BusinessException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -91,10 +89,10 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
 
     private String determineModuleMessage(ServerWebExchange exchange) {
         String path = exchange.getRequest().getPath().toString();
-        if (path.startsWith(LoanUtils.ROUTER_BASE_PATH)) {
-            return LoanUtils.CONFLICT_MESSAGE;
-        } else if (path.startsWith(UserUtils.PATH_API_USERS)) {
-            return UserUtils.CONFLICT_MESSAGE;
+        if (path.startsWith(Utils.LOAN_ROUTER_BASE_PATH)) {
+            return Utils.LOAN_CONFLICT_MESSAGE;
+        } else if (path.startsWith(Utils.USER_PATH_API_USERS)) {
+            return Utils.USER_CONFLICT_MESSAGE;
         }
 
         return Utils.VALIDATION_ERROR;

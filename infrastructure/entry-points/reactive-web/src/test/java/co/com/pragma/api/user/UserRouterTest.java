@@ -1,6 +1,6 @@
 package co.com.pragma.api.user;
 
-import co.com.pragma.api.user.util.UserUtils;
+import co.com.pragma.api.util.Utils;
 import co.com.pragma.model.exceptions.BusinessException;
 import co.com.pragma.model.user.User;
 import co.com.pragma.usecase.registeruser.RegisterUserUseCase;
@@ -53,7 +53,7 @@ class UserRouterTest {
             .thenReturn(Mono.just(validUser));
 
         webTestClient.post()
-            .uri(UserUtils.PATH_API_USERS)
+            .uri(Utils.USER_PATH_API_USERS)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(validUser)
             .exchange()
@@ -69,7 +69,7 @@ class UserRouterTest {
             .thenReturn(Mono.error(new BusinessException("Error de validación en los datos de entrada.")));
 
         webTestClient.post()
-            .uri(UserUtils.PATH_API_USERS)
+            .uri(Utils.USER_PATH_API_USERS)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(invalidUser)
             .exchange()
@@ -85,7 +85,7 @@ class UserRouterTest {
             .thenReturn(Mono.error(new BusinessException("El correo electrónico ya se encuentra registrado")));
 
         webTestClient.post()
-            .uri(UserUtils.PATH_API_USERS)
+            .uri(Utils.USER_PATH_API_USERS)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(validUser)
             .exchange()

@@ -1,7 +1,6 @@
 package co.com.pragma.api.exception;
 
 import co.com.pragma.api.dto.ApiResponse;
-import co.com.pragma.api.loan.util.LoanUtils;
 import co.com.pragma.api.util.Utils;
 import co.com.pragma.model.loan.constants.AppMessages;
 import jakarta.validation.ConstraintViolation;

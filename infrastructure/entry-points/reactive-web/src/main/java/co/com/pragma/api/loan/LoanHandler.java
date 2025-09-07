@@ -3,13 +3,11 @@ package co.com.pragma.api.loan;
 import co.com.pragma.api.dto.ApiResponse;
 import co.com.pragma.api.loan.dto.LoanDTO;
 import co.com.pragma.api.loan.mapper.LoanMapper;
-import co.com.pragma.api.loan.util.LoanUtils;
 import co.com.pragma.api.util.Utils;
 import co.com.pragma.api.util.ValidationUtils;
 import co.com.pragma.model.loan.LoanRequest;
 import co.com.pragma.model.exceptions.BusinessException;
 import co.com.pragma.usecase.loan.LoanUseCase;
-import jdk.jshell.execution.Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,7 +28,7 @@ public class LoanHandler {
             ValidationUtils.validate(dto, validator).switchIfEmpty(
                 loanUseCase.register(LoanMapper.toMain(dto)).flatMap(savedLoanRequest -> {
                     ApiResponse<LoanRequest> response = ApiResponse.<LoanRequest>builder()
-                        .code(Utils.CREATE_CODE).message(LoanUtils.CREATE_MESSAGE)
+                        .code(Utils.CREATE_CODE).message(Utils.LOAN_CREATE_MESSAGE)
                         .data(savedLoanRequest).build();
                     return ServerResponse.status(HttpStatus.CREATED)
                         .contentType(MediaType.APPLICATION_JSON).bodyValue(response);

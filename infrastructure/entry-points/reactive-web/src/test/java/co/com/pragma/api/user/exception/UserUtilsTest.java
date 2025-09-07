@@ -1,6 +1,5 @@
 package co.com.pragma.api.user.exception;
 
-import co.com.pragma.api.user.util.UserUtils;
 import co.com.pragma.api.util.Utils;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +10,7 @@ class UserUtilsTest {
     @Test
     void shouldHaveCorrectCreateConstants() {
         assertThat(Utils.CREATE_CODE).isEqualTo("201.01");
-        assertThat(UserUtils.CREATE_MESSAGE).isEqualTo("Usuario registrado exitosamente");
+        assertThat(Utils.USER_CREATE_MESSAGE).isEqualTo("Usuario registrado exitosamente");
     }
 
     @Test
@@ -24,7 +23,7 @@ class UserUtilsTest {
     @Test
     void shouldHaveCorrectConflictConstants() {
         assertThat(Utils.CONFLICT_CODE).isEqualTo("409.01");
-        assertThat(UserUtils.CONFLICT_MESSAGE).isEqualTo("El usuario ya se encuentra registrado.");
+        assertThat(Utils.USER_CONFLICT_MESSAGE).isEqualTo("El usuario ya se encuentra registrado.");
     }
 
     @Test
