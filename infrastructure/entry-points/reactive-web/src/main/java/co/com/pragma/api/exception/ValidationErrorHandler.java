@@ -1,7 +1,7 @@
 package co.com.pragma.api.exception;
 
 import co.com.pragma.api.dto.ApiResponse;
-import co.com.pragma.api.util.LoanUtils;
+import co.com.pragma.api.loan.util.LoanUtils;
 import co.com.pragma.model.loan.constants.AppMessages;
 import jakarta.validation.ConstraintViolation;
 import org.springframework.http.HttpStatus;
@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ValidationErrorHandler {
-    private ValidationErrorHandler() {
+    ValidationErrorHandler() {
         throw new UnsupportedOperationException(String.valueOf(AppMessages.CLASS_SHOULD_NOT_BE_INSTANTIATED.getMessage()));
     }
 

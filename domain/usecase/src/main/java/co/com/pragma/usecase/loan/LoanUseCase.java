@@ -3,7 +3,7 @@ package co.com.pragma.usecase.loan;
 import co.com.pragma.model.loan.LoanRequest;
 import co.com.pragma.model.loan.constants.AppMessages;
 import co.com.pragma.model.loan.constants.RequestStatus;
-import co.com.pragma.model.loan.exceptions.BusinessException;
+import co.com.pragma.model.exceptions.BusinessException;
 import co.com.pragma.model.loan.gateways.LoanRepository;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;

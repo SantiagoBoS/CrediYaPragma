@@ -1,6 +1,6 @@
 package co.com.pragma.api.util;
 
-import co.com.pragma.api.dto.LoanDTO;
+import co.com.pragma.api.loan.dto.LoanDTO;
 import co.com.pragma.api.exception.ValidationErrorHandler;
 import co.com.pragma.model.loan.constants.AppMessages;
 import co.com.pragma.model.loan.constants.RequestStatus;
