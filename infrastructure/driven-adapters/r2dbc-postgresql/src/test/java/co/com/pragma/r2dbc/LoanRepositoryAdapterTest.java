@@ -1,7 +1,7 @@
 package co.com.pragma.r2dbc;
 
 import co.com.pragma.model.loan.LoanRequest;
-import co.com.pragma.model.loan.constants.AppMessages;
+import co.com.pragma.model.constants.AppMessages;
 import co.com.pragma.model.loan.constants.RequestStatus;
 import co.com.pragma.model.exceptions.BusinessException;
 import co.com.pragma.r2dbc.loan.LoanReactiveRepository;
@@ -46,12 +46,12 @@ public class LoanRepositoryAdapterTest {
         repositoryAdapter = new LoanRepositoryAdapter(repository, mapper, tsOperator);
 
         entity = new LoanEntity();
-        entity.setId("1");
+        entity.setId(Long.valueOf("1"));
         entity.setClientDocument("123456");
         entity.setAmount(10000.0);
         entity.setTermMonths(12);
         entity.setLoanType(AppMessages.VALID_TYPE_LOAN_PERSONAL.getMessage());
-        entity.setStatus(RequestStatus.PENDING_REVIEW.name());
+        entity.setStatus(RequestStatus.PENDING_REVIEW);
         entity.setCreatedAt(LocalDateTime.now());
 
         domain = LoanRequest.builder()

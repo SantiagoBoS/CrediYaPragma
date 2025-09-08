@@ -3,7 +3,8 @@ package co.com.pragma.api.user;
 import co.com.pragma.api.util.Utils;
 import co.com.pragma.model.exceptions.BusinessException;
 import co.com.pragma.model.user.User;
-import co.com.pragma.usecase.registeruser.RegisterUserUseCase;
+import co.com.pragma.model.user.gateways.UserRepository;
+import co.com.pragma.usecase.user.UserUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -25,11 +26,16 @@ class UserRouterTest {
     private WebTestClient webTestClient;
 
     @MockBean
-    private RegisterUserUseCase registerUserUseCase;
+    private UserUseCase userUseCase;
+
+    @MockBean
+    private UserRepository userRepository;
 
     private User validUser;
     private User invalidUser;
     private String CODE = "$.code";
+    private String errorValidationMessage = "Error de validación en los datos de entrada.";
+    private String emailExistsMessage = "El correo electrónico ya se encuentra registrado";
 
     @BeforeEach
     void setup() {
@@ -49,8 +55,7 @@ class UserRouterTest {
 
     @Test
     void shouldRegisterUserSuccessfully() {
-        Mockito.when(registerUserUseCase.registerUser(Mockito.any(User.class)))
-            .thenReturn(Mono.just(validUser));
+        Mockito.when(userUseCase.registerUser(Mockito.any(User.class))).thenReturn(Mono.just(validUser));
 
         webTestClient.post()
             .uri(Utils.USER_PATH_API_USERS)
@@ -65,8 +70,7 @@ class UserRouterTest {
 
     @Test
     void shouldReturnBadRequestWhenValidationFails() {
-        Mockito.when(registerUserUseCase.registerUser(Mockito.any(User.class)))
-            .thenReturn(Mono.error(new BusinessException("Error de validación en los datos de entrada.")));
+        Mockito.when(userUseCase.registerUser(Mockito.any(User.class))).thenReturn(Mono.error(new BusinessException(errorValidationMessage)));
 
         webTestClient.post()
             .uri(Utils.USER_PATH_API_USERS)
@@ -75,14 +79,14 @@ class UserRouterTest {
             .exchange()
             .expectStatus().isBadRequest()
             .expectBody()
-            .jsonPath("$.message").isEqualTo("Error de validación en los datos de entrada.")
+            .jsonPath("$.message").isEqualTo(errorValidationMessage)
             .jsonPath(CODE).isEqualTo("400.01");
     }
 
     @Test
     void shouldReturnConflictWhenEmailAlreadyExists() {
-        Mockito.when(registerUserUseCase.registerUser(Mockito.any(User.class)))
-            .thenReturn(Mono.error(new BusinessException("El correo electrónico ya se encuentra registrado")));
+        Mockito.when(userUseCase.registerUser(Mockito.any(User.class)))
+                .thenReturn(Mono.error(new BusinessException(emailExistsMessage)));
 
         webTestClient.post()
             .uri(Utils.USER_PATH_API_USERS)
@@ -91,7 +95,7 @@ class UserRouterTest {
             .exchange()
             .expectStatus().isBadRequest()
             .expectBody()
-            .jsonPath("$.message").isEqualTo("El correo electrónico ya se encuentra registrado")
+            .jsonPath("$.message").isEqualTo(emailExistsMessage)
             .jsonPath(CODE).isEqualTo("400.02");
     }
 }

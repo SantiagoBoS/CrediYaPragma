@@ -2,7 +2,7 @@ package co.com.pragma.api.exception;
 
 import co.com.pragma.api.dto.ApiResponse;
 import co.com.pragma.api.util.Utils;
-import co.com.pragma.model.loan.constants.AppMessages;
+import co.com.pragma.model.constants.AppMessages;
 import jakarta.validation.ConstraintViolation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

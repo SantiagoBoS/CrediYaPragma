@@ -1,6 +1,6 @@
 package co.com.pragma.model.loan;
 
-import co.com.pragma.model.loan.constants.AppMessages;
+import co.com.pragma.model.constants.AppMessages;
 import co.com.pragma.model.loan.constants.RequestStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

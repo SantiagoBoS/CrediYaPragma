@@ -2,7 +2,7 @@ package co.com.pragma.api.loan.mapper;
 
 import co.com.pragma.api.loan.dto.LoanDTO;
 import co.com.pragma.model.loan.LoanRequest;
-import co.com.pragma.model.loan.constants.AppMessages;
+import co.com.pragma.model.constants.AppMessages;
 import co.com.pragma.model.loan.constants.RequestStatus;
 import org.junit.jupiter.api.Test;
 

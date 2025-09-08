@@ -32,6 +32,18 @@ class UserRepositoryTest {
             }
             return Mono.empty();
         }
+
+        @Override
+        public Mono<User> findByDocumentNumber(String documentNumber) {
+            if (documentNumber.equals("123")) {
+                return Mono.just(User.builder()
+                        .documentNumber("123")
+                        .name("Santiago")
+                        .email("test@example.com")
+                        .build());
+            }
+            return Mono.empty();
+        }
     };
 
     @Test
@@ -57,5 +69,17 @@ class UserRepositoryTest {
     @Test
     void shouldReturnEmptyWhenUserNotFound() {
         StepVerifier.create(repository.findByEmailAndDocumentNumber("prueba@example.com", "999")).verifyComplete();
+    }
+
+    @Test
+    void shouldFindUserByDocumentNumber() {
+        StepVerifier.create(repository.findByDocumentNumber("123"))
+                .expectNextMatches(user -> user.getDocumentNumber().equals("123"))
+                .verifyComplete();
+    }
+
+    @Test
+    void shouldReturnEmptyWhenDocumentNotFound() {
+        StepVerifier.create(repository.findByDocumentNumber("999")).verifyComplete();
     }
 }

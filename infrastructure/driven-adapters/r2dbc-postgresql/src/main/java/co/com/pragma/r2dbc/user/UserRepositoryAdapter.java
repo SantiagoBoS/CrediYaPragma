@@ -1,8 +1,8 @@
 package co.com.pragma.r2dbc.user;
 
+import co.com.pragma.model.constants.AppMessages;
 import co.com.pragma.model.exceptions.BusinessException;
 import co.com.pragma.model.user.User;
-import co.com.pragma.model.user.constants.AppMessages;
 import co.com.pragma.model.user.gateways.UserRepository;
 import co.com.pragma.r2dbc.helper.ReactiveAdapterOperations;
 import co.com.pragma.r2dbc.user.entity.UserEntity;
@@ -40,5 +40,13 @@ public class UserRepositoryAdapter extends ReactiveAdapterOperations<User, UserE
     @Override
     public Mono<User> findByEmailAndDocumentNumber(String email, String documentNumber) {
         return repository.findByEmailAndDocumentNumber(email, documentNumber).map(this::toEntity).as(tsOperator::transactional);
+    }
+
+    @Override
+    public Mono<User> findByDocumentNumber(String documentNumber) {
+        return repository.findByDocumentNumber(documentNumber)
+                .map(this::toEntity)
+                .as(tsOperator::transactional)
+                .switchIfEmpty(Mono.error(new BusinessException(AppMessages.USER_NOT_FOUND.getMessage())));
     }
 }

@@ -1,8 +1,8 @@
 package co.com.pragma.r2dbc;
 
+import co.com.pragma.model.constants.AppMessages;
 import co.com.pragma.model.exceptions.BusinessException;
 import co.com.pragma.model.user.User;
-import co.com.pragma.model.user.constants.AppMessages;
 import co.com.pragma.r2dbc.user.UserReactiveRepository;
 import co.com.pragma.r2dbc.user.UserRepositoryAdapter;
 import co.com.pragma.r2dbc.user.entity.UserEntity;
@@ -116,5 +116,22 @@ class UserRepositoryAdapterTest {
         when(repository.findByEmailAndDocumentNumber("test@test.com", "123456789")).thenReturn(Mono.empty());
         Mono<User> result = repositoryAdapter.findByEmailAndDocumentNumber("test@test.com", "123456789");
         StepVerifier.create(result).verifyComplete();
+    }
+
+    @Test
+    void mustFindByDocumentNumberSuccessfully() {
+        when(repository.findByDocumentNumber("123456789")).thenReturn(Mono.just(userEntity));
+        when(mapper.map(userEntity, User.class)).thenReturn(user);
+        Mono<User> result = repositoryAdapter.findByDocumentNumber("123456789");
+        StepVerifier.create(result).expectNext(user).verifyComplete();
+    }
+
+    @Test
+    void mustThrowBusinessExceptionWhenUserNotFoundByDocumentNumber() {
+        when(repository.findByDocumentNumber("999999")).thenReturn(Mono.empty());
+        Mono<User> result = repositoryAdapter.findByDocumentNumber("999999");
+        StepVerifier.create(result).expectErrorSatisfies(e -> {assert e instanceof BusinessException;
+                org.junit.jupiter.api.Assertions.assertEquals(AppMessages.USER_NOT_FOUND.getMessage(), e.getMessage());
+            }).verify();
     }
 }

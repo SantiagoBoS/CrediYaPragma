@@ -33,6 +33,7 @@ public class Utils {
     public static final String USER_EXAMPLE_INTERNAL_ERROR = "{ \"code\": \"500.01\", \"message\": \"Error interno del servidor\" }";
 
     public static final String USER_PATH_API_USERS = "/api/v1/usuarios";
+    public static final String USER_PATH_API_USERS_BY_DOCUMENT = USER_PATH_API_USERS + "/{documentNumber}";
     public static final String USER_PATH_OPERATION_ID = "registerUser";
     public static final String USER_PATH_OPERATION_SUMMARY = "Registrar un nuevo usuario";
     public static final String USER_PATH_OPERATION_DESCRIPTION = "Permite registrar un nuevo solicitante proporcionando sus datos personales";

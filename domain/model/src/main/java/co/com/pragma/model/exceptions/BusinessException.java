@@ -1,6 +1,6 @@
 package co.com.pragma.model.exceptions;
 
-import co.com.pragma.model.loan.constants.AppMessages;
+import co.com.pragma.model.constants.AppMessages;
 
 public class BusinessException  extends RuntimeException {
     public BusinessException(String message) {

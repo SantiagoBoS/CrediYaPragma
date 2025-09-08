@@ -1,14 +1,14 @@
-package co.com.pragma.usecase.registeruser;
+package co.com.pragma.usecase.user;
 
+import co.com.pragma.model.constants.AppMessages;
 import co.com.pragma.model.exceptions.BusinessException;
 import co.com.pragma.model.user.User;
-import co.com.pragma.model.user.constants.AppMessages;
 import co.com.pragma.model.user.gateways.UserRepository;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
-public class RegisterUserUseCase {
+public class UserUseCase {
     private final UserRepository userRepository;
     public Mono<User> registerUser(User user) {
         return userRepository.findByEmailAndDocumentNumber(user.getEmail(), user.getDocumentNumber())

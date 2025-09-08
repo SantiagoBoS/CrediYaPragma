@@ -1,15 +1,15 @@
 package co.com.pragma.api.user.mapper;
 
-import co.com.pragma.api.user.dto.UserRequestDTO;
+import co.com.pragma.api.user.dto.UserDTO;
+import co.com.pragma.model.constants.AppMessages;
 import co.com.pragma.model.user.User;
-import co.com.pragma.model.user.constants.AppMessages;
 
 public class UserMapper {
     private UserMapper() {
         throw new UnsupportedOperationException(String.valueOf(AppMessages.CLASS_SHOULD_NOT_BE_INSTANTIATED.getMessage()));
     }
 
-    public static User toEntity(UserRequestDTO userDto) {
+    public static User toEntity(UserDTO userDto) {
         if (userDto == null) {
             return null;
         }
@@ -26,11 +26,11 @@ public class UserMapper {
                 .build();
     }
 
-    public static UserRequestDTO toDto(User user) {
+    public static UserDTO toDto(User user) {
         if (user == null) {
             return null;
         }
-        return UserRequestDTO.builder()
+        return UserDTO.builder()
                 .documentNumber(user.getDocumentNumber())
                 .name(user.getName())
                 .lastName(user.getLastName())

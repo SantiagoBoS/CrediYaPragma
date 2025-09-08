@@ -1,5 +1,6 @@
 package co.com.pragma.r2dbc.loan.entity;
 
+import co.com.pragma.model.loan.constants.RequestStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @Table("loan_requests")
 public class LoanEntity {
     @Id
-    private String id;
+    private Long id;
 
     @Column(name = "client_document")
     private String clientDocument;
@@ -30,8 +31,8 @@ public class LoanEntity {
     private String loanType;
 
     @Column(name = "status")
-    private String status;
+    private RequestStatus status = RequestStatus.PENDING_REVIEW;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

@@ -1,15 +1,15 @@
 package co.com.pragma.config;
 
 import co.com.pragma.model.user.gateways.UserRepository;
-import co.com.pragma.usecase.registeruser.RegisterUserUseCase;
+import co.com.pragma.usecase.user.UserUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class UseCasesConfig {
+public class UserUseCaseConfig {
 
     @Bean
-    public RegisterUserUseCase registerUserUseCase(UserRepository userRepository) {
-        return new RegisterUserUseCase(userRepository);
+    public UserUseCase userUseCase(UserRepository userRepository) {
+        return new UserUseCase(userRepository);
     }
 }

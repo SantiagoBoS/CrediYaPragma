@@ -3,7 +3,7 @@ package co.com.pragma.api.loan;
 import co.com.pragma.api.loan.dto.LoanDTO;
 import co.com.pragma.api.util.Utils;
 import co.com.pragma.model.loan.LoanRequest;
-import co.com.pragma.model.loan.constants.AppMessages;
+import co.com.pragma.model.constants.AppMessages;
 import co.com.pragma.model.loan.constants.RequestStatus;
 import co.com.pragma.model.exceptions.BusinessException;
 import co.com.pragma.usecase.loan.LoanUseCase;
@@ -97,5 +97,23 @@ class LoanHandlerTest {
                 .exchange().expectStatus().isBadRequest().expectBody()
                 .jsonPath(TEST_HANDLER_CODE).isEqualTo(Utils.VALIDATION_CODE_GENERAL)
                 .jsonPath(TEST_HANDLER_MESSAGE).isEqualTo(AppMessages.APPLICATION_IN_PROCESS.getMessage());
+    }
+
+    @Test
+    void shouldReturnAllLoanRequests() {
+        when(loanUseCase.getAllLoanRequests()).thenReturn(Mono.just(loanTest).flux());
+        LoanHandler handler = new LoanHandler(loanUseCase, validator);
+        RouterFunction<ServerResponse> routerFunction = RouterFunctions.route().GET(Utils.LOAN_ROUTER_BASE_PATH, handler::getAllLoanRequests).build();
+        WebTestClient client = WebTestClient.bindToRouterFunction(routerFunction).build();
+
+        client.get()
+                .uri(Utils.LOAN_ROUTER_BASE_PATH)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$[0].clientDocument").isEqualTo("12345")
+                .jsonPath("$[0].status").isEqualTo(RequestStatus.PENDING_REVIEW.name());
+
+        verify(loanUseCase, times(1)).getAllLoanRequests();
     }
 }

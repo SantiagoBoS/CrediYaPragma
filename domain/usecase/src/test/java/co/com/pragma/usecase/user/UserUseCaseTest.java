@@ -1,4 +1,4 @@
-package co.com.pragma.usecase.registeruser;
+package co.com.pragma.usecase.user;
 
 import co.com.pragma.model.exceptions.BusinessException;
 import co.com.pragma.model.user.User;
@@ -14,15 +14,15 @@ import java.time.LocalDate;
 
 import static org.mockito.Mockito.*;
 
-public class RegisterUserUseCaseTest {
+public class UserUseCaseTest {
 
     private UserRepository userRepository;
-    private RegisterUserUseCase registerUserUseCase;
+    private UserUseCase userUseCase;
 
     @BeforeEach
     void setUp() {
         userRepository = Mockito.mock(UserRepository.class);
-        registerUserUseCase = new RegisterUserUseCase(userRepository);
+        userUseCase = new UserUseCase(userRepository);
     }
 
     private User buildUser() {
@@ -43,7 +43,7 @@ public class RegisterUserUseCaseTest {
         User user = buildUser();
         when(userRepository.findByEmailAndDocumentNumber(user.getEmail(), user.getDocumentNumber())).thenReturn(Mono.empty());
         when(userRepository.save(user)).thenReturn(Mono.just(user));
-        StepVerifier.create(registerUserUseCase.registerUser(user)).expectNext(user).verifyComplete();
+        StepVerifier.create(userUseCase.registerUser(user)).expectNext(user).verifyComplete();
         verify(userRepository).findByEmailAndDocumentNumber(user.getEmail(), user.getDocumentNumber());
         verify(userRepository).save(user);
     }
@@ -52,7 +52,7 @@ public class RegisterUserUseCaseTest {
     void shouldThrowBusinessExceptionWhenUserAlreadyExistsByEmailOrDocument() {
         User user = buildUser();
         when(userRepository.findByEmailAndDocumentNumber(user.getEmail(), user.getDocumentNumber())).thenReturn(Mono.just(user));
-        StepVerifier.create(registerUserUseCase.registerUser(user)).expectError(BusinessException.class).verify();
+        StepVerifier.create(userUseCase.registerUser(user)).expectError(BusinessException.class).verify();
         verify(userRepository).findByEmailAndDocumentNumber(user.getEmail(), user.getDocumentNumber());
         verify(userRepository, never()).save(any(User.class));
     }
@@ -62,7 +62,7 @@ public class RegisterUserUseCaseTest {
         User user = buildUser();
         when(userRepository.findByEmailAndDocumentNumber(user.getEmail(), user.getDocumentNumber())).thenReturn(Mono.empty());
         when(userRepository.save(user)).thenReturn(Mono.error(new RuntimeException("DB error")));
-        StepVerifier.create(registerUserUseCase.registerUser(user)).expectErrorMatches(throwable -> throwable instanceof RuntimeException && throwable.getMessage().equals("DB error")).verify();
+        StepVerifier.create(userUseCase.registerUser(user)).expectErrorMatches(throwable -> throwable instanceof RuntimeException && throwable.getMessage().equals("DB error")).verify();
         verify(userRepository).findByEmailAndDocumentNumber(user.getEmail(), user.getDocumentNumber());
         verify(userRepository).save(user);
     }

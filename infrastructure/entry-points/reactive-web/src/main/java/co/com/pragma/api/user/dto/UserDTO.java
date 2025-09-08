@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserRequestDTO {
+public class UserDTO {
     @NotBlank(message = "El documento no puede estar vacío")
     private String documentNumber;
 
