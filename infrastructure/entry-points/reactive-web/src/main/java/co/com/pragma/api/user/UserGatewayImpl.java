@@ -1,5 +1,7 @@
 package co.com.pragma.api.user;
 
+import co.com.pragma.api.user.config.UserServiceProperties;
+import co.com.pragma.model.constants.ApiPaths;
 import co.com.pragma.model.constants.AppMessages;
 import co.com.pragma.model.exceptions.BusinessException;
 import co.com.pragma.model.loan.gateways.UserGateway;
@@ -11,9 +13,8 @@ import reactor.core.publisher.Mono;
 public class UserGatewayImpl implements UserGateway {
     private final WebClient webClient;
 
-    public UserGatewayImpl(WebClient.Builder builder) {
-        //QUITARLA QUEMADA
-        this.webClient = builder.baseUrl("http://localhost:8081/api/v1/usuarios").build();
+    public UserGatewayImpl(WebClient.Builder builder, UserServiceProperties userServiceProperties) {
+        this.webClient = builder.baseUrl(userServiceProperties.getBaseUrl() + ApiPaths.USER_BASE).build();
     }
 
     @Override
