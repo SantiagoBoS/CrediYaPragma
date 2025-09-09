@@ -3,9 +3,9 @@ package co.com.pragma.api.user;
 import co.com.pragma.api.dto.ApiResponse;
 import co.com.pragma.api.user.dto.UserDTO;
 import co.com.pragma.api.user.mapper.UserMapper;
-import co.com.pragma.api.util.Utils;
 import co.com.pragma.api.util.ValidationUtils;
 import co.com.pragma.model.constants.AppMessages;
+import co.com.pragma.model.constants.ErrorCode;
 import co.com.pragma.model.exceptions.BusinessException;
 import co.com.pragma.model.user.User;
 import co.com.pragma.model.user.gateways.UserRepository;
@@ -33,14 +33,14 @@ public class UserHandler {
                 ValidationUtils.validate(dto, validator).switchIfEmpty(
                         registerUserUseCase.registerUser(UserMapper.toEntity(dto)).flatMap(savedUser -> {
                             ApiResponse<User> response = ApiResponse.<User>builder()
-                                    .code(Utils.CREATE_CODE).message(Utils.USER_CREATE_MESSAGE)
+                                    .code(ErrorCode.USER_CREATED.getBusinessCode()).message(AppMessages.USER_CREATED.getMessage())
                                     .data(savedUser).build();
                             return ServerResponse.status(HttpStatus.CREATED)
                                     .contentType(MediaType.APPLICATION_JSON).bodyValue(response);
                         })
                 )
         ).onErrorResume(BusinessException.class, ex -> {
-            ApiResponse<Object> response = ApiResponse.builder().code(Utils.VALIDATION_CODE_GENERAL).message(ex.getMessage()).build();
+            ApiResponse<Object> response = ApiResponse.builder().code(ErrorCode.USER_GENERAL_VALIDATION_ERROR.getBusinessCode()).message(ex.getMessage()).build();
             return ServerResponse.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).bodyValue(response);
         });
     }
@@ -50,7 +50,7 @@ public class UserHandler {
         return userRepository.findByDocumentNumber(documentNumber)
             .timeout(Duration.ofSeconds(3))
             .flatMap(user -> {ApiResponse<User> response = ApiResponse.<User>builder()
-                    .code(Utils.SUCCESS_CODE).message(AppMessages.USER_FOUND.getMessage())
+                    .code(ErrorCode.USER_SUCCESS.getBusinessCode()).message(AppMessages.USER_FOUND.getMessage())
                     .data(user).build();
                 return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(response);
             }).switchIfEmpty(ServerResponse.notFound().build());

@@ -1,7 +1,8 @@
 package co.com.pragma.api.loan;
 
 import co.com.pragma.api.loan.dto.LoanDTO;
-import co.com.pragma.api.util.Utils;
+import co.com.pragma.model.constants.ApiPaths;
+import co.com.pragma.model.constants.ErrorCode;
 import co.com.pragma.model.loan.LoanRequest;
 import co.com.pragma.model.constants.AppMessages;
 import co.com.pragma.model.loan.constants.RequestStatus;
@@ -39,7 +40,7 @@ class LoanHandlerTest {
         loanUseCase = Mockito.mock(LoanUseCase.class);
         validator = Validation.buildDefaultValidatorFactory().getValidator();
         LoanHandler handler = new LoanHandler(loanUseCase, validator);
-        RouterFunction<ServerResponse> routerFunction = RouterFunctions.route().POST(Utils.LOAN_ROUTER_BASE_PATH, handler::createLoan).build();
+        RouterFunction<ServerResponse> routerFunction = RouterFunctions.route().POST(ApiPaths.LOAN_BASE, handler::createLoan).build();
         webTestClient = WebTestClient.bindToRouterFunction(routerFunction).build();
 
         dto = LoanDTO.builder()
@@ -63,12 +64,12 @@ class LoanHandlerTest {
     void shouldRegisterLoanRequestSuccessfully() {
         when(loanUseCase.register(any(LoanRequest.class))).thenReturn(Mono.just(loanTest));
         webTestClient.post()
-                .uri(Utils.LOAN_ROUTER_BASE_PATH)
+                .uri(ApiPaths.LOAN_BASE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
                 .exchange().expectStatus().isCreated().expectBody()
-                .jsonPath(TEST_HANDLER_CODE).isEqualTo(Utils.CREATE_CODE)
-                .jsonPath(TEST_HANDLER_MESSAGE).isEqualTo(Utils.LOAN_CREATE_MESSAGE)
+                .jsonPath(TEST_HANDLER_CODE).isEqualTo(ErrorCode.LOAN_CREATED.getBusinessCode())
+                .jsonPath(TEST_HANDLER_MESSAGE).isEqualTo(AppMessages.LOAN_CREATED.getMessage())
                 .jsonPath("$.data.clientDocument").isEqualTo("12345")
                 .jsonPath("$.data.status").isEqualTo(RequestStatus.PENDING_REVIEW.name());
         verify(loanUseCase, times(1)).register(any(LoanRequest.class));
@@ -79,35 +80,35 @@ class LoanHandlerTest {
         LoanDTO invalidDto = new LoanDTO();
         when(loanUseCase.register(any(LoanRequest.class))).thenReturn(Mono.empty());
         webTestClient.post()
-                .uri(Utils.LOAN_ROUTER_BASE_PATH)
+                .uri(ApiPaths.LOAN_BASE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(invalidDto)
                 .exchange().expectStatus().isBadRequest().expectBody()
-                .jsonPath(TEST_HANDLER_CODE).isEqualTo(Utils.VALIDATION_CODE)
-                .jsonPath(TEST_HANDLER_MESSAGE).isEqualTo(Utils.VALIDATION_MESSAGE);
+                .jsonPath(TEST_HANDLER_CODE).isEqualTo(ErrorCode.VALIDATION_ERROR.getBusinessCode())
+                .jsonPath(TEST_HANDLER_MESSAGE).isEqualTo(AppMessages.VALIDATION_MESSAGE.getMessage());
     }
 
     @Test
     void shouldHandleBusinessException() {
-        when(loanUseCase.register(any(LoanRequest.class))).thenReturn(Mono.error(new BusinessException(AppMessages.APPLICATION_IN_PROCESS.getMessage())));
+        when(loanUseCase.register(any(LoanRequest.class))).thenReturn(Mono.error(new BusinessException(AppMessages.LOAN_APPLICATION_IN_PROCESS.getMessage())));
         webTestClient.post()
-                .uri(Utils.LOAN_ROUTER_BASE_PATH)
+                .uri(ApiPaths.LOAN_BASE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
                 .exchange().expectStatus().isBadRequest().expectBody()
-                .jsonPath(TEST_HANDLER_CODE).isEqualTo(Utils.VALIDATION_CODE_GENERAL)
-                .jsonPath(TEST_HANDLER_MESSAGE).isEqualTo(AppMessages.APPLICATION_IN_PROCESS.getMessage());
+                .jsonPath(TEST_HANDLER_CODE).isEqualTo(ErrorCode.LOAN_GENERAL_VALIDATION_ERROR.getBusinessCode())
+                .jsonPath(TEST_HANDLER_MESSAGE).isEqualTo(AppMessages.LOAN_APPLICATION_IN_PROCESS.getMessage());
     }
 
     @Test
     void shouldReturnAllLoanRequests() {
         when(loanUseCase.getAllLoanRequests()).thenReturn(Mono.just(loanTest).flux());
         LoanHandler handler = new LoanHandler(loanUseCase, validator);
-        RouterFunction<ServerResponse> routerFunction = RouterFunctions.route().GET(Utils.LOAN_ROUTER_BASE_PATH, handler::getAllLoanRequests).build();
+        RouterFunction<ServerResponse> routerFunction = RouterFunctions.route().GET(ApiPaths.LOAN_BASE, handler::getAllLoanRequests).build();
         WebTestClient client = WebTestClient.bindToRouterFunction(routerFunction).build();
 
         client.get()
-                .uri(Utils.LOAN_ROUTER_BASE_PATH)
+                .uri(ApiPaths.LOAN_BASE)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()

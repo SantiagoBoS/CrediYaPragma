@@ -70,7 +70,7 @@ public class LoanUseCaseTest {
         StepVerifier.create(result)
                 .expectErrorMatches(ex ->
                         ex instanceof BusinessException &&
-                                ex.getMessage().contains(AppMessages.APPLICATION_IN_PROCESS.getMessage()))
+                                ex.getMessage().contains(AppMessages.LOAN_APPLICATION_IN_PROCESS.getMessage()))
                 .verify();
 
         verify(loanRepository, never()).save(any());
@@ -80,12 +80,12 @@ public class LoanUseCaseTest {
     void shouldThrowDuplicateExceptionFromRepository() {
         when(userGateway.existsByDocument("12345")).thenReturn(Mono.just(true));
         when(loanRepository.findByClientDocumentAndStatus(any(), any())).thenReturn(Mono.empty());
-        when(loanRepository.save(any())).thenReturn(Mono.error(new BusinessException(AppMessages.DUPLICATE_APPLICATION.getMessage())));
+        when(loanRepository.save(any())).thenReturn(Mono.error(new BusinessException(AppMessages.LOAN_DUPLICATE_APPLICATION.getMessage())));
         Mono<LoanRequest> result = loanUseCase.register(loanRequest);
         StepVerifier.create(result)
                 .expectErrorMatches(ex ->
                         ex instanceof BusinessException &&
-                                ex.getMessage().contains(AppMessages.DUPLICATE_APPLICATION.getMessage()))
+                                ex.getMessage().contains(AppMessages.LOAN_DUPLICATE_APPLICATION.getMessage()))
                 .verify();
     }
 
@@ -93,12 +93,12 @@ public class LoanUseCaseTest {
     void shouldThrowGenericBusinessExceptionOnUnexpectedError() {
         when(userGateway.existsByDocument("12345")).thenReturn(Mono.just(true));
         when(loanRepository.findByClientDocumentAndStatus(any(), any())).thenReturn(Mono.empty());
-        when(loanRepository.save(any())).thenReturn(Mono.error(new BusinessException(AppMessages.INTERNAL_ERROR.getMessage())));
+        when(loanRepository.save(any())).thenReturn(Mono.error(new BusinessException(AppMessages.LOAN_INTERNAL_ERROR.getMessage())));
         Mono<LoanRequest> result = loanUseCase.register(loanRequest);
         StepVerifier.create(result)
                 .expectErrorMatches(ex ->
                         ex instanceof BusinessException &&
-                                ex.getMessage().contains(AppMessages.INTERNAL_ERROR.getMessage()))
+                                ex.getMessage().contains(AppMessages.LOAN_INTERNAL_ERROR.getMessage()))
                 .verify();
     }
 

@@ -36,9 +36,9 @@ public class LoanRepositoryAdapter extends ReactiveAdapterOperations<LoanRequest
             .as(tsOperator::transactional)
             .onErrorResume(throwable -> {
                 if (throwable.getMessage() != null && throwable.getMessage().contains("duplicate")) {
-                    return Mono.error(new BusinessException(AppMessages.DUPLICATE_APPLICATION));
+                    return Mono.error(new BusinessException(AppMessages.LOAN_DUPLICATE_APPLICATION));
                 }
-                return Mono.error(new BusinessException(AppMessages.INTERNAL_ERROR));
+                return Mono.error(new BusinessException(AppMessages.LOAN_INTERNAL_ERROR));
             });
     }
 

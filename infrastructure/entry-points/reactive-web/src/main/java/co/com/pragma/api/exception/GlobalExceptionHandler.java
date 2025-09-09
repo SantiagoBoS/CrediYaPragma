@@ -2,7 +2,9 @@ package co.com.pragma.api.exception;
 
 import co.com.pragma.api.dto.ApiResponse;
 import co.com.pragma.api.dto.FieldErrorDTO;
-import co.com.pragma.api.util.Utils;
+import co.com.pragma.model.constants.ApiPaths;
+import co.com.pragma.model.constants.AppMessages;
+import co.com.pragma.model.constants.ErrorCode;
 import co.com.pragma.model.exceptions.BusinessException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,8 +42,8 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
                     .toList();
 
             response = ApiResponse.builder()
-                    .code(Utils.VALIDATION_CODE)
-                    .message(Utils.VALIDATION_MESSAGE)
+                    .code(ErrorCode.VALIDATION_ERROR.getBusinessCode())
+                    .message(AppMessages.VALIDATION_MESSAGE.getMessage())
                     .errors(errors)
                     .build();
             status = HttpStatus.BAD_REQUEST;
@@ -52,8 +54,8 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
                     .toList();
 
             response = ApiResponse.builder()
-                    .code(Utils.VALIDATION_CODE_GENERAL)
-                    .message(Utils.VALIDATION_MESSAGE)
+                    .code(ErrorCode.GENERAL_VALIDATION_ERROR.getBusinessCode())
+                    .message(AppMessages.VALIDATION_MESSAGE.getMessage())
                     .errors(errors)
                     .build();
             status = HttpStatus.BAD_REQUEST;
@@ -61,15 +63,15 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
         } else if (ex instanceof BusinessException be) {
             String message = be.getMessage() != null ? be.getMessage() : determineModuleMessage(exchange);
             response = ApiResponse.builder()
-                    .code(Utils.CONFLICT_CODE)
+                    .code(ErrorCode.CONFLICT_CODE.getBusinessCode())
                     .message(message)
                     .build();
             status = HttpStatus.CONFLICT;
 
         } else {
             response = ApiResponse.builder()
-                    .code(Utils.INTERNAL_ERROR_CODE)
-                    .message(Utils.INTERNAL_ERROR_MESSAGE)
+                    .code(ErrorCode.INTERNAL_SERVER_ERROR.getBusinessCode())
+                    .message(AppMessages.INTERNAL_ERROR_MESSAGE.getMessage())
                     .build();
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
@@ -89,12 +91,12 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
 
     private String determineModuleMessage(ServerWebExchange exchange) {
         String path = exchange.getRequest().getPath().toString();
-        if (path.startsWith(Utils.LOAN_ROUTER_BASE_PATH)) {
-            return Utils.LOAN_CONFLICT_MESSAGE;
-        } else if (path.startsWith(Utils.USER_PATH_API_USERS)) {
-            return Utils.USER_CONFLICT_MESSAGE;
+        if (path.startsWith(ApiPaths.LOAN_BASE)) {
+            return AppMessages.LOAN_ALREADY_EXISTS.getMessage();
+        } else if (path.startsWith(ApiPaths.USER_BASE)) {
+            return AppMessages.USER_ALREADY_EXISTS.getMessage();
         }
 
-        return Utils.VALIDATION_ERROR;
+        return AppMessages.VALIDATION_ERROR.getMessage();
     }
 }

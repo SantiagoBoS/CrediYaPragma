@@ -106,7 +106,7 @@ public class LoanRepositoryAdapterTest {
         Mono<LoanRequest> result = repositoryAdapter.save(domain);
         StepVerifier.create(result)
                 .expectErrorMatches(ex -> ex instanceof BusinessException &&
-                        ex.getMessage().equals(AppMessages.DUPLICATE_APPLICATION.getMessage()))
+                        ex.getMessage().equals(AppMessages.LOAN_DUPLICATE_APPLICATION.getMessage()))
                 .verify();
     }
 
@@ -116,7 +116,7 @@ public class LoanRepositoryAdapterTest {
         Mono<LoanRequest> result = repositoryAdapter.save(domain);
         StepVerifier.create(result)
                 .expectErrorMatches(ex -> ex instanceof BusinessException &&
-                        ex.getMessage().equals(AppMessages.INTERNAL_ERROR.getMessage()))
+                        ex.getMessage().equals(AppMessages.LOAN_INTERNAL_ERROR.getMessage()))
                 .verify();
     }
 }

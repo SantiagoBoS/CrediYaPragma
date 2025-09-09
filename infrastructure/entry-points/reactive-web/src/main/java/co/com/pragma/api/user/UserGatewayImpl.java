@@ -12,6 +12,7 @@ public class UserGatewayImpl implements UserGateway {
     private final WebClient webClient;
 
     public UserGatewayImpl(WebClient.Builder builder) {
+        //QUITARLA QUEMADA
         this.webClient = builder.baseUrl("http://localhost:8081/api/v1/usuarios").build();
     }
 

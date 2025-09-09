@@ -39,7 +39,7 @@ class GlobalExceptionHandlerTest {
         StepVerifier.create(handler.handle(exchange, ex)).verifyComplete();
         assertThat(exchange.getResponse().getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         String json = exchange.getResponse().getBodyAsString().block();
-        assertThat(json).contains("\"code\":\"400.01\"");
+        assertThat(json).contains("\"code\":\"CO400.01\"");
         assertThat(json).contains("\"message\"");
         assertThat(json).contains("\"errors\"");
     }
@@ -51,7 +51,7 @@ class GlobalExceptionHandlerTest {
         StepVerifier.create(handler.handle(exchange, ex)).verifyComplete();
         assertThat(exchange.getResponse().getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         String json = exchange.getResponse().getBodyAsString().block();
-        assertThat(json).contains("\"code\":\"409.01\"");
+        assertThat(json).contains("\"code\":\"CO409.01\"");
         assertThat(json).contains("\"message\":\"Mensaje específico\"");
     }
 
@@ -62,7 +62,7 @@ class GlobalExceptionHandlerTest {
         StepVerifier.create(handler.handle(exchange, ex)).verifyComplete();
         assertThat(exchange.getResponse().getStatusCode()).isEqualTo(org.springframework.http.HttpStatus.CONFLICT);
         String json = exchange.getResponse().getBodyAsString().block();
-        assertThat(json).contains("\"code\":\"409.01\"");
+        assertThat(json).contains("\"code\":\"CO409.01\"");
         assertThat(json).contains("\"message\":\"Errores de validación\"");
     }
 
@@ -73,7 +73,7 @@ class GlobalExceptionHandlerTest {
         StepVerifier.create(handler.handle(exchange, ex)).verifyComplete();
         assertThat(exchange.getResponse().getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
         String json = exchange.getResponse().getBodyAsString().block();
-        assertThat(json).contains("\"code\":\"500.01\"");
+        assertThat(json).contains("\"code\":\"CO500.01\"");
         assertThat(json).contains("\"message\"");
     }
 
@@ -108,7 +108,7 @@ class GlobalExceptionHandlerTest {
         StepVerifier.create(handler.handle(exchange, ex)).verifyComplete();
         assertThat(exchange.getResponse().getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         String json = exchange.getResponse().getBodyAsString().block();
-        assertThat(json).contains("\"code\":\"400.02\"");
+        assertThat(json).contains("\"code\":\"CO400.02\"");
         assertThat(json).contains("\"message\"");
         assertThat(json).contains("\"errors\"");
     }

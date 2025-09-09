@@ -106,7 +106,7 @@ class UserRepositoryAdapterTest {
         StepVerifier.create(repositoryAdapter.save(user))
                 .expectErrorSatisfies(e -> {
                     assert e instanceof BusinessException;
-                    org.junit.jupiter.api.Assertions.assertEquals(AppMessages.ERROR_SAVING_USER.getMessage(), e.getMessage());
+                    org.junit.jupiter.api.Assertions.assertEquals(AppMessages.USER_ERROR_SAVING.getMessage(), e.getMessage());
                 })
                 .verify();
     }

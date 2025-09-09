@@ -1,6 +1,7 @@
 package co.com.pragma.api.user;
 
-import co.com.pragma.api.util.Utils;
+import co.com.pragma.model.constants.ApiPaths;
+import co.com.pragma.model.constants.ErrorCode;
 import co.com.pragma.model.exceptions.BusinessException;
 import co.com.pragma.model.user.User;
 import co.com.pragma.model.user.gateways.UserRepository;
@@ -58,14 +59,14 @@ class UserRouterTest {
         Mockito.when(userUseCase.registerUser(Mockito.any(User.class))).thenReturn(Mono.just(validUser));
 
         webTestClient.post()
-            .uri(Utils.USER_PATH_API_USERS)
+            .uri(ApiPaths.USER_BASE)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(validUser)
             .exchange()
             .expectStatus().isCreated()
             .expectBody()
             .jsonPath("$.data.email").isEqualTo("santiago@example.com")
-            .jsonPath(CODE).isEqualTo("201.01");
+            .jsonPath(CODE).isEqualTo(ErrorCode.USER_CREATED.getBusinessCode());
     }
 
     @Test
@@ -73,14 +74,14 @@ class UserRouterTest {
         Mockito.when(userUseCase.registerUser(Mockito.any(User.class))).thenReturn(Mono.error(new BusinessException(errorValidationMessage)));
 
         webTestClient.post()
-            .uri(Utils.USER_PATH_API_USERS)
+            .uri(ApiPaths.USER_BASE)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(invalidUser)
             .exchange()
             .expectStatus().isBadRequest()
             .expectBody()
             .jsonPath("$.message").isEqualTo(errorValidationMessage)
-            .jsonPath(CODE).isEqualTo("400.01");
+            .jsonPath(CODE).isEqualTo(ErrorCode.VALIDATION_ERROR.getBusinessCode());
     }
 
     @Test
@@ -89,13 +90,13 @@ class UserRouterTest {
                 .thenReturn(Mono.error(new BusinessException(emailExistsMessage)));
 
         webTestClient.post()
-            .uri(Utils.USER_PATH_API_USERS)
+            .uri(ApiPaths.USER_BASE)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(validUser)
             .exchange()
             .expectStatus().isBadRequest()
             .expectBody()
             .jsonPath("$.message").isEqualTo(emailExistsMessage)
-            .jsonPath(CODE).isEqualTo("400.02");
+            .jsonPath(CODE).isEqualTo(ErrorCode.USER_GENERAL_VALIDATION_ERROR.getBusinessCode());
     }
 }

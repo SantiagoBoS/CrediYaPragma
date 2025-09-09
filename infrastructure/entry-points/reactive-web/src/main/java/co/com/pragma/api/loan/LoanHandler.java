@@ -3,8 +3,10 @@ package co.com.pragma.api.loan;
 import co.com.pragma.api.dto.ApiResponse;
 import co.com.pragma.api.loan.dto.LoanDTO;
 import co.com.pragma.api.loan.mapper.LoanMapper;
-import co.com.pragma.api.util.Utils;
+import co.com.pragma.model.constants.AppMessages;
+import co.com.pragma.model.constants.SwaggerConstants;
 import co.com.pragma.api.util.ValidationUtils;
+import co.com.pragma.model.constants.ErrorCode;
 import co.com.pragma.model.loan.LoanRequest;
 import co.com.pragma.model.exceptions.BusinessException;
 import co.com.pragma.usecase.loan.LoanUseCase;
@@ -28,7 +30,7 @@ public class LoanHandler {
             ValidationUtils.validate(dto, validator).switchIfEmpty(
                 loanUseCase.register(LoanMapper.toMain(dto)).flatMap(savedLoanRequest -> {
                     ApiResponse<LoanRequest> response = ApiResponse.<LoanRequest>builder()
-                        .code(Utils.CREATE_CODE).message(Utils.LOAN_CREATE_MESSAGE)
+                        .code(ErrorCode.LOAN_CREATED.getBusinessCode()).message(AppMessages.LOAN_CREATED.getMessage())
                         .data(savedLoanRequest).build();
                     return ServerResponse.status(HttpStatus.CREATED)
                         .contentType(MediaType.APPLICATION_JSON).bodyValue(response);
@@ -36,7 +38,7 @@ public class LoanHandler {
             )
         ).onErrorResume(BusinessException.class, ex -> {
             ApiResponse<Object> response = ApiResponse.builder()
-                .code(Utils.VALIDATION_CODE_GENERAL).message(ex.getMessage()).build();
+                .code(ErrorCode.LOAN_GENERAL_VALIDATION_ERROR.getBusinessCode()).message(ex.getMessage()).build();
             return ServerResponse.status(HttpStatus.BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON).bodyValue(response);
         });

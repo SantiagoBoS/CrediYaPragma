@@ -33,7 +33,7 @@ public class UserRepositoryAdapter extends ReactiveAdapterOperations<User, UserE
                 if (mss != null && (mss.contains("email") || mss.contains("document_number"))) {
                     return Mono.error(new BusinessException(AppMessages.USER_ALREADY_EXISTS.getMessage()));
                 }
-                return Mono.error(new BusinessException(AppMessages.ERROR_SAVING_USER.getMessage()));
+                return Mono.error(new BusinessException(AppMessages.USER_ERROR_SAVING.getMessage()));
             });
     }
 
