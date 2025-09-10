@@ -9,6 +9,7 @@ import co.com.pragma.api.util.ValidationUtils;
 import co.com.pragma.model.constants.ErrorCode;
 import co.com.pragma.model.loan.LoanRequest;
 import co.com.pragma.model.exceptions.BusinessException;
+import co.com.pragma.model.loan.LoanType;
 import co.com.pragma.usecase.loan.LoanUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 import jakarta.validation.Validator;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -47,4 +49,8 @@ public class LoanHandler {
     public Mono<ServerResponse> getAllLoanRequests(ServerRequest request) {
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(loanUseCase.getAllLoanRequests(), LoanRequest.class);
     }
+
+    /*public Flux<ServerResponse> getAllLoanTypes(ServerRequest request) {
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(loanUseCase.getAllLoanTypes(), LoanType.class);
+    }*/
 }

@@ -41,4 +41,5 @@ public class LoanRouter {
                 .route(POST(ApiPaths.LOAN_BASE), handler::createLoan)
                 .andRoute(RequestPredicates.GET(ApiPaths.LOAN_BASE), handler::getAllLoanRequests);
     }
+
 }

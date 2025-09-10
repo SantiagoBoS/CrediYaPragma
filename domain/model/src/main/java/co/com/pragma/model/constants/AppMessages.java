@@ -24,6 +24,7 @@ public enum AppMessages {
     LOAN_APPLICATION_IN_PROCESS("El cliente ya tiene una solicitud en proceso"),
     LOAN_DUPLICATE_APPLICATION("Ya existe una solicitud duplicada para este cliente"),
     LOAN_INTERNAL_ERROR("Error interno al registrar solicitud"),
+    LOAN_TYPE_INVALID("Tipo de préstamo inválido"),
 
     //COMMON
     VALIDATION_MESSAGE("Error de validación en los datos de entrada."),

@@ -25,8 +25,7 @@ public class LoanDTO {
     @Min(value = 1, message = "El termino debe ser mayor a 0")
     private Integer termMonths;
 
-    @NotBlank(message = "Se requiere el tipo de prestamo")
-    @Pattern(regexp = "PERSONAL|MORTGAGE|CAR", message = "Tipo de prestamo invalido")
+    @NotBlank(message = "Se requiere el tipo de préstamo")
     private String loanType;
 
     private RequestStatus status;
