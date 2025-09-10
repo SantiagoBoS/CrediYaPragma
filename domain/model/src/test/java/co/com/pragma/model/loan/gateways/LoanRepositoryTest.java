@@ -1,7 +1,6 @@
 package co.com.pragma.model.loan.gateways;
 
 import co.com.pragma.model.loan.LoanRequest;
-import co.com.pragma.model.constants.AppMessages;
 import co.com.pragma.model.loan.constants.RequestStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +26,7 @@ public class LoanRepositoryTest {
                 .clientDocument("12345")
                 .amount(1000.0)
                 .termMonths(12)
-                .loanType(AppMessages.VALID_TYPE_LOAN_PERSONAL.getMessage())
+                .loanType("Personal Loan")
                 .status(RequestStatus.PENDING_REVIEW)
                 .createdAt(fixedDate)
                 .build();
@@ -37,14 +36,6 @@ public class LoanRepositoryTest {
             public Mono<LoanRequest> save(LoanRequest loanRequest) {
                 database.add(loanRequest);
                 return Mono.just(loanRequest);
-            }
-
-            @Override
-            public Mono<LoanRequest> findByClientDocumentAndStatus(String clientDocument, String status) {
-                return Flux.fromIterable(database)
-                        .filter(lr -> lr.getClientDocument().equals(clientDocument)
-                                && lr.getStatus().name().equals(status))
-                        .next();
             }
 
             @Override
@@ -67,27 +58,8 @@ public class LoanRepositoryTest {
     }
 
     @Test
-    void shouldFindByClientDocumentAndStatus() {
-        LoanRequest modified = baseRequest.toBuilder()
-                .loanType(AppMessages.VALID_TYPE_LOAN_CAR.getMessage()).build();
-
-        repository.save(modified).block();
-        StepVerifier.create(repository.findByClientDocumentAndStatus("12345", RequestStatus.PENDING_REVIEW.name()))
-                .expectNextMatches(found ->
-                        found.getLoanType().equals(AppMessages.VALID_TYPE_LOAN_CAR.getMessage())
-                                && found.getTermMonths() == 12)
-                .verifyComplete();
-    }
-
-    @Test
-    void shouldReturnEmptyWhenNotFound() {
-        StepVerifier.create(repository.findByClientDocumentAndStatus("99999", RequestStatus.APPROVED.name())).verifyComplete();
-    }
-
-    @Test
     void shouldFindAllLoanRequests() {
-        LoanRequest second = baseRequest.toBuilder()
-                .clientDocument("67890").build();
+        LoanRequest second = baseRequest.toBuilder().clientDocument("67890").build();
         repository.save(baseRequest).block();
         repository.save(second).block();
         StepVerifier.create(repository.findAll())

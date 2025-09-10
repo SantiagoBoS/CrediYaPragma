@@ -26,11 +26,6 @@ public class LoanRepositoryAdapter extends ReactiveAdapterOperations<LoanRequest
     }
 
     @Override
-    public Mono<LoanRequest> findByClientDocumentAndStatus(String clientDocument, String status) {
-        return repository.findByClientDocumentAndStatus(clientDocument, status).map(this::toEntity);
-    }
-
-    @Override
     public Mono<LoanRequest> save(LoanRequest loanRequest) {
         return super.save(loanRequest)
             .as(tsOperator::transactional)

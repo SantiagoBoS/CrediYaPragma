@@ -18,6 +18,7 @@ import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+
 import java.time.LocalDateTime;
 
 import static org.mockito.Mockito.lenient;
@@ -63,16 +64,9 @@ public class LoanRepositoryAdapterTest {
                 .createdAt(entity.getCreatedAt())
                 .build();
 
+        // Simular comportamiento del TransactionalOperator
         lenient().when(tsOperator.transactional(any(Flux.class))).thenAnswer(invocation -> invocation.getArgument(0));
         lenient().when(tsOperator.transactional(any(Mono.class))).thenAnswer(invocation -> invocation.getArgument(0));
-    }
-
-    @Test
-    void mustFindByClientDocumentAndStatus() {
-        when(repository.findByClientDocumentAndStatus("123456", RequestStatus.PENDING_REVIEW.name())).thenReturn(Mono.just(entity));
-        when(mapper.map(entity, LoanRequest.class)).thenReturn(domain);
-        Mono<LoanRequest> result = repositoryAdapter.findByClientDocumentAndStatus("123456", RequestStatus.PENDING_REVIEW.name());
-        StepVerifier.create(result).expectNext(domain).verifyComplete();
     }
 
     @Test
@@ -85,8 +79,7 @@ public class LoanRepositoryAdapterTest {
                         loanRequest.getClientDocument().equals("123456") &&
                                 loanRequest.getAmount().equals(10000.0) &&
                                 loanRequest.getStatus() == RequestStatus.PENDING_REVIEW
-                )
-                .verifyComplete();
+                ).verifyComplete();
     }
 
     @Test

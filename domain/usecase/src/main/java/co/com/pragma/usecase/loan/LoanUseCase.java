@@ -17,10 +17,7 @@ public class LoanUseCase {
 
     public Mono<LoanRequest> register(LoanRequest loanRequest) {
         return userGateway.existsByDocument(loanRequest.getClientDocument())
-                .then(loanRepository.findByClientDocumentAndStatus(loanRequest.getClientDocument(), RequestStatus.PENDING_REVIEW.toString())
-                        .flatMap(existing -> Mono.<LoanRequest>error(new BusinessException(AppMessages.LOAN_APPLICATION_IN_PROCESS)))
-                        .switchIfEmpty(Mono.defer(() -> loanRepository.save(loanRequest)))
-                );
+                .then(loanRepository.save(loanRequest));
     }
 
     public Flux<LoanRequest> getAllLoanRequests() {
