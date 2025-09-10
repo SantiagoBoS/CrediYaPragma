@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 public enum AppMessages {
     VALID_TYPE_LOAN_PERSONAL("PERSONAL"),
     VALID_TYPE_LOAN_MORTGAGE("MORTGAGE"),
-    VALID_TYPE_LOAN_CAR("CAR"),
 
     //USER
     USER_CREATED("Usuario registrado exitosamente"),

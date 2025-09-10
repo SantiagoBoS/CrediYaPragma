@@ -27,8 +27,4 @@ public class LoanUseCase {
     public Flux<LoanRequest> getAllLoanRequests() {
         return loanRepository.findAll();
     }
-
-    /*pubic Flux<LoanType> getAllLoanTypes() {
-        return loanTypeRepository.findAll();
-    }*/
 }

@@ -2,9 +2,11 @@ package co.com.pragma.usecase.loan;
 
 import co.com.pragma.model.loan.LoanRequest;
 import co.com.pragma.model.constants.AppMessages;
+import co.com.pragma.model.loan.LoanType;
 import co.com.pragma.model.loan.constants.RequestStatus;
 import co.com.pragma.model.exceptions.BusinessException;
 import co.com.pragma.model.loan.gateways.LoanRepository;
+import co.com.pragma.model.loan.gateways.LoanTypeRepository;
 import co.com.pragma.model.loan.gateways.UserGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,10 +29,14 @@ public class LoanUseCaseTest {
     @Mock
     private UserGateway userGateway;
 
+    @Mock
+    private LoanTypeRepository loanTypeRepository;
+
     @InjectMocks
     private LoanUseCase loanUseCase;
 
     private LoanRequest loanRequest;
+    private LoanType loanType;
 
     @BeforeEach
     void setUp() {
@@ -39,15 +45,21 @@ public class LoanUseCaseTest {
                 .clientDocument("12345")
                 .amount(10000.0)
                 .termMonths(12)
-                .loanType(AppMessages.VALID_TYPE_LOAN_PERSONAL.getMessage())
+                .loanType("PERSONAL")
                 .createdAt(LocalDateTime.now())
                 .status(RequestStatus.PENDING_REVIEW)
+                .build();
+
+        loanType = LoanType.builder()
+                .code("PERSONAL")
+                .description("Préstamo personal")
                 .build();
     }
 
     @Test
     void shouldRegisterLoanRequestSuccessfully() {
         when(userGateway.existsByDocument("12345")).thenReturn(Mono.just(true));
+        when(loanTypeRepository.findByCode("PERSONAL")).thenReturn(Mono.just(loanType));
         when(loanRepository.save(any())).thenReturn(Mono.just(loanRequest));
         Mono<LoanRequest> result = loanUseCase.register(loanRequest);
         StepVerifier.create(result)
@@ -60,6 +72,7 @@ public class LoanUseCaseTest {
     @Test
     void shouldThrowDuplicateExceptionFromRepository() {
         when(userGateway.existsByDocument("12345")).thenReturn(Mono.just(true));
+        when(loanTypeRepository.findByCode("PERSONAL")).thenReturn(Mono.just(loanType));
         when(loanRepository.save(any())).thenReturn(Mono.error(new BusinessException(AppMessages.LOAN_DUPLICATE_APPLICATION.getMessage())));
         Mono<LoanRequest> result = loanUseCase.register(loanRequest);
         StepVerifier.create(result)
@@ -72,6 +85,7 @@ public class LoanUseCaseTest {
     @Test
     void shouldThrowGenericBusinessExceptionOnUnexpectedError() {
         when(userGateway.existsByDocument("12345")).thenReturn(Mono.just(true));
+        when(loanTypeRepository.findByCode("PERSONAL")).thenReturn(Mono.just(loanType));
         when(loanRepository.save(any())).thenReturn(Mono.error(new BusinessException(AppMessages.LOAN_INTERNAL_ERROR.getMessage())));
         Mono<LoanRequest> result = loanUseCase.register(loanRequest);
         StepVerifier.create(result)
@@ -95,6 +109,7 @@ public class LoanUseCaseTest {
     @Test
     void shouldProceedWhenUserDoesNotExist() {
         when(userGateway.existsByDocument("12345")).thenReturn(Mono.empty());
+        when(loanTypeRepository.findByCode("PERSONAL")).thenReturn(Mono.just(loanType));
         when(loanRepository.save(any())).thenReturn(Mono.just(loanRequest));
 
         Mono<LoanRequest> result = loanUseCase.register(loanRequest);
