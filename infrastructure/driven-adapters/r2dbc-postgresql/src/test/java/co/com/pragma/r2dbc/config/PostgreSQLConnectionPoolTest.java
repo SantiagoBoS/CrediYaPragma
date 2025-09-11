@@ -21,7 +21,6 @@ class PostgreSQLConnectionPoolTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-
         when(properties.host()).thenReturn("localhost");
         when(properties.port()).thenReturn(5432);
         when(properties.database()).thenReturn("dbName");

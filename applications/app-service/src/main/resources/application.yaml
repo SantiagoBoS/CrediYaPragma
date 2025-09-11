@@ -31,7 +31,7 @@ management:
         enabled: true
 
 cors:
-  allowed-origins: "http://localhost:4200,http://localhost:8080"
+  allowed-origins: "http://localhost:4200,http://localhost:8080,http://localhost:8081"
 
 jwt:
   secret: "TBfdZLz1jcl6o/+vVsfgYjYq6ZQHIeGvuxG4C5mtI7IeNoSvxScVzCt6EXwptyfbjUXayqQ9sZupvlLMDlg3FA=="

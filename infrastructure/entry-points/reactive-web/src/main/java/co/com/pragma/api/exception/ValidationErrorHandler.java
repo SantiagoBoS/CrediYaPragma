@@ -1,6 +1,8 @@
 package co.com.pragma.api.exception;
 
 import co.com.pragma.api.dto.ApiResponse;
+import co.com.pragma.model.constants.AppMessages;
+import co.com.pragma.model.constants.ErrorCode;
 import jakarta.validation.ConstraintViolation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,6 +15,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ValidationErrorHandler {
+    ValidationErrorHandler() {
+        throw new UnsupportedOperationException(String.valueOf(AppMessages.CLASS_SHOULD_NOT_BE_INSTANTIATED.getMessage()));
+    }
+
     public static Mono<ServerResponse> buildValidationErrorResponse(Set<? extends ConstraintViolation<?>> violations) {
         List<Map<String, String>> errors = violations.stream()
                 .map(violation -> Map.of(
@@ -21,8 +27,8 @@ public class ValidationErrorHandler {
                 .collect(Collectors.toList());
 
         ApiResponse<Object> response = ApiResponse.builder()
-                .code(AuthUtils.VALIDATION_CODE)
-                .message(AuthUtils.VALIDATION_MESSAGE)
+                .code(ErrorCode.VALIDATION_ERROR.getBusinessCode())
+                .message(AppMessages.VALIDATION_MESSAGE.getMessage())
                 .errors(errors)
                 .build();
 

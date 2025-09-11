@@ -2,7 +2,10 @@ package co.com.pragma.api.exception;
 
 import co.com.pragma.api.dto.ApiResponse;
 import co.com.pragma.api.dto.FieldErrorDTO;
-import co.com.pragma.model.auth.exception.BusinessException;
+import co.com.pragma.model.constants.ApiPaths;
+import co.com.pragma.model.constants.AppMessages;
+import co.com.pragma.model.constants.ErrorCode;
+import co.com.pragma.model.exceptions.BusinessException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.ConstraintViolationException;
@@ -21,6 +24,7 @@ import java.util.List;
 @Component
 @Order(-2)
 public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
+
     private final ObjectMapper objectMapper;
 
     public GlobalExceptionHandler(ObjectMapper objectMapper) {
@@ -33,26 +37,48 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
         HttpStatus status;
 
         if (ex instanceof WebExchangeBindException webEx) {
-            List<FieldErrorDTO> errors = webEx.getFieldErrors().stream().map(err -> new FieldErrorDTO(err.getField(), err.getDefaultMessage())).toList();
-            response = ApiResponse.builder().code(AuthUtils.VALIDATION_CODE).message(AuthUtils.VALIDATION_MESSAGE).errors(errors).build();
+            List<FieldErrorDTO> errors = webEx.getFieldErrors().stream()
+                    .map(err -> new FieldErrorDTO(err.getField(), err.getDefaultMessage()))
+                    .toList();
+
+            response = ApiResponse.builder()
+                    .code(ErrorCode.VALIDATION_ERROR.getBusinessCode())
+                    .message(AppMessages.VALIDATION_MESSAGE.getMessage())
+                    .errors(errors)
+                    .build();
             status = HttpStatus.BAD_REQUEST;
 
         } else if (ex instanceof ConstraintViolationException cvEx) {
-            List<FieldErrorDTO> errors = cvEx.getConstraintViolations().stream().map(v -> new FieldErrorDTO(v.getPropertyPath().toString(), v.getMessage())).toList();
-            response = ApiResponse.builder().code(AuthUtils.VALIDATION_CODE_GENERAL).message(AuthUtils.VALIDATION_MESSAGE).errors(errors).build();
+            List<FieldErrorDTO> errors = cvEx.getConstraintViolations().stream()
+                    .map(v -> new FieldErrorDTO(v.getPropertyPath().toString(), v.getMessage()))
+                    .toList();
+
+            response = ApiResponse.builder()
+                    .code(ErrorCode.GENERAL_VALIDATION_ERROR.getBusinessCode())
+                    .message(AppMessages.VALIDATION_MESSAGE.getMessage())
+                    .errors(errors)
+                    .build();
             status = HttpStatus.BAD_REQUEST;
 
         } else if (ex instanceof BusinessException be) {
-            response = ApiResponse.builder().code(AuthUtils.CONFLICT_CODE).message(be.getMessage() != null ? be.getMessage() : AuthUtils.CONFLICT_MESSAGE).build();
+            String message = be.getMessage() != null ? be.getMessage() : determineModuleMessage(exchange);
+            response = ApiResponse.builder()
+                    .code(ErrorCode.CONFLICT_CODE.getBusinessCode())
+                    .message(message)
+                    .build();
             status = HttpStatus.CONFLICT;
 
         } else {
-            response = ApiResponse.builder().code(AuthUtils.INTERNAL_ERROR_CODE).message(AuthUtils.INTERNAL_ERROR_MESSAGE).build();
+            response = ApiResponse.builder()
+                    .code(ErrorCode.INTERNAL_SERVER_ERROR.getBusinessCode())
+                    .message(AppMessages.INTERNAL_ERROR_MESSAGE.getMessage())
+                    .build();
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
         exchange.getResponse().setStatusCode(status);
         exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
+
         DataBuffer dataBuffer;
         try {
             dataBuffer = exchange.getResponse().bufferFactory().wrap(objectMapper.writeValueAsBytes(response));
@@ -60,5 +86,17 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
             return Mono.error(e);
         }
         return exchange.getResponse().writeWith(Mono.just(dataBuffer));
+    }
+
+
+    private String determineModuleMessage(ServerWebExchange exchange) {
+        String path = exchange.getRequest().getPath().toString();
+        if (path.startsWith(ApiPaths.LOAN_BASE)) {
+            return AppMessages.LOAN_ALREADY_EXISTS.getMessage();
+        } else if (path.startsWith(ApiPaths.USER_BASE)) {
+            return AppMessages.USER_ALREADY_EXISTS.getMessage();
+        }
+
+        return AppMessages.VALIDATION_ERROR.getMessage();
     }
 }
