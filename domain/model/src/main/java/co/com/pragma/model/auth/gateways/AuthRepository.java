@@ -5,4 +5,5 @@ import reactor.core.publisher.Mono;
 
 public interface AuthRepository {
     Mono<Auth> findByEmail(String email);
+    Mono<Auth> save(Auth auth);
 }
