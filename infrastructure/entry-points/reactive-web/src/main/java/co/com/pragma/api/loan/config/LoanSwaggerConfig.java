@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Primary;
 @Configuration
 public class LoanSwaggerConfig {
     @Bean(name = "swaggerConfigLoan")
-    @Primary
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()

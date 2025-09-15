@@ -23,6 +23,8 @@ public class UserMapper {
                 .phone(userDto.getPhone())
                 .email(userDto.getEmail())
                 .baseSalary(userDto.getBaseSalary())
+                .password(userDto.getPassword())
+                .role(userDto.getRole())
                 .build();
     }
 
@@ -39,6 +41,8 @@ public class UserMapper {
                 .phone(user.getPhone())
                 .email(user.getEmail())
                 .baseSalary(user.getBaseSalary())
+                .password(user.getPassword())
+                .role(user.getRole())
                 .build();
     }
 }

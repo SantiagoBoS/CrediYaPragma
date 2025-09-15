@@ -38,4 +38,9 @@ public class UserDTO {
     @Min(value = 0, message = "Salario base no puede ser menor a 0")
     @Max(value = 15000000, message = "Salario base no puede ser mayor a 15.000.000")
     private BigDecimal baseSalary;
+
+    @NotBlank(message = "La contraseña no puede estar vacía")
+    private String password;
+
+    private String role;
 }

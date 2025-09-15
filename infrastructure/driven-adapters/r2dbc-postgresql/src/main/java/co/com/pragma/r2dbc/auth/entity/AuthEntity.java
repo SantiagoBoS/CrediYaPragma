@@ -1,6 +1,5 @@
 package co.com.pragma.r2dbc.auth.entity;
 
-import co.com.pragma.model.auth.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,5 +22,5 @@ public class AuthEntity {
     private String password;
 
     @Column("role")
-    private Role role;
+    private String role;
 }

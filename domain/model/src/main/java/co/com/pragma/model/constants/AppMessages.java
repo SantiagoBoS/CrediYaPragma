@@ -16,6 +16,7 @@ public enum AppMessages {
     USER_NOT_FOUND("Usuario no encontrado"),
     USER_FOUND("Usuario encontrado"),
     USER_NOT_EXIST("El usuario no existe"),
+    ROLE_NOT_FOUND("Rol no encontrado"),
 
     //LOAN
     LOAN_CREATED("Solicitud registrada correctamente"),
