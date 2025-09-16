@@ -9,9 +9,9 @@ spring:
       path: "/h2"
 
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/crediya
-    username: postgres
-    password: 123456789
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   liquibase:
     enabled: true
@@ -34,5 +34,5 @@ cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080,http://localhost:8081"
 
 jwt:
-  secret: "TBfdZLz1jcl6o/+vVsfgYjYq6ZQHIeGvuxG4C5mtI7IeNoSvxScVzCt6EXwptyfbjUXayqQ9sZupvlLMDlg3FA=="
-  expiration-ms: 3600000
+  secret: ${JWT_SECRET}
+  expiration-ms: ${JWT_EXPIRATION_MS}
