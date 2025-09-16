@@ -15,6 +15,9 @@ public class AuthEntity {
     @Id
     private Long id;
 
+    @Column("document")
+    private String document;
+
     @Column("email")
     private String email;
 

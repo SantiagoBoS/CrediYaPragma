@@ -6,12 +6,14 @@ import co.com.pragma.api.loan.mapper.LoanMapper;
 import co.com.pragma.model.constants.AppMessages;
 import co.com.pragma.api.util.ValidationUtils;
 import co.com.pragma.model.constants.ErrorCode;
-import co.com.pragma.model.loan.LoanRequest;
 import co.com.pragma.model.exceptions.BusinessException;
+import co.com.pragma.model.loan.LoanRequest;
+import co.com.pragma.model.loan.gateways.UserGateway;
 import co.com.pragma.usecase.loan.LoanUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.stereotype.Component;
 import jakarta.validation.Validator;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -23,31 +25,39 @@ import reactor.core.publisher.Mono;
 public class LoanHandler {
     private final LoanUseCase loanUseCase;
     private final Validator validator;
+    private final UserGateway userGateway;
 
     public Mono<ServerResponse> createLoan(ServerRequest request) {
-        return request.bodyToMono(LoanDTO.class).flatMap(dto ->
-            ValidationUtils.validate(dto, validator).switchIfEmpty(
-                loanUseCase.register(LoanMapper.toMain(dto)).flatMap(savedLoanRequest -> {
-                    ApiResponse<LoanRequest> response = ApiResponse.<LoanRequest>builder()
-                        .code(ErrorCode.LOAN_CREATED.getBusinessCode()).message(AppMessages.LOAN_CREATED.getMessage())
-                        .data(savedLoanRequest).build();
-                    return ServerResponse.status(HttpStatus.CREATED)
-                        .contentType(MediaType.APPLICATION_JSON).bodyValue(response);
-                })
-            )
-        ).onErrorResume(BusinessException.class, ex -> {
-            ApiResponse<Object> response = ApiResponse.builder()
-                .code(ErrorCode.LOAN_GENERAL_VALIDATION_ERROR.getBusinessCode()).message(ex.getMessage()).build();
-            return ServerResponse.status(HttpStatus.BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON).bodyValue(response);
-        });
+        String token = request.headers().firstHeader("Authorization");
+        return ReactiveSecurityContextHolder.getContext()
+            .flatMap(securityContext -> {
+                String clientDocumentFromJwt = (String) securityContext.getAuthentication().getCredentials();
+                return request.bodyToMono(LoanDTO.class)
+                    .flatMap(dto -> validateClientDocument(dto.getClientDocument(), clientDocumentFromJwt)
+                        .then(ValidationUtils.validate(dto, validator))
+                        .switchIfEmpty(loanUseCase.register(LoanMapper.toMain(dto), token)
+                            .flatMap(savedLoanRequest -> ServerResponse.status(HttpStatus.CREATED)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(ApiResponse.<LoanRequest>builder()
+                                    .code(ErrorCode.LOAN_CREATED.getBusinessCode()).message(AppMessages.LOAN_CREATED.getMessage())
+                                    .data(savedLoanRequest).build()
+                                )
+                            )
+                        )
+                    );
+            });
     }
 
     public Mono<ServerResponse> getAllLoanRequests(ServerRequest request) {
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(loanUseCase.getAllLoanRequests(), LoanRequest.class);
     }
 
-    /*public Flux<ServerResponse> getAllLoanTypes(ServerRequest request) {
-        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(loanUseCase.getAllLoanTypes(), LoanType.class);
-    }*/
+    private Mono<Void> validateClientDocument(String dtoDocument, String jwtDocument) {
+        if (!dtoDocument.equals(jwtDocument)) {
+            return Mono.error(new BusinessException(
+                    AppMessages.LOAN_CANNOT_BE_CREATED_FOR_ANOTHER_USER.getMessage()
+            ));
+        }
+        return Mono.empty();
+    }
 }

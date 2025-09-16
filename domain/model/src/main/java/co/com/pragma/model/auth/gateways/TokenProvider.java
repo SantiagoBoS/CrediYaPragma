@@ -7,4 +7,5 @@ public interface TokenProvider {
     boolean validateToken(String token);
     String getEmailFromToken(String token);
     String getRoleFromToken(String token);
+    String getDocumentNumber(String token);
 }

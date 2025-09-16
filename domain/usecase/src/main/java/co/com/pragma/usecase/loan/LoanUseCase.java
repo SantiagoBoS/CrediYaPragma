@@ -16,8 +16,8 @@ public class LoanUseCase {
     private final UserGateway userGateway;
     private final LoanTypeRepository loanTypeRepository;
 
-    public Mono<LoanRequest> register(LoanRequest loanRequest) {
-        return userGateway.existsByDocument(loanRequest.getClientDocument())
+    public Mono<LoanRequest> register(LoanRequest loanRequest, String token) {
+        return userGateway.existsByDocumentToken(loanRequest.getClientDocument(), token)
             .then(loanTypeRepository.findByCode(loanRequest.getLoanType())
                 .switchIfEmpty(Mono.error(new BusinessException(AppMessages.LOAN_TYPE_INVALID.getMessage())))
                 .then(loanRepository.save(loanRequest))

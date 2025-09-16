@@ -22,7 +22,6 @@ public class JwtProviderAdapter implements TokenProvider {
     @PostConstruct
     public void init() {
         this.secretKey = Keys.hmacShaKeyFor(jwtConfig.getSecret().getBytes());
-        //this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
     }
 
     @Override
@@ -31,6 +30,7 @@ public class JwtProviderAdapter implements TokenProvider {
         return Jwts.builder()
                 .setSubject(auth.getEmail())
                 .claim("role", auth.getRole())
+                .claim("document", auth.getDocument())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtConfig.getExpirationMs()))
                 .signWith(secretKey, SignatureAlgorithm.HS512)
@@ -59,5 +59,12 @@ public class JwtProviderAdapter implements TokenProvider {
         // Extrae el rol del usuario del token JWT
         Claims claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
         return claims.get("role", String.class);
+    }
+
+    @Override
+    public String getDocumentNumber(String token) {
+        // Extrae el número de documento del usuario del token JWT
+        Claims claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
+        return claims.get("document", String.class);
     }
 }

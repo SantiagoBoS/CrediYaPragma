@@ -1,7 +1,10 @@
 package co.com.pragma.usecase.user;
 
+import co.com.pragma.model.auth.gateways.AuthRepository;
+import co.com.pragma.model.auth.gateways.PasswordEncoderService;
 import co.com.pragma.model.exceptions.BusinessException;
 import co.com.pragma.model.user.User;
+import co.com.pragma.model.user.gateways.RoleRepository;
 import co.com.pragma.model.user.gateways.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,11 +21,17 @@ public class UserUseCaseTest {
 
     private UserRepository userRepository;
     private UserUseCase userUseCase;
+    private PasswordEncoderService passwordEncoderService;
+    private AuthRepository authRepository;
+    private RoleRepository roleRepository;
 
     @BeforeEach
     void setUp() {
         userRepository = Mockito.mock(UserRepository.class);
-        userUseCase = new UserUseCase(userRepository);
+        authRepository = Mockito.mock(AuthRepository.class);
+        passwordEncoderService = Mockito.mock(PasswordEncoderService.class);
+        roleRepository = Mockito.mock(RoleRepository.class);
+        userUseCase = new UserUseCase(userRepository, roleRepository, passwordEncoderService, authRepository);
     }
 
     private User buildUser() {
@@ -34,7 +43,9 @@ public class UserUseCaseTest {
             "Calle 123",
             "3102567890",
             "sbs@example.com",
-            new BigDecimal("2000000")
+            new BigDecimal("2000000"),
+            "securePassword",
+            "ADMIN"
         );
     }
 

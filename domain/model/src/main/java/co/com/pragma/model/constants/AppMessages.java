@@ -25,6 +25,7 @@ public enum AppMessages {
     LOAN_DUPLICATE_APPLICATION("Ya existe una solicitud duplicada para este cliente"),
     LOAN_INTERNAL_ERROR("Error interno al registrar solicitud"),
     LOAN_TYPE_INVALID("Tipo de préstamo inválido"),
+    LOAN_CANNOT_BE_CREATED_FOR_ANOTHER_USER("No puedes crear un préstamo para otro usuario"),
 
     //COMMON
     VALIDATION_MESSAGE("Error de validación en los datos de entrada."),

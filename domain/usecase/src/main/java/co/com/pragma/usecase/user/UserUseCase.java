@@ -28,6 +28,7 @@ public class UserUseCase {
                     return userRepository.save(user)
                         .flatMap(savedUser -> {
                             Auth auth = new Auth();
+                            auth.setDocument(savedUser.getDocumentNumber());
                             auth.setEmail(savedUser.getEmail());
                             auth.setPassword(savedUser.getPassword());
                             auth.setRole(savedUser.getRole());

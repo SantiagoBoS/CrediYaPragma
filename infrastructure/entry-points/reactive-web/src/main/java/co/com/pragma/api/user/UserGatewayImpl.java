@@ -26,4 +26,15 @@ public class UserGatewayImpl implements UserGateway {
             .map(r -> true)
             .onErrorResume(e -> Mono.error(new BusinessException(AppMessages.USER_NOT_EXIST.getMessage())));
     }
+
+    @Override
+    public Mono<Boolean> existsByDocumentToken(String documentNumber, String token) {
+        return webClient.get()
+            .uri("/{documentNumber}", documentNumber)
+            .header("Authorization", token)
+            .retrieve()
+            .toBodilessEntity()
+            .map(r -> true)
+            .onErrorResume(e -> Mono.error(new BusinessException(AppMessages.USER_NOT_EXIST.getMessage())));
+    }
 }

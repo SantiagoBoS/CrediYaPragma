@@ -69,7 +69,7 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
             status = HttpStatus.CONFLICT;
 
         } else {
-            System.out.println("Error interno" + ex);
+            System.out.println("Error: " + ex);
             response = ApiResponse.builder()
                     .code(ErrorCode.INTERNAL_SERVER_ERROR.getBusinessCode())
                     .message(AppMessages.INTERNAL_ERROR_MESSAGE.getMessage())
