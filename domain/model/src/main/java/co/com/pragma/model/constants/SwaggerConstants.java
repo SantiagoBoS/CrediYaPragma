@@ -51,7 +51,8 @@ public final class SwaggerConstants {
     public static final String LOAN_EXAMPLE_VALIDATION_DUPLICATE = "{ \"code\": \"409.01\", \"message\": \"El cliente ya tiene una solicitud en proceso\" }";
     public static final String LOAN_EXAMPLE_INTERNAL_ERROR = "{ \"code\": \"500.01\", \"message\": \"Ocurrió un error inesperado. Intente nuevamente más tarde.\" }";
 
-    public static final String LOAN_ROUTER_OPERATION_ID = "createLoan";
+    public static final String LOAN_ROUTER_OPERATION_POST = "createLoan";
+    public static final String LOAN_ROUTER_OPERATION_GET = "getLoanList";
     public static final String LOAN_ROUTER_SUMMARY = "Registrar una nueva solicitud de préstamo";
     public static final String LOAN_ROUTER_DESCRIPTION = "Permite registrar una solicitud de préstamo proporcionando documento del cliente, monto, plazo y tipo de préstamo";
     public static final String LOAN_ROUTER_REQUEST_DESCRIPTION = "Datos de la nueva solicitud de préstamo";

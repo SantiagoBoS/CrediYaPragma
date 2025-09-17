@@ -48,10 +48,6 @@ public class LoanHandler {
             });
     }
 
-    public Mono<ServerResponse> getAllLoanRequests(ServerRequest request) {
-        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(loanUseCase.getAllLoanRequests(), LoanRequest.class);
-    }
-
     private Mono<Void> validateClientDocument(String dtoDocument, String jwtDocument) {
         if (!dtoDocument.equals(jwtDocument)) {
             return Mono.error(new BusinessException(

@@ -35,14 +35,4 @@ class LoanRouterTest {
                 .expectStatus().isOk()
                 .expectBody(String.class).isEqualTo("created");
     }
-
-    @Test
-    void shouldRouteToGetAllLoanRequests() {
-        when(handler.getAllLoanRequests(any())).thenReturn(ServerResponse.ok().bodyValue("all"));
-        webTestClient.get()
-                .uri(BASE_URL_SOLICITUD)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(String.class).isEqualTo("all");
-    }
 }

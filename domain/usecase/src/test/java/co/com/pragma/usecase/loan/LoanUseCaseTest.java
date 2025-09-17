@@ -112,16 +112,6 @@ class LoanUseCaseTest {
     }
 
     @Test
-    void shouldReturnAllLoanRequests() {
-        when(loanRepository.findAll()).thenReturn(Flux.just(loanRequest));
-        Flux<LoanRequest> result = loanUseCase.getAllLoanRequests();
-        StepVerifier.create(result).expectNextMatches(req -> req.getClientDocument().equals("12345"))
-                .verifyComplete();
-
-        verify(loanRepository).findAll();
-    }
-
-    @Test
     void shouldProceedWhenUserGatewayReturnsEmpty() {
         when(userGateway.existsByDocumentToken("12345", token)).thenReturn(Mono.empty());
         when(loanTypeRepository.findByCode("PERSONAL")).thenReturn(Mono.just(loanType));

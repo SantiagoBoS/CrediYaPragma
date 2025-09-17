@@ -23,8 +23,4 @@ public class LoanUseCase {
                 .then(loanRepository.save(loanRequest))
             );
     }
-
-    public Flux<LoanRequest> getAllLoanRequests() {
-        return loanRepository.findAll();
-    }
 }

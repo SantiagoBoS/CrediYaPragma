@@ -35,6 +35,7 @@ class LoanTypeRepositoryAdapterTest {
         loanTypeEntity.setId(1L);
         loanTypeEntity.setCode("HOME");
         loanTypeEntity.setDescription("Home Loan");
+        loanTypeEntity.setInterestRate("12");
 
         loanType = new LoanType();
         loanType.setId(1L);

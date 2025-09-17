@@ -12,7 +12,6 @@ import org.springdoc.core.annotations.RouterOperation;
 import org.springdoc.core.annotations.RouterOperations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -23,8 +22,8 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 public class LoanRouter {
     @Bean
     @RouterOperations({
-        @RouterOperation( path = ApiPaths.LOAN_BASE, beanClass = LoanHandler.class, beanMethod = SwaggerConstants.LOAN_ROUTER_OPERATION_ID, method = POST,
-            operation = @Operation( operationId = SwaggerConstants.LOAN_ROUTER_OPERATION_ID, summary = SwaggerConstants.LOAN_ROUTER_SUMMARY, description = SwaggerConstants.LOAN_ROUTER_DESCRIPTION,
+        @RouterOperation( path = ApiPaths.LOAN_BASE, beanClass = LoanHandler.class, beanMethod = SwaggerConstants.LOAN_ROUTER_OPERATION_POST, method = POST,
+            operation = @Operation( operationId = SwaggerConstants.LOAN_ROUTER_OPERATION_POST, summary = SwaggerConstants.LOAN_ROUTER_SUMMARY, description = SwaggerConstants.LOAN_ROUTER_DESCRIPTION,
                 requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody( description = SwaggerConstants.LOAN_ROUTER_REQUEST_DESCRIPTION, required = true, content = @Content( schema = @Schema(implementation = LoanDTO.class), examples = { @ExampleObject( name = SwaggerConstants.LOAN_TEXT_VALID_LOAN, value = SwaggerConstants.LOAN_EXAMPLE_VALID_LOAN )})),
                 responses = {
                     @ApiResponse( responseCode = SwaggerConstants.CREATE_CODE, description = SwaggerConstants.LOAN_CREATE_MESSAGE, content = @Content( schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject( name = SwaggerConstants.LOAN_TEXT_VALIDATION_CORRECT, value = SwaggerConstants.LOAN_EXAMPLE_VALIDATION_CORRECT)})),
@@ -37,9 +36,7 @@ public class LoanRouter {
     })
 
     public RouterFunction<ServerResponse> loanRequestRoutes(LoanHandler handler) {
-        return RouterFunctions
-                .route(POST(ApiPaths.LOAN_BASE), handler::createLoan)
-                .andRoute(RequestPredicates.GET(ApiPaths.LOAN_BASE), handler::getAllLoanRequests);
+        return RouterFunctions.route(POST(ApiPaths.LOAN_BASE), handler::createLoan);
     }
 
 }

@@ -21,6 +21,7 @@ public class SecurityConfig {
             .authorizeExchange(exchanges -> exchanges
                 .pathMatchers(ApiPaths.AUTH_BASE).permitAll()
                 .pathMatchers(HttpMethod.GET, ApiPaths.USER_BASE + "/**").authenticated()
+                .pathMatchers(HttpMethod.GET, ApiPaths.LOAN_BASE + "/**").hasAnyRole(UserRoles.ADMIN, UserRoles.ASESOR)
                 .pathMatchers(HttpMethod.POST, ApiPaths.USER_BASE + "/**").hasAnyRole(UserRoles.ADMIN, UserRoles.ASESOR)
                 .pathMatchers(HttpMethod.POST, ApiPaths.LOAN_BASE + "/**").hasRole(UserRoles.CLIENTE)
                 .anyExchange().authenticated()
