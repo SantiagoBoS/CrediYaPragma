@@ -1,4 +1,4 @@
-package co.com.pragma.api.loan;
+package co.com.pragma.api.loan.handler;
 
 import co.com.pragma.api.dto.ApiResponse;
 import co.com.pragma.api.loan.dto.LoanDTO;

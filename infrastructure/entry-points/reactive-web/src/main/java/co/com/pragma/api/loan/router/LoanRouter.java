@@ -1,6 +1,8 @@
-package co.com.pragma.api.loan;
+package co.com.pragma.api.loan.router;
 
+import co.com.pragma.api.loan.handler.LoanHandler;
 import co.com.pragma.api.loan.dto.LoanDTO;
+import co.com.pragma.api.loan.handler.LoanListHandler;
 import co.com.pragma.model.constants.SwaggerConstants;
 import co.com.pragma.model.constants.ApiPaths;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,7 +17,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
+
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
 
 @Configuration
@@ -32,11 +37,16 @@ public class LoanRouter {
                     @ApiResponse( responseCode = SwaggerConstants.INTERNAL_ERROR_CODE, description = SwaggerConstants.INTERNAL_ERROR_MESSAGE, content = @Content(schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject( name = SwaggerConstants.INTERNAL_ERROR_MESSAGE, value = SwaggerConstants.LOAN_EXAMPLE_INTERNAL_ERROR)}))
                 }
             )
-        )
+        ),
+        @RouterOperation(path = ApiPaths.LOAN_BASE, beanClass = LoanListHandler.class, beanMethod = SwaggerConstants.LOAN_ROUTER_OPERATION_GET, method = GET)
     })
-
-    public RouterFunction<ServerResponse> loanRequestRoutes(LoanHandler handler) {
-        return RouterFunctions.route(POST(ApiPaths.LOAN_BASE), handler::createLoan);
+    public RouterFunction<ServerResponse> loanRoutes(
+            LoanHandler loanHandler,
+            LoanListHandler loanListHandler
+    ){
+        return RouterFunctions
+                .route(POST(ApiPaths.LOAN_BASE), loanHandler::createLoan)
+                .andRoute(GET(ApiPaths.LOAN_BASE), loanListHandler::getLoanList);
     }
 
 }

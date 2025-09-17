@@ -1,5 +1,8 @@
 package co.com.pragma.api.loan;
 
+import co.com.pragma.api.loan.handler.LoanHandler;
+import co.com.pragma.api.loan.handler.LoanListHandler;
+import co.com.pragma.api.loan.router.LoanRouter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -11,16 +14,19 @@ import static org.mockito.Mockito.when;
 
 class LoanRouterTest {
 
-    private LoanHandler handler;
+    private LoanHandler loanHandler;
+    private LoanListHandler loanListHandler;
     private WebTestClient webTestClient;
     private final String BASE_URL_SOLICITUD = "/solicitud";
 
     @BeforeEach
     void setUp() {
-        handler = Mockito.mock(LoanHandler.class);
+        loanHandler = Mockito.mock(LoanHandler.class);
+        loanListHandler = Mockito.mock(LoanListHandler.class);
+
         LoanRouter router = new LoanRouter();
 
-        webTestClient = WebTestClient.bindToRouterFunction(router.loanRequestRoutes(handler))
+        webTestClient = WebTestClient.bindToRouterFunction(router.loanRoutes(loanHandler, loanListHandler))
                 .configureClient()
                 .baseUrl("/api/v1")
                 .build();
@@ -28,11 +34,22 @@ class LoanRouterTest {
 
     @Test
     void shouldRouteToCreateLoan() {
-        when(handler.createLoan(any())).thenReturn(ServerResponse.ok().bodyValue("created"));
+        when(loanHandler.createLoan(any())).thenReturn(ServerResponse.ok().bodyValue("created"));
         webTestClient.post()
                 .uri(BASE_URL_SOLICITUD)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(String.class).isEqualTo("created");
+    }
+
+    @Test
+    void shouldRouteToGetLoanList() {
+        when(loanListHandler.getLoanList(any())).thenReturn(ServerResponse.ok().bodyValue("list"));
+
+        webTestClient.get()
+                .uri(BASE_URL_SOLICITUD)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(String.class).isEqualTo("list");
     }
 }

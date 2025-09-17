@@ -1,4 +1,4 @@
-package co.com.pragma.api.loanlist;
+package co.com.pragma.api.loan.handler;
 
 import co.com.pragma.model.loan.LoanList;
 import co.com.pragma.model.loan.constants.RequestStatus;
