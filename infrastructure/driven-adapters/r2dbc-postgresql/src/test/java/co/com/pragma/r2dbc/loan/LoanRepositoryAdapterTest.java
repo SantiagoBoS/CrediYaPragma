@@ -1,11 +1,9 @@
-package co.com.pragma.r2dbc;
+package co.com.pragma.r2dbc.loan;
 
 import co.com.pragma.model.loan.LoanRequest;
 import co.com.pragma.model.constants.AppMessages;
 import co.com.pragma.model.loan.constants.RequestStatus;
 import co.com.pragma.model.exceptions.BusinessException;
-import co.com.pragma.r2dbc.loan.LoanReactiveRepository;
-import co.com.pragma.r2dbc.loan.LoanRepositoryAdapter;
 import co.com.pragma.r2dbc.loan.entity.LoanEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,36 +1,35 @@
 package co.com.pragma.r2dbc.config;
 
+import io.r2dbc.pool.ConnectionPool;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.when;
 
 class PostgreSQLConnectionPoolTest {
 
     @InjectMocks
     private PostgreSQLConnectionPool connectionPool;
 
-    @Mock
-    private PostgresqlConnectionProperties properties;
-
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        when(properties.host()).thenReturn("localhost");
-        when(properties.port()).thenReturn(5432);
-        when(properties.database()).thenReturn("dbName");
-        when(properties.schema()).thenReturn("schema");
-        when(properties.username()).thenReturn("username");
-        when(properties.password()).thenReturn("password");
+
+        // Setear directamente los valores de las @Value
+        connectionPool.host = "localhost";
+        connectionPool.port = 5432;
+        connectionPool.database = "dbName";
+        connectionPool.schema = "schema";
+        connectionPool.username = "username";
+        connectionPool.password = "password";
     }
 
     @Test
     void getConnectionConfigSuccess() {
-        assertNotNull(connectionPool.getConnectionConfig(properties));
+        //Validar que la configuración de la conexión no sea nula
+        ConnectionPool pool = connectionPool.getConnectionConfig(null);
+        assertNotNull(pool);
     }
 }

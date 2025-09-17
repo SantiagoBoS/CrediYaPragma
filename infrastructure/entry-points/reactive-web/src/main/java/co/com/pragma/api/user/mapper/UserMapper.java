@@ -5,7 +5,7 @@ import co.com.pragma.model.constants.AppMessages;
 import co.com.pragma.model.user.User;
 
 public class UserMapper {
-    private UserMapper() {
+    UserMapper() {
         throw new UnsupportedOperationException(String.valueOf(AppMessages.CLASS_SHOULD_NOT_BE_INSTANTIATED.getMessage()));
     }
 

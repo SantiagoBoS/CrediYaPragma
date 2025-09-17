@@ -18,22 +18,22 @@ public class PostgreSQLConnectionPool {
     public static final int MAX_IDLE_TIME = 30;
 
     @Value("${DB_HOST}")
-    private String host;
+    String host;
 
     @Value("${DB_PORT}")
-    private Integer port;
+    Integer port;
 
     @Value("${DB_NAME}")
-    private String database;
+    String database;
 
     @Value("${DB_SCHEMA}")
-    private String schema;
+    String schema;
 
     @Value("${DB_USERNAME}")
-    private String username;
+    String username;
 
     @Value("${DB_PASSWORD}")
-    private String password;
+    String password;
 
 	@Bean
 	public ConnectionPool getConnectionConfig(PostgresqlConnectionProperties properties) {

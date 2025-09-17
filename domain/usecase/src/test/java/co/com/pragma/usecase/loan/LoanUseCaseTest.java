@@ -22,7 +22,8 @@ import java.time.LocalDateTime;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class LoanUseCaseTest {
+class LoanUseCaseTest {
+
     @Mock
     private LoanRepository loanRepository;
 
@@ -37,10 +38,12 @@ public class LoanUseCaseTest {
 
     private LoanRequest loanRequest;
     private LoanType loanType;
+    private String token;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
         loanRequest = LoanRequest.builder()
                 .clientDocument("12345")
                 .amount(10000.0)
@@ -54,27 +57,38 @@ public class LoanUseCaseTest {
                 .code("PERSONAL")
                 .description("Préstamo personal")
                 .build();
+
+        token = "fake-jwt-token";
     }
 
     @Test
     void shouldRegisterLoanRequestSuccessfully() {
-        when(userGateway.existsByDocument("12345")).thenReturn(Mono.just(true));
+        //Valida que se registre una solicitud de préstamo exitosamente
+        when(userGateway.existsByDocumentToken("12345", token)).thenReturn(Mono.just(true));
         when(loanTypeRepository.findByCode("PERSONAL")).thenReturn(Mono.just(loanType));
         when(loanRepository.save(any())).thenReturn(Mono.just(loanRequest));
-        Mono<LoanRequest> result = loanUseCase.register(loanRequest);
+
+        Mono<LoanRequest> result = loanUseCase.register(loanRequest, token);
+
         StepVerifier.create(result)
                 .expectNextMatches(saved ->
-                        saved.getClientDocument().equals("12345") && saved.getStatus() == RequestStatus.PENDING_REVIEW)
+                        saved.getClientDocument().equals("12345") &&
+                                saved.getStatus() == RequestStatus.PENDING_REVIEW)
                 .verifyComplete();
+
         verify(loanRepository).save(any());
     }
 
     @Test
     void shouldThrowDuplicateExceptionFromRepository() {
-        when(userGateway.existsByDocument("12345")).thenReturn(Mono.just(true));
+        //Valida que se lance una excepción de duplicado cuando el repositorio lo indique
+        when(userGateway.existsByDocumentToken("12345", token)).thenReturn(Mono.just(true));
         when(loanTypeRepository.findByCode("PERSONAL")).thenReturn(Mono.just(loanType));
-        when(loanRepository.save(any())).thenReturn(Mono.error(new BusinessException(AppMessages.LOAN_DUPLICATE_APPLICATION.getMessage())));
-        Mono<LoanRequest> result = loanUseCase.register(loanRequest);
+        when(loanRepository.save(any()))
+                .thenReturn(Mono.error(new BusinessException(AppMessages.LOAN_DUPLICATE_APPLICATION.getMessage())));
+
+        Mono<LoanRequest> result = loanUseCase.register(loanRequest, token);
+
         StepVerifier.create(result)
                 .expectErrorMatches(ex ->
                         ex instanceof BusinessException &&
@@ -84,14 +98,16 @@ public class LoanUseCaseTest {
 
     @Test
     void shouldThrowGenericBusinessExceptionOnUnexpectedError() {
-        when(userGateway.existsByDocument("12345")).thenReturn(Mono.just(true));
+        //Valida que se lance una excepción genérica cuando ocurre un error inesperado
+        when(userGateway.existsByDocumentToken("12345", token)).thenReturn(Mono.just(true));
         when(loanTypeRepository.findByCode("PERSONAL")).thenReturn(Mono.just(loanType));
         when(loanRepository.save(any())).thenReturn(Mono.error(new BusinessException(AppMessages.LOAN_INTERNAL_ERROR.getMessage())));
-        Mono<LoanRequest> result = loanUseCase.register(loanRequest);
+
+        Mono<LoanRequest> result = loanUseCase.register(loanRequest, token);
+
         StepVerifier.create(result)
-                .expectErrorMatches(ex ->
-                        ex instanceof BusinessException &&
-                                ex.getMessage().contains(AppMessages.LOAN_INTERNAL_ERROR.getMessage()))
+                .expectErrorMatches(ex -> ex instanceof BusinessException &&
+                        ex.getMessage().contains(AppMessages.LOAN_INTERNAL_ERROR.getMessage()))
                 .verify();
     }
 
@@ -99,20 +115,19 @@ public class LoanUseCaseTest {
     void shouldReturnAllLoanRequests() {
         when(loanRepository.findAll()).thenReturn(Flux.just(loanRequest));
         Flux<LoanRequest> result = loanUseCase.getAllLoanRequests();
-        StepVerifier.create(result)
-                .expectNextMatches(req -> req.getClientDocument().equals("12345"))
+        StepVerifier.create(result).expectNextMatches(req -> req.getClientDocument().equals("12345"))
                 .verifyComplete();
 
         verify(loanRepository).findAll();
     }
 
     @Test
-    void shouldProceedWhenUserDoesNotExist() {
-        when(userGateway.existsByDocument("12345")).thenReturn(Mono.empty());
+    void shouldProceedWhenUserGatewayReturnsEmpty() {
+        when(userGateway.existsByDocumentToken("12345", token)).thenReturn(Mono.empty());
         when(loanTypeRepository.findByCode("PERSONAL")).thenReturn(Mono.just(loanType));
         when(loanRepository.save(any())).thenReturn(Mono.just(loanRequest));
 
-        Mono<LoanRequest> result = loanUseCase.register(loanRequest);
+        Mono<LoanRequest> result = loanUseCase.register(loanRequest, token);
 
         StepVerifier.create(result)
                 .expectNextMatches(req -> req.getClientDocument().equals("12345"))

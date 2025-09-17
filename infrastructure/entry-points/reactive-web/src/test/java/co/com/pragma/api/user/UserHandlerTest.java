@@ -69,7 +69,11 @@ class UserHandlerTest {
 
     @Test
     void shouldRegisterUserSuccessfully() {
+        dto.setPassword("secret");
+        dto.setRole("CLIENT");
+
         when(userUseCase.registerUser(any(User.class))).thenReturn(Mono.just(savedUser));
+
         webTestClient.post()
                 .uri(ApiPaths.USER_BASE)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -104,7 +108,12 @@ class UserHandlerTest {
 
     @Test
     void shouldHandleBusinessException() {
+        dto.setPassword("secret");
+        dto.setRole("CLIENT");
+
+        String userAlready = "Usuario ya existe";
         when(userUseCase.registerUser(any(User.class))).thenReturn(Mono.error(new BusinessException(userAlready)));
+
         webTestClient.post()
                 .uri(ApiPaths.USER_BASE)
                 .contentType(MediaType.APPLICATION_JSON)
