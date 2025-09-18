@@ -92,9 +92,7 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
 
     private String determineModuleMessage(ServerWebExchange exchange) {
         String path = exchange.getRequest().getPath().toString();
-        if (path.startsWith(ApiPaths.LOAN_BASE)) {
-            return AppMessages.LOAN_ALREADY_EXISTS.getMessage();
-        } else if (path.startsWith(ApiPaths.USER_BASE)) {
+        if (path.startsWith(ApiPaths.USER_BASE)) {
             return AppMessages.USER_ALREADY_EXISTS.getMessage();
         }
 

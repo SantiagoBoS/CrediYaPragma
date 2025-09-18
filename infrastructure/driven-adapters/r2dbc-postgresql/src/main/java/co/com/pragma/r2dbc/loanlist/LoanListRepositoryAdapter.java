@@ -7,7 +7,6 @@ import co.com.pragma.model.loan.gateways.LoanListRepository;
 import co.com.pragma.r2dbc.helper.ReactiveAdapterOperations;
 import co.com.pragma.r2dbc.loanlist.entity.LoanListEntity;
 import org.reactivecommons.utils.ObjectMapper;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -26,7 +25,6 @@ public class LoanListRepositoryAdapter extends ReactiveAdapterOperations<LoanLis
     @Override
     public Flux<LoanList> findByStatuses(List<RequestStatus> statuses, int page, int size) {
         var statusNames = statuses.stream().map(Enum::name).toList();
-        /*var pageable = PageRequest.of(page, size);*/
         return repository.findByRequestStatusIn(statusNames)
                 .skip((long) page * size)
                 .take(size)

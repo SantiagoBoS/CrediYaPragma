@@ -1,7 +1,6 @@
 package co.com.pragma.r2dbc.loanlist;
 
 import co.com.pragma.r2dbc.loanlist.entity.LoanListEntity;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.ReactiveQueryByExampleExecutor;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;

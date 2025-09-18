@@ -6,6 +6,7 @@ public final class SwaggerConstants {
     }
 
     //BASE CODES
+    public static final String OK_CODE = "200";
     public static final String CREATE_CODE = "201";
     public static final String VALIDATION_CODE = "400";
     public static final String UNAUTHORIZED_CODE = "401";
@@ -15,6 +16,7 @@ public final class SwaggerConstants {
     //GENERIC MESSAGES
     public static final String VALIDATION_MESSAGE= "Error de validación en los datos de entrada";
     public static final String INTERNAL_ERROR_MESSAGE = "Error interno del servidor";
+    public static final String TEXT_VALIDATION_CORRECT = "Respuesta exitosa";
 
 
     //DOCUMENTATION USER
@@ -23,7 +25,6 @@ public final class SwaggerConstants {
 
     public static final String USER_TEXT_VALID_USER = "Usuario válido";
     public static final String USER_EXAMPLE_VALID_USER = "{ \"documentNumber\": \"123456789\", \"name\": \"Santiago\", \"lastName\": \"Borrero\", \"birthDate\": \"1995-05-10\", \"address\": \"Calle 123\", \"phone\": \"3001234567\", \"email\": \"santi@correo.com\", \"baseSalary\": \"3500000\" }";
-    public static final String USER_TEXT_VALIDATION_CORRECT = "Respuesta exitosa";
     public static final String USER_EXAMPLE_VALIDATION_CORRECT = "{ \"code\": \"201.01\", \"message\": \"Usuario registrado exitosamente\", \"data\": { \"name\": \"Santiago\", \"lastName\": \"Borrero\", \"birthDate\": \"1995-05-10\", \"address\": \"Calle 123\", \"phone\": \"3001234567\", \"email\": \"santi@correo.com\", \"baseSalary\": 3500000 } }";
     public static final String USER_TEXT_ERROR_VALIDATION = "Error de validación";
     public static final String USER_EXAMPLE_ERROR_VALIDATION = "{ \"code\": \"400.01\", \"message\": \"Error de validación en los datos de entrada.\", \"errors\": [ \"El campo 'email' es obligatorio.\", \"El campo 'documentNumber' es obligatorio.\" ] }";
@@ -40,7 +41,6 @@ public final class SwaggerConstants {
 
     //DOCUMENTATION LOAN
     public static final String LOAN_CREATE_MESSAGE = "Solicitud registrada correctamente";
-    public static final String LOAN_CONFLICT_MESSAGE = "Ya existe una solicitud en proceso para este cliente";
 
     public static final String LOAN_TEXT_VALID_LOAN = "Solicitud válida";
     public static final String LOAN_EXAMPLE_VALID_LOAN = "{ \"clientDocument\": \"123456789\", \"amount\": 5000000, \"term\": 24, \"loanType\": \"PERSONAL\" }";
@@ -48,8 +48,15 @@ public final class SwaggerConstants {
     public static final String LOAN_EXAMPLE_VALIDATION_CORRECT = "{ \"code\": \"201.01\", \"message\": \"Solicitud registrada exitosamente\", \"data\": { \"clientDocument\": \"123456789\", \"amount\": 5000000, \"term\": 24, \"loanType\": \"PERSONAL\", \"status\": \"PENDING_REVIEW\" } }";
     public static final String LOAN_TEXT_ERROR_VALIDATION =  "Error de validación";
     public static final String LOAN_EXAMPLE_ERROR_VALIDATION = "{ \"code\": \"400.01\", \"message\": \"Error de validación en los datos de entrada.\", \"errors\": [ \"El campo 'amount' debe ser mayor a 0\", \"El campo 'term' es obligatorio\" ] }";
-    public static final String LOAN_EXAMPLE_VALIDATION_DUPLICATE = "{ \"code\": \"409.01\", \"message\": \"El cliente ya tiene una solicitud en proceso\" }";
     public static final String LOAN_EXAMPLE_INTERNAL_ERROR = "{ \"code\": \"500.01\", \"message\": \"Ocurrió un error inesperado. Intente nuevamente más tarde.\" }";
+
+    public static final String LOAN_GET_SUMMARY = "Obtener lista de solicitudes de préstamo";
+    public static final String LOAN_GET_DESCRIPTION = "Endpoint para consultar todas las solicitudes de préstamo con paginación. Requiere autenticación de asesor.";
+    public static final String LOAN_GET_PARAM_PAGE = "Número de página a consultar (comienza en 1)";
+    public static final String LOAN_GET_PARAM_SIZE = "Cantidad de elementos por página";
+    public static final String LOAN_TEXT_GET_LOAN_LIST = "Lista de solicitudes obtenida exitosamente";
+    public static final String LOAN_EXAMPLE_GET_RESPONSE = "{ \"content\": [ { \"amount\": 5000000.00, \"term\": 24, \"email\": \"carlos.perez@test.com\", \"fullName\": \"Carlos Perez\", \"loanType\": \"PERSONAL\", \"interestRate\": 12.00, \"requestStatus\": \"PENDING_REVIEW\", \"monthlyPayment\": 233333.33 }, { \"amount\": 8000000.00, \"term\": 36, \"email\": \"maria.gomez@test.com\", \"fullName\": \"Maria Gomez\", \"loanType\": \"CAR\", \"interestRate\": 10.00, \"requestStatus\": \"REJECTED\", \"monthlyPayment\": 244444.44 } ], \"page\": 1, \"size\": 10, \"total\": 14, \"totalPages\": 2 }";
+
 
     public static final String LOAN_ROUTER_OPERATION_POST = "createLoan";
     public static final String LOAN_ROUTER_OPERATION_GET = "getLoanList";

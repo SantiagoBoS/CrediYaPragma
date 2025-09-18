@@ -1,15 +1,19 @@
 package co.com.pragma.api.loan.router;
 
+import co.com.pragma.api.loan.dto.LoanListResponseDTO;
 import co.com.pragma.api.loan.handler.LoanHandler;
 import co.com.pragma.api.loan.dto.LoanDTO;
 import co.com.pragma.api.loan.handler.LoanListHandler;
 import co.com.pragma.model.constants.SwaggerConstants;
 import co.com.pragma.model.constants.ApiPaths;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springdoc.core.annotations.RouterOperations;
 import org.springframework.context.annotation.Bean;
@@ -33,12 +37,18 @@ public class LoanRouter {
                 responses = {
                     @ApiResponse( responseCode = SwaggerConstants.CREATE_CODE, description = SwaggerConstants.LOAN_CREATE_MESSAGE, content = @Content( schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject( name = SwaggerConstants.LOAN_TEXT_VALIDATION_CORRECT, value = SwaggerConstants.LOAN_EXAMPLE_VALIDATION_CORRECT)})),
                     @ApiResponse( responseCode = SwaggerConstants.VALIDATION_CODE, description = SwaggerConstants.VALIDATION_MESSAGE, content = @Content(schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject( name = SwaggerConstants.LOAN_TEXT_ERROR_VALIDATION, value = SwaggerConstants.LOAN_EXAMPLE_ERROR_VALIDATION)})),
-                    @ApiResponse( responseCode = SwaggerConstants.CONFLICT_CODE, description = SwaggerConstants.LOAN_CONFLICT_MESSAGE, content = @Content(schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject( name = SwaggerConstants.LOAN_CONFLICT_MESSAGE, value = SwaggerConstants.LOAN_EXAMPLE_VALIDATION_DUPLICATE)})),
                     @ApiResponse( responseCode = SwaggerConstants.INTERNAL_ERROR_CODE, description = SwaggerConstants.INTERNAL_ERROR_MESSAGE, content = @Content(schema = @Schema(implementation = ApiResponse.class), examples = { @ExampleObject( name = SwaggerConstants.INTERNAL_ERROR_MESSAGE, value = SwaggerConstants.LOAN_EXAMPLE_INTERNAL_ERROR)}))
                 }
             )
         ),
-        @RouterOperation(path = ApiPaths.LOAN_BASE, beanClass = LoanListHandler.class, beanMethod = SwaggerConstants.LOAN_ROUTER_OPERATION_GET, method = GET)
+        @RouterOperation(path = ApiPaths.LOAN_BASE, beanClass = LoanListHandler.class, beanMethod = SwaggerConstants.LOAN_ROUTER_OPERATION_GET, method = GET,
+            operation = @Operation(operationId = SwaggerConstants.LOAN_ROUTER_OPERATION_GET, summary = SwaggerConstants.LOAN_GET_SUMMARY, description = SwaggerConstants.LOAN_GET_DESCRIPTION, parameters = {@Parameter(name = "page", description = SwaggerConstants.LOAN_GET_PARAM_PAGE, in = ParameterIn.QUERY, schema = @Schema(type = "integer", defaultValue = "1", minimum = "1")), @Parameter(name = "size", description = SwaggerConstants.LOAN_GET_PARAM_SIZE, in = ParameterIn.QUERY, schema = @Schema(type = "integer", defaultValue = "10", minimum = "1", maximum = "100"))},
+                security = @SecurityRequirement(name = "Bearer Authentication"),
+                responses = {
+                    @ApiResponse(responseCode = SwaggerConstants.OK_CODE, description = SwaggerConstants.LOAN_TEXT_GET_LOAN_LIST, content = @Content(schema = @Schema(implementation = LoanListResponseDTO.class), examples = @ExampleObject(name = SwaggerConstants.TEXT_VALIDATION_CORRECT, value = SwaggerConstants.LOAN_EXAMPLE_GET_RESPONSE)))
+                }
+            )
+        )
     })
     public RouterFunction<ServerResponse> loanRoutes(
             LoanHandler loanHandler,
