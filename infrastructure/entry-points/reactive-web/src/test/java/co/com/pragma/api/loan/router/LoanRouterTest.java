@@ -1,13 +1,12 @@
-package co.com.pragma.api.loan;
+package co.com.pragma.api.loan.router;
 
 import co.com.pragma.api.loan.handler.LoanHandler;
 import co.com.pragma.api.loan.handler.LoanListHandler;
-import co.com.pragma.api.loan.router.LoanRouter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.function.server.*;
+import org.springframework.web.reactive.function.server.ServerResponse;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -17,7 +16,8 @@ class LoanRouterTest {
     private LoanHandler loanHandler;
     private LoanListHandler loanListHandler;
     private WebTestClient webTestClient;
-    private final String BASE_URL_SOLICITUD = "/solicitud";
+
+    private static final String BASE_URL_SOLICITUD = "/solicitud";
 
     @BeforeEach
     void setUp() {
@@ -25,7 +25,6 @@ class LoanRouterTest {
         loanListHandler = Mockito.mock(LoanListHandler.class);
 
         LoanRouter router = new LoanRouter();
-
         webTestClient = WebTestClient.bindToRouterFunction(router.loanRoutes(loanHandler, loanListHandler))
                 .configureClient()
                 .baseUrl("/api/v1")
@@ -45,7 +44,6 @@ class LoanRouterTest {
     @Test
     void shouldRouteToGetLoanList() {
         when(loanListHandler.getLoanList(any())).thenReturn(ServerResponse.ok().bodyValue("list"));
-
         webTestClient.get()
                 .uri(BASE_URL_SOLICITUD)
                 .exchange()
