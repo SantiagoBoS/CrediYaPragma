@@ -1,6 +1,5 @@
-package co.com.pragma.model.loan;
+package co.com.pragma.api.loan.dto;
 
-import co.com.pragma.model.loan.constants.RequestStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,14 +11,13 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoanList {
+public class LoanListResponseDTO {
     private BigDecimal amount;
     private Integer term;
     private String email;
     private String fullName;
     private String loanType;
     private BigDecimal interestRate;
-    private RequestStatus requestStatus;
-    private BigDecimal baseSalary;
+    private String requestStatus;
     private BigDecimal monthlyPayment;
 }

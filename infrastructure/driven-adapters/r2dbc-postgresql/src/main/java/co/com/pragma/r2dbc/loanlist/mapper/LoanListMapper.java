@@ -1,6 +1,7 @@
 package co.com.pragma.r2dbc.loanlist.mapper;
 
 import co.com.pragma.model.loan.LoanList;
+import co.com.pragma.model.loan.constants.RequestStatus;
 import co.com.pragma.r2dbc.loanlist.entity.LoanListEntity;
 
 public class LoanListMapper {
@@ -12,7 +13,7 @@ public class LoanListMapper {
                 .fullName(entity.getFirstName() + " " + entity.getLastName())
                 .loanType(entity.getLoanType())
                 .interestRate(entity.getInterestRate())
-                .requestStatus(entity.getRequestStatus())
+                .requestStatus(RequestStatus.valueOf(entity.getRequestStatus()))
                 .baseSalary(entity.getBaseSalary())
                 .monthlyPayment(entity.getMonthlyPayment())
                 .build();

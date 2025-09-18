@@ -5,10 +5,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.ReactiveQueryByExampleExecutor;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 public interface LoanListReactiveRepository extends ReactiveCrudRepository<LoanListEntity, String>, ReactiveQueryByExampleExecutor<LoanListEntity> {
-    Flux<LoanListEntity> findByRequestStatusIn(List<String> statuses, Pageable pageable);
-
+    Flux<LoanListEntity> findByRequestStatusIn(List<String> statuses);
+    Mono<Long> countByRequestStatusIn(List<String> statuses);
 }

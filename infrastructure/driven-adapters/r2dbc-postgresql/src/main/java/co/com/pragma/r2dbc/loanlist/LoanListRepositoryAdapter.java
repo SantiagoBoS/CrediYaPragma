@@ -9,28 +9,33 @@ import co.com.pragma.r2dbc.loanlist.entity.LoanListEntity;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 @Repository
 public class LoanListRepositoryAdapter extends ReactiveAdapterOperations<LoanList, LoanListEntity, String, LoanListReactiveRepository> implements LoanListRepository {
     private final LoanListReactiveRepository repository;
-    private final TransactionalOperator tsOperator;
 
-    protected LoanListRepositoryAdapter(LoanListReactiveRepository repository, ObjectMapper mapper, TransactionalOperator tsOperator) {
+    protected LoanListRepositoryAdapter(LoanListReactiveRepository repository, ObjectMapper mapper) {
         super(repository, mapper, d -> mapper.map(d, LoanList.class));
         this.repository = repository;
-        this.tsOperator = tsOperator;
     }
 
     @Override
-    public Flux<LoanList> findByStatuses(List<RequestStatus> statuses, Integer page, Integer size) {
-        var pageable = PageRequest.of(page, size);
+    public Flux<LoanList> findByStatuses(List<RequestStatus> statuses, int page, int size) {
         var statusNames = statuses.stream().map(Enum::name).toList();
-        return repository.findByRequestStatusIn(statusNames, pageable)
-                .map(LoanListMapper::toDomain)
-                .as(tsOperator::transactional);
+        /*var pageable = PageRequest.of(page, size);*/
+        return repository.findByRequestStatusIn(statusNames)
+                .skip((long) page * size)
+                .take(size)
+                .map(LoanListMapper::toDomain);
+    }
+
+    @Override
+    public Mono<Long> countByStatuses(List<RequestStatus> statuses) {
+        var statusNames = statuses.stream().map(Enum::name).toList();
+        return repository.countByRequestStatusIn(statusNames);
     }
 }

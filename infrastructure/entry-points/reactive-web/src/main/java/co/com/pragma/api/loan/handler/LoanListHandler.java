@@ -1,6 +1,8 @@
 package co.com.pragma.api.loan.handler;
 
-import co.com.pragma.model.loan.LoanList;
+import co.com.pragma.api.loan.dto.LoanListResponseDTO;
+import co.com.pragma.api.loan.dto.PageResponseDTO;
+import co.com.pragma.api.loan.mapper.LoanListResponseMapper;
 import co.com.pragma.model.loan.constants.RequestStatus;
 import co.com.pragma.usecase.loanlist.LoanListUseCase;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +23,8 @@ public class LoanListHandler {
 
     public Mono<ServerResponse> getLoanList(ServerRequest request) {
         String statusesParam = request.queryParam("statuses").orElse("");
-        Integer page = Integer.parseInt(request.queryParam("page").orElse("0"));
-        Integer size = Integer.parseInt(request.queryParam("size").orElse("10"));
+        int page = Integer.parseInt(request.queryParam("page").orElse("0"));
+        int size = Integer.parseInt(request.queryParam("size").orElse("10"));
 
         List<RequestStatus> statuses = statusesParam.isBlank()
                 ? List.of()
@@ -31,7 +33,26 @@ public class LoanListHandler {
                 .map(RequestStatus::valueOf)
                 .toList();
 
-        Flux<LoanList> loans = loanListUseCase.list(statuses, page, size);
-        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(loans, LoanList.class);
+        // Flux de resultados paginados
+        Flux<LoanListResponseDTO> loans = loanListUseCase.list(statuses, page, size).map(LoanListResponseMapper::toDto);
+
+        // Count total para calcular paginación
+        Mono<Long> totalCount = loanListUseCase.countByStatuses(statuses);
+
+        return loans.collectList()
+                .zipWith(totalCount)
+                .flatMap(tuple -> {
+                    var content = tuple.getT1();
+                    var total = tuple.getT2();
+
+                    PageResponseDTO<LoanListResponseDTO> response = PageResponseDTO.<LoanListResponseDTO>builder().content(content)
+                            .page(page)
+                            .size(size)
+                            .total(total)
+                            .totalPages((int) Math.ceil((double) total / size))
+                            .build();
+
+                    return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(response);
+                });
     }
 }
