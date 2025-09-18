@@ -19,6 +19,7 @@ public class SecurityConfig {
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http, JwtAuthenticationWebFilter jwtFilter) {
         return http.csrf(ServerHttpSecurity.CsrfSpec::disable)
             .authorizeExchange(exchanges -> exchanges
+                .pathMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/webjars/**").permitAll()
                 .pathMatchers(ApiPaths.AUTH_BASE).permitAll()
                 .pathMatchers(HttpMethod.GET, ApiPaths.USER_BASE + "/**").authenticated()
                 .pathMatchers(HttpMethod.POST, ApiPaths.USER_BASE + "/**").hasAnyRole(UserRoles.ADMIN, UserRoles.ASESOR)
