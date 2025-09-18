@@ -29,6 +29,7 @@ public class JwtAuthenticationWebFilter implements WebFilter {
 
         String token = authHeader.substring(7);
 
+        //Autentica el token JWT authentication manager
         return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(token, token))
                 .flatMap(auth -> chain.filter(exchange)
                         .contextWrite(ReactiveSecurityContextHolder.withAuthentication(auth)))
