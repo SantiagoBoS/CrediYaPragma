@@ -4,6 +4,7 @@ import io.r2dbc.pool.ConnectionPool;
 import io.r2dbc.pool.ConnectionPoolConfiguration;
 import io.r2dbc.postgresql.PostgresqlConnectionConfiguration;
 import io.r2dbc.postgresql.PostgresqlConnectionFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,17 +16,34 @@ public class PostgreSQLConnectionPool {
     public static final int INITIAL_SIZE = 12;
     public static final int MAX_SIZE = 15;
     public static final int MAX_IDLE_TIME = 30;
-    public static final int DEFAULT_PORT = 5432;
+
+    @Value("${DB_HOST}")
+    String host;
+
+    @Value("${DB_PORT}")
+    Integer port;
+
+    @Value("${DB_NAME}")
+    String database;
+
+    @Value("${DB_SCHEMA}")
+    String schema;
+
+    @Value("${DB_USERNAME}")
+    String username;
+
+    @Value("${DB_PASSWORD}")
+    String password;
 
 	@Bean
 	public ConnectionPool getConnectionConfig(PostgresqlConnectionProperties properties) {
 		PostgresqlConnectionConfiguration dbConfiguration = PostgresqlConnectionConfiguration.builder()
-                .host("localhost")
-                .port(DEFAULT_PORT)
-                .database("crediya")
-                .schema("public")
-                .username("postgres")
-                .password("123456789")
+                .host(host)
+                .port(port)
+                .database(database)
+                .schema(schema)
+                .username(username)
+                .password(password)
                 .build();
 
         ConnectionPoolConfiguration poolConfiguration = ConnectionPoolConfiguration.builder()

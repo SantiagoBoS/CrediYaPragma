@@ -1,3 +1,4 @@
+apply plugin: 'info.solidsoft.pitest.aggregator'
 
 allprojects {
     repositories {
@@ -11,6 +12,7 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'jacoco'
     apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'info.solidsoft.pitest'
 
     compileJava.dependsOn validateStructure
 
@@ -18,7 +20,6 @@ subprojects {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
-
 
     test {
         useJUnitPlatform()
@@ -29,14 +30,15 @@ subprojects {
         implementation 'io.projectreactor.addons:reactor-extra'
 
         testImplementation 'io.projectreactor.tools:blockhound-junit-platform:1.0.13.RELEASE'
-
         testImplementation 'io.projectreactor:reactor-test'
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
         compileOnly "org.projectlombok:lombok:${lombokVersion}"
-        annotationProcessor  "org.projectlombok:lombok:${lombokVersion}"
-        testCompileOnly  "org.projectlombok:lombok:${lombokVersion}"
-        testAnnotationProcessor  "org.projectlombok:lombok:${lombokVersion}"
+        annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+        testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+        testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
         implementation platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
     }
 
@@ -48,19 +50,33 @@ subprojects {
         }
     }
 
-    test.finalizedBy(project.tasks.jacocoTestReport)
-
-
     jacocoTestReport {
-        dependsOn test, 'pitest'
+        dependsOn test
         reports {
-            xml.setRequired true
-            xml.setOutputLocation layout.buildDirectory.file("reports/jacoco.xml")
-            csv.setRequired false
-            html.setOutputLocation layout.buildDirectory.dir("reports/jacocoHtml")
+            xml.required.set(true)
+            xml.outputLocation = layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml")
+            csv.required.set(false)
+            html.required.set(true)
+            html.outputLocation = layout.buildDirectory.dir("reports/jacoco/test/html")
         }
     }
 
+    pitest {
+        targetClasses = ['co.com.pragma.*']
+        excludedClasses = []
+        excludedTestClasses = []
+        pitestVersion = '1.20.1'
+        verbose = false
+        outputFormats = ['XML', 'HTML']
+        threads = 8
+        exportLineCoverage = true
+        useClasspathFile = true
+        timestampedReports = false
+        fileExtensionsToFilter.addAll('xml', 'orbit')
+        junit5PluginVersion = '1.2.2'
+        failWhenNoMutations = false
+        jvmArgs = ["-XX:+AllowRedefinitionToAddDeleteMethods"]
+    }
 }
 
 jacoco {
@@ -69,15 +85,17 @@ jacoco {
 }
 
 tasks.register('jacocoMergedReport', JacocoReport) {
-    dependsOn = [test, subprojects.jacocoTestReport, pitestReportAggregate]
+    dependsOn = [test, subprojects.jacocoTestReport]
     additionalSourceDirs.setFrom files(subprojects.sourceSets.main.allSource.srcDirs)
     sourceDirectories.setFrom files(subprojects.sourceSets.main.allSource.srcDirs)
     classDirectories.setFrom files(subprojects.sourceSets.main.output)
     executionData.setFrom project.fileTree(dir: '.', include: '**/build/jacoco/test.exec')
     reports {
-        xml.setRequired true
-        csv.setRequired false
-        html.setRequired true
+        xml.required.set(true)
+        xml.outputLocation = layout.buildDirectory.file("reports/jacocoMergedReport/jacocoMergedReport.xml")
+        csv.required.set(false)
+        html.required.set(true)
+        html.outputLocation = layout.buildDirectory.dir("reports/jacocoMergedReport/html")
     }
 }
 
@@ -87,7 +105,7 @@ tasks.withType(JavaCompile).configureEach {
     ]
 }
 
-tasks.register('pitestReportAggregate') {
+pitestReportAggregate {
     doLast {
         def reportDir = layout.buildDirectory.dir("reports/pitest").get().asFile
         def consolidatedReport = new File(reportDir, 'mutations.xml')
@@ -109,4 +127,8 @@ tasks.register('pitestReportAggregate') {
 
 tasks.named('wrapper') {
     gradleVersion = '8.14.3'
+}
+
+tasks.named("clean") {
+    delete layout.buildDirectory
 }

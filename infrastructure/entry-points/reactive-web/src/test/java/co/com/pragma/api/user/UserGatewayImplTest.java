@@ -1,0 +1,80 @@
+package co.com.pragma.api.user;
+
+import co.com.pragma.api.user.config.UserServiceProperties;
+import co.com.pragma.model.constants.AppMessages;
+import co.com.pragma.model.exceptions.BusinessException;
+import co.com.pragma.model.loan.gateways.UserGateway;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+
+class UserGatewayImplTest {
+
+    private UserServiceProperties properties;
+    private WebClient.Builder webClientBuilder;
+    private UserGateway userGateway;
+
+    @BeforeEach
+    void setUp() {
+        properties = mock(UserServiceProperties.class);
+        when(properties.getBaseUrl()).thenReturn("http://localhost");
+
+        webClientBuilder = WebClient.builder();
+        userGateway = new UserGatewayImpl(webClientBuilder, properties);
+    }
+
+    @Test
+    void existsByDocumentShouldReturnTrue() {
+        // Simulamos una respuesta exitosa de WebClient
+        UserGatewayImpl spyGateway = spy((UserGatewayImpl) userGateway);
+        doReturn(Mono.just(true)).when(spyGateway).existsByDocument(anyString());
+
+        StepVerifier.create(spyGateway.existsByDocument("12345"))
+                .expectNext(true)
+                .verifyComplete();
+    }
+
+    @Test
+    void existsByDocumentShouldReturnErrorWhenUserNotFound() {
+        //Verifica que no encuentra el usuario
+        UserGatewayImpl spyGateway = spy((UserGatewayImpl) userGateway);
+        doReturn(Mono.error(new BusinessException(AppMessages.USER_NOT_EXIST.getMessage())))
+                .when(spyGateway).existsByDocument(anyString());
+
+        StepVerifier.create(spyGateway.existsByDocument("99999"))
+                .expectErrorMatches(throwable ->
+                        throwable instanceof BusinessException &&
+                                throwable.getMessage().equals(AppMessages.USER_NOT_EXIST.getMessage()))
+                .verify();
+    }
+
+    @Test
+    void existsByDocumentTokenShouldReturnTrue() {
+        //Verifica que mediante el token si existe el usuario
+        UserGatewayImpl spyGateway = spy((UserGatewayImpl) userGateway);
+        doReturn(Mono.just(true)).when(spyGateway).existsByDocumentToken(anyString(), anyString());
+
+        StepVerifier.create(spyGateway.existsByDocumentToken("12345", "token"))
+                .expectNext(true)
+                .verifyComplete();
+    }
+
+    @Test
+    void existsByDocumentTokenShouldReturnErrorWhenUserNotFound() {
+        //Devuelve error por que no encuentra el usuario
+        UserGatewayImpl spyGateway = spy((UserGatewayImpl) userGateway);
+        doReturn(Mono.error(new BusinessException(AppMessages.USER_NOT_EXIST.getMessage())))
+                .when(spyGateway).existsByDocumentToken(anyString(), anyString());
+
+        StepVerifier.create(spyGateway.existsByDocumentToken("99999", "token"))
+                .expectErrorMatches(throwable ->
+                        throwable instanceof BusinessException &&
+                                throwable.getMessage().equals(AppMessages.USER_NOT_EXIST.getMessage()))
+                .verify();
+    }
+}
