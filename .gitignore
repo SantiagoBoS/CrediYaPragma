@@ -336,4 +336,5 @@ gradle-app.setting
 build-cache
 
 #ENV
-applications/app-service/.env
+applications/app-service/.env.backup
+.env

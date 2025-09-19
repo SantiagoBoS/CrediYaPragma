@@ -1,0 +1,76 @@
+services:
+  # Service Loan
+  loan-service:
+    build:
+      context: .
+      dockerfile: applications/app-service/Dockerfile
+    container_name: crediya-loan-service
+    ports:
+      - ${LOAN_SERVICE_PORT}
+    environment:
+      - SPRING_PROFILES_ACTIVE=loan,docker
+      - SERVER_PORT=${LOAN_PORT}
+    env_file:
+      - .env
+    depends_on:
+      - postgres-db
+    networks:
+      - ${NETWORK} # Red docker
+    restart: unless-stopped
+
+  # Service User
+  user-service:
+    build:
+      context: .
+      dockerfile: applications/app-service/Dockerfile
+    container_name: crediya-user-service
+    ports:
+      - ${USER_SERVICE_PORT}
+    environment:
+      - SPRING_PROFILES_ACTIVE=user,docker
+      - SERVER_PORT=${USER_PORT}
+    env_file:
+      - .env
+    depends_on:
+      - postgres-db
+    networks:
+      - ${NETWORK}
+    restart: unless-stopped
+
+  # BD
+  postgres-db:
+    image: postgres:13-alpine
+    container_name: ${CONTAINER_NAME}
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - ${BD_SERVICE_PORT}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - ${NETWORK}
+    restart: unless-stopped
+
+  # Admin Web BD
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: crediya-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - ${BD_WEB_SERVICE_PORT}
+    depends_on:
+      - postgres-db
+    networks:
+      - ${NETWORK}
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+
+networks:
+  crediya-network:
+    driver: bridge
