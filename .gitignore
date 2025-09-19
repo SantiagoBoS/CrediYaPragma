@@ -338,3 +338,8 @@ build-cache
 #ENV
 applications/app-service/.env.backup
 .env
+*.env
+.env.local
+.env.development
+.env.production
+.env.test
