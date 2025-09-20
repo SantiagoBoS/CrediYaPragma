@@ -1,8 +1,8 @@
 package co.com.pragma.usecase.loanlist;
 
-import co.com.pragma.model.loan.LoanList;
+import co.com.pragma.model.loan.loanlist.LoanList;
 import co.com.pragma.model.loan.constants.RequestStatus;
-import co.com.pragma.model.loan.gateways.LoanListRepository;
+import co.com.pragma.model.loan.loanlist.gateways.LoanListRepository;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

@@ -1,19 +1,18 @@
 package co.com.pragma.usecase.loan;
 
-import co.com.pragma.model.loan.LoanRequest;
+import co.com.pragma.model.loan.loanrequest.LoanRequest;
 import co.com.pragma.model.constants.AppMessages;
-import co.com.pragma.model.loan.LoanType;
+import co.com.pragma.model.loan.loantype.LoanType;
 import co.com.pragma.model.loan.constants.RequestStatus;
 import co.com.pragma.model.exceptions.BusinessException;
-import co.com.pragma.model.loan.gateways.LoanRepository;
-import co.com.pragma.model.loan.gateways.LoanTypeRepository;
-import co.com.pragma.model.loan.gateways.UserGateway;
+import co.com.pragma.model.loan.loanrequest.gateways.LoanRepository;
+import co.com.pragma.model.loan.loantype.gateways.LoanTypeRepository;
+import co.com.pragma.model.user.gateways.UserDocumentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -28,7 +27,7 @@ class LoanUseCaseTest {
     private LoanRepository loanRepository;
 
     @Mock
-    private UserGateway userGateway;
+    private UserDocumentRepository userDocumentRepository;
 
     @Mock
     private LoanTypeRepository loanTypeRepository;
@@ -64,7 +63,7 @@ class LoanUseCaseTest {
     @Test
     void shouldRegisterLoanRequestSuccessfully() {
         //Valida que se registre una solicitud de préstamo exitosamente
-        when(userGateway.existsByDocumentToken("12345", token)).thenReturn(Mono.just(true));
+        when(userDocumentRepository.existsByDocumentToken("12345", token)).thenReturn(Mono.just(true));
         when(loanTypeRepository.findByCode("PERSONAL")).thenReturn(Mono.just(loanType));
         when(loanRepository.save(any())).thenReturn(Mono.just(loanRequest));
 
@@ -82,7 +81,7 @@ class LoanUseCaseTest {
     @Test
     void shouldThrowDuplicateExceptionFromRepository() {
         //Valida que se lance una excepción de duplicado cuando el repositorio lo indique
-        when(userGateway.existsByDocumentToken("12345", token)).thenReturn(Mono.just(true));
+        when(userDocumentRepository.existsByDocumentToken("12345", token)).thenReturn(Mono.just(true));
         when(loanTypeRepository.findByCode("PERSONAL")).thenReturn(Mono.just(loanType));
         when(loanRepository.save(any()))
                 .thenReturn(Mono.error(new BusinessException(AppMessages.LOAN_DUPLICATE_APPLICATION.getMessage())));
@@ -99,7 +98,7 @@ class LoanUseCaseTest {
     @Test
     void shouldThrowGenericBusinessExceptionOnUnexpectedError() {
         //Valida que se lance una excepción genérica cuando ocurre un error inesperado
-        when(userGateway.existsByDocumentToken("12345", token)).thenReturn(Mono.just(true));
+        when(userDocumentRepository.existsByDocumentToken("12345", token)).thenReturn(Mono.just(true));
         when(loanTypeRepository.findByCode("PERSONAL")).thenReturn(Mono.just(loanType));
         when(loanRepository.save(any())).thenReturn(Mono.error(new BusinessException(AppMessages.LOAN_INTERNAL_ERROR.getMessage())));
 
@@ -113,7 +112,7 @@ class LoanUseCaseTest {
 
     @Test
     void shouldProceedWhenUserGatewayReturnsEmpty() {
-        when(userGateway.existsByDocumentToken("12345", token)).thenReturn(Mono.empty());
+        when(userDocumentRepository.existsByDocumentToken("12345", token)).thenReturn(Mono.empty());
         when(loanTypeRepository.findByCode("PERSONAL")).thenReturn(Mono.just(loanType));
         when(loanRepository.save(any())).thenReturn(Mono.just(loanRequest));
 

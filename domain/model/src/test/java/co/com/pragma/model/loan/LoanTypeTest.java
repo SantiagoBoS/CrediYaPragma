@@ -1,5 +1,6 @@
 package co.com.pragma.model.loan;
 
+import co.com.pragma.model.loan.loantype.LoanType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -1,0 +1,44 @@
+package co.com.pragma.r2dbc.loan.loan;
+
+import co.com.pragma.model.loan.loanrequest.LoanRequest;
+import co.com.pragma.model.constants.AppMessages;
+import co.com.pragma.model.exceptions.BusinessException;
+import co.com.pragma.model.loan.loanrequest.gateways.LoanRepository;
+import co.com.pragma.r2dbc.loan.loan.entity.LoanEntity;
+import co.com.pragma.r2dbc.helper.ReactiveAdapterOperations;
+import org.reactivecommons.utils.ObjectMapper;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.reactive.TransactionalOperator;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+@Repository
+public class LoanRepositoryAdapter extends ReactiveAdapterOperations<LoanRequest, LoanEntity, String, LoanReactiveRepository> implements LoanRepository {
+    private final LoanReactiveRepository repository;
+    private final ObjectMapper mapper;
+    private final TransactionalOperator tsOperator;
+
+    public LoanRepositoryAdapter(LoanReactiveRepository repository, ObjectMapper mapper, TransactionalOperator tsOperator) {
+        super(repository, mapper, d -> mapper.map(d, LoanRequest.class));
+        this.repository = repository;
+        this.mapper = mapper;
+        this.tsOperator = tsOperator;
+    }
+
+    @Override
+    public Mono<LoanRequest> save(LoanRequest loanRequest) {
+        return super.save(loanRequest)
+            .as(tsOperator::transactional)
+            .onErrorResume(throwable -> {
+                if (throwable.getMessage() != null && throwable.getMessage().contains("duplicate")) {
+                    return Mono.error(new BusinessException(AppMessages.LOAN_DUPLICATE_APPLICATION));
+                }
+                return Mono.error(new BusinessException(AppMessages.LOAN_INTERNAL_ERROR));
+            });
+    }
+
+    @Override
+    public Flux<LoanRequest> findAll() {
+        return repository.findAll().map(this::toEntity).as(tsOperator::transactional);
+    }
+}

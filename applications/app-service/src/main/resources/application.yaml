@@ -30,6 +30,19 @@ management:
       probes:
         enabled: true
 
+  aws:
+    region: us-east-1 # Cambia según tu región preferida
+    sqs:
+      queue-url: ${AWS_SQS_QUEUE_URL:http://localhost:4566/000000000000/credinya-notifications} # URL para LocalStack o AWS real
+    credentials:
+      access-key-id: ${AWS_ACCESS_KEY_ID:fakeAccessKey} # Usará placeholders para desarrollo
+      secret-access-key: ${AWS_SECRET_ACCESS_KEY:fakeSecretKey}
+
+  app:
+    sqs:
+      enabled: ${SQS_ENABLED:false} # Bandera para activar/desactivar el envío real a SQS
+
+
 cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080,http://localhost:8081"
 

@@ -1,6 +1,6 @@
 package co.com.pragma.api.loan.handler;
 
-import co.com.pragma.model.loan.LoanList;
+import co.com.pragma.model.loan.loanlist.LoanList;
 import co.com.pragma.model.loan.constants.RequestStatus;
 import co.com.pragma.usecase.loanlist.LoanListUseCase;
 import org.junit.jupiter.api.BeforeEach;

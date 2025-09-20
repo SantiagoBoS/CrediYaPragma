@@ -7,8 +7,8 @@ import co.com.pragma.model.constants.AppMessages;
 import co.com.pragma.api.util.ValidationUtils;
 import co.com.pragma.model.constants.ErrorCode;
 import co.com.pragma.model.exceptions.BusinessException;
-import co.com.pragma.model.loan.LoanRequest;
-import co.com.pragma.model.loan.gateways.UserGateway;
+import co.com.pragma.model.loan.loanrequest.LoanRequest;
+import co.com.pragma.model.user.gateways.UserDocumentRepository;
 import co.com.pragma.usecase.loan.LoanUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,7 +25,7 @@ import reactor.core.publisher.Mono;
 public class LoanHandler {
     private final LoanUseCase loanUseCase;
     private final Validator validator;
-    private final UserGateway userGateway;
+    private final UserDocumentRepository userDocumentRepository;
 
     public Mono<ServerResponse> createLoan(ServerRequest request) {
         String token = request.headers().firstHeader("Authorization");

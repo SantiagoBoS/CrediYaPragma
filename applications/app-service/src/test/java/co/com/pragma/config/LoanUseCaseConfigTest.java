@@ -1,8 +1,8 @@
 package co.com.pragma.config;
 
-import co.com.pragma.model.loan.gateways.LoanRepository;
-import co.com.pragma.model.loan.gateways.LoanTypeRepository;
-import co.com.pragma.model.loan.gateways.UserGateway;
+import co.com.pragma.model.loan.loanrequest.gateways.LoanRepository;
+import co.com.pragma.model.loan.loantype.gateways.LoanTypeRepository;
+import co.com.pragma.model.user.gateways.UserDocumentRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -30,8 +30,8 @@ class LoanUseCaseConfigTest {
         }
 
         @Bean
-        public UserGateway userGateway() {
-            return mock(UserGateway.class);
+        public UserDocumentRepository userGateway() {
+            return mock(UserDocumentRepository.class);
         }
 
         @Bean
