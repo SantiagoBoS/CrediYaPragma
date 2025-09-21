@@ -7,6 +7,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
-public interface LoanUpdateReactiveRepository extends ReactiveCrudRepository<LoanEntity, String>, ReactiveQueryByExampleExecutor<LoanEntity> {
+public interface LoanUpdateReactiveRepository extends ReactiveCrudRepository<LoanEntity, Long>, ReactiveQueryByExampleExecutor<LoanEntity> {
     Mono<LoanEntity> findByPublicId(UUID publicId);
 }
