@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -17,6 +18,9 @@ import java.time.LocalDateTime;
 public class LoanEntity {
     @Id
     private String id;
+
+    @Column(name = "public_id")
+    private UUID publicId;
 
     @Column(name = "client_document")
     private String clientDocument;

@@ -2,33 +2,45 @@ services:
   # Service Loan
   loan-service:
     build:
-      context: .
-      dockerfile: applications/app-service/Dockerfile
+      # context: .
+      # dockerfile: applications/app-service/Dockerfile
+      context: ./applications/app-service
+      dockerfile: Dockerfile
     container_name: crediya-loan-service
     ports:
       - ${LOAN_SERVICE_PORT}
     environment:
       - SPRING_PROFILES_ACTIVE=loan,docker
       - SERVER_PORT=${LOAN_PORT}
+      - AWS_REGION=us-east-1  # ← AÑADE ESTO
+      - AWS_ACCESS_KEY_ID=fakeAccessKey  # ← AÑADE ESTO
+      - AWS_SECRET_ACCESS_KEY=fakeSecretKey  # ← AÑADE ESTO
+      - SQS_ENABLED=false  # ← AÑADE ESTO para desactivar SQS temporalmente
     env_file:
       - .env
     depends_on:
       - postgres-db
     networks:
-      - ${NETWORK} # Red docker
+      - ${NETWORK}
     restart: unless-stopped
 
   # Service User
   user-service:
     build:
-      context: .
-      dockerfile: applications/app-service/Dockerfile
+      # context: .
+      # dockerfile: applications/app-service/Dockerfile
+      context: ./applications/app-service
+      dockerfile: Dockerfile
     container_name: crediya-user-service
     ports:
       - ${USER_SERVICE_PORT}
     environment:
       - SPRING_PROFILES_ACTIVE=user,docker
       - SERVER_PORT=${USER_PORT}
+      - AWS_REGION=us-east-1  # ← AÑADE ESTO también para user-service si lo necesita
+      - AWS_ACCESS_KEY_ID=fakeAccessKey
+      - AWS_SECRET_ACCESS_KEY=fakeSecretKey
+      - SQS_ENABLED=false
     env_file:
       - .env
     depends_on:

@@ -7,7 +7,6 @@ import co.com.pragma.model.loan.loanrequest.LoanRequest;
 import co.com.pragma.model.loan.loanupdate.gateways.LoanUpdateRepository;
 import co.com.pragma.model.user.gateways.UserRepository;
 import co.com.pragma.r2dbc.helper.ReactiveAdapterOperations;
-import co.com.pragma.r2dbc.loan.loan.LoanReactiveRepository;
 import co.com.pragma.r2dbc.loan.loan.entity.LoanEntity;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Repository;
@@ -17,14 +16,19 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 @Repository
-public class LoanUpdateRepositoryAdapter extends ReactiveAdapterOperations<LoanRequest, LoanEntity, String, LoanReactiveRepository> implements LoanUpdateRepository {
+public class LoanUpdateRepositoryAdapter extends ReactiveAdapterOperations<LoanRequest, LoanEntity, String, LoanUpdateReactiveRepository> implements LoanUpdateRepository {
 
-    private final LoanReactiveRepository repository;
+    private final LoanUpdateReactiveRepository repository;
     private final ObjectMapper mapper;
     private final TransactionalOperator tsOperator;
     private final UserRepository userRepository;
 
-    public LoanUpdateRepositoryAdapter(LoanReactiveRepository repository, ObjectMapper mapper, TransactionalOperator tsOperator, UserRepository userRepository) {
+    public LoanUpdateRepositoryAdapter(
+            LoanUpdateReactiveRepository repository,
+            ObjectMapper mapper,
+            TransactionalOperator tsOperator,
+            UserRepository userRepository
+    ) {
         super(repository, mapper, d -> mapper.map(d, LoanRequest.class));
         this.repository = repository;
         this.mapper = mapper;

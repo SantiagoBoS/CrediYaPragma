@@ -5,7 +5,8 @@ FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
 # Copy the pre-built jar (built locally)
-COPY applications/app-service/build/libs/*.jar app.jar
+#COPY applications/app-service/build/libs/*.jar app.jar
+COPY build/libs/CrediYa.jar app.jar
 
 # Expose port
 EXPOSE ${LOAN_PORT}

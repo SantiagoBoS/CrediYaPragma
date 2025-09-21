@@ -8,8 +8,10 @@ import co.com.pragma.model.constants.AppMessages;
 import co.com.pragma.model.constants.ErrorCode;
 import co.com.pragma.model.loan.loanrequest.LoanRequest;
 import co.com.pragma.usecase.loan.LoanUpdateUseCase;
+import jakarta.annotation.PostConstruct;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
@@ -18,11 +20,17 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class LoanUpdateHandler {
     private final LoanUpdateUseCase loanUpdateUseCase;
     private final Validator validator;
+
+    @PostConstruct
+    public void init() {
+        log.info("✅ LoanUpdateHandler inicializado correctamente");
+    }
 
     public Mono<ServerResponse> updateLoanStatus(ServerRequest request) {
         String publicId = request.pathVariable("publicId");
