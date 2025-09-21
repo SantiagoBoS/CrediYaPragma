@@ -1,4 +1,4 @@
-package co.com.pragma.usecase.loanlist;
+package co.com.pragma.usecase.loan;
 
 import co.com.pragma.model.loan.loanlist.LoanList;
 import co.com.pragma.model.loan.constants.RequestStatus;

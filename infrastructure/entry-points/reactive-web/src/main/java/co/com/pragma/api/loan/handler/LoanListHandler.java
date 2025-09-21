@@ -4,7 +4,7 @@ import co.com.pragma.api.loan.dto.LoanListResponseDTO;
 import co.com.pragma.api.loan.dto.PageResponseDTO;
 import co.com.pragma.api.loan.mapper.LoanListResponseMapper;
 import co.com.pragma.model.loan.constants.RequestStatus;
-import co.com.pragma.usecase.loanlist.LoanListUseCase;
+import co.com.pragma.usecase.loan.LoanListUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
