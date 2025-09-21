@@ -1,7 +1,7 @@
 package co.com.pragma.r2dbc.role.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.annotation.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,9 +15,9 @@ public class RoleEntity {
     @Id
     private Long id;
 
-    @Column(name = "code")
+    @Column("code")
     private String code;
 
-    @Column(name = "description")
+    @Column("description")
     private String description;
 }

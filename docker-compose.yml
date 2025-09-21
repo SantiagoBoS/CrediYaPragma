@@ -12,14 +12,15 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=loan,docker
       - SERVER_PORT=${LOAN_PORT}
-      - AWS_REGION=us-east-1  # ← AÑADE ESTO
-      - AWS_ACCESS_KEY_ID=fakeAccessKey  # ← AÑADE ESTO
-      - AWS_SECRET_ACCESS_KEY=fakeSecretKey  # ← AÑADE ESTO
-      - SQS_ENABLED=false  # ← AÑADE ESTO para desactivar SQS temporalmente
+      - AWS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=fakeAccessKey
+      - AWS_SECRET_ACCESS_KEY=fakeSecretKey
+      - SQS_ENABLED=false
     env_file:
       - .env
     depends_on:
       - postgres-db
+      - user-service
     networks:
       - ${NETWORK}
     restart: unless-stopped
@@ -37,7 +38,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=user,docker
       - SERVER_PORT=${USER_PORT}
-      - AWS_REGION=us-east-1  # ← AÑADE ESTO también para user-service si lo necesita
+      - AWS_REGION=us-east-1
       - AWS_ACCESS_KEY_ID=fakeAccessKey
       - AWS_SECRET_ACCESS_KEY=fakeSecretKey
       - SQS_ENABLED=false

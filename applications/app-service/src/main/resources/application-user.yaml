@@ -4,3 +4,7 @@ server:
 spring:
   application:
     name: user-service
+  r2dbc:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}

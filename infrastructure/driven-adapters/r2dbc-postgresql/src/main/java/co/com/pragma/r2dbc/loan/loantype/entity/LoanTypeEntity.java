@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import jakarta.persistence.Column;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Data
@@ -17,6 +17,6 @@ public class LoanTypeEntity {
     private String code;
     private String description;
 
-    @Column(name = "interest_rate")
+    @Column("interest_rate")
     private String interestRate;
 }

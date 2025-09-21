@@ -1,7 +1,7 @@
 package co.com.pragma.r2dbc.user.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.annotation.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,33 +18,33 @@ public class UserEntity {
     @Id
     private String id;
 
-    @Column(name = "document_number")
+    @Column("document_number")
     private String documentNumber;
 
-    @Column(name = "name")
+    @Column("name")
     private String name;
 
-    @Column(name = "last_name")
+    @Column("last_name")
     private String lastName;
 
-    @Column(name = "birth_date")
+    @Column("birth_date")
     private LocalDate birthDate;
 
-    @Column(name = "address")
+    @Column("address")
     private String address;
 
-    @Column(name = "phone")
+    @Column("phone")
     private String phone;
 
-    @Column(name = "email")
+    @Column("email")
     private String email;
 
-    @Column(name = "base_salary")
+    @Column("base_salary")
     private BigDecimal baseSalary;
 
-    @Column(name = "password")
+    @Column("password")
     private String password;
 
-    @Column(name = "role")
+    @Column("role")
     private String role;
 }

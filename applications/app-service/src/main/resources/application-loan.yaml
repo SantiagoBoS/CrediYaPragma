@@ -4,7 +4,11 @@ server:
 spring:
   application:
     name: loan-service
+  r2dbc:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
 user:
   service:
-    base-url: http://localhost:8081
+    base-url: http://user-service:8081
