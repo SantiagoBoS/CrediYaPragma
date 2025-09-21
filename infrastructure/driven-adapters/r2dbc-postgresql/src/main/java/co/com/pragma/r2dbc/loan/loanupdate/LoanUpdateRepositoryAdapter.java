@@ -61,6 +61,10 @@ public class LoanUpdateRepositoryAdapter extends ReactiveAdapterOperations<LoanR
                 .doOnSuccess(updated -> log.info("Préstamo actualizado exitosamente"))
                 .as(tsOperator::transactional)
                 .onErrorResume(throwable -> {
+                    log.error("Error en updateStatus: {}", throwable.getMessage(), throwable);
+                    if (throwable instanceof BusinessException) {
+                        return Mono.error(throwable);
+                    }
                     return Mono.error(new BusinessException(AppMessages.LOAN_UPDATE_ERROR));
                 });
 

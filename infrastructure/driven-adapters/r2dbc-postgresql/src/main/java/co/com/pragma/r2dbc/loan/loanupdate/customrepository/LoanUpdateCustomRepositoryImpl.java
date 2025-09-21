@@ -26,6 +26,7 @@ public class LoanUpdateCustomRepositoryImpl implements LoanUpdateCustomRepositor
         return entityTemplate.select(LoanEntity.class)
                 .matching(Query.query(Criteria.where("public_id").is(publicId)))
                 .one()
+                .switchIfEmpty(Mono.error(new BusinessException(AppMessages.LOAN_NOT_FOUND)))
                 .flatMap(entity -> {
                     entity.setStatus(status);
                     entity.setAdvisorId(advisorId);
@@ -33,6 +34,9 @@ public class LoanUpdateCustomRepositoryImpl implements LoanUpdateCustomRepositor
                     return entityTemplate.update(entity);
                 })
                 .onErrorResume(throwable -> {
+                    if (throwable instanceof BusinessException) {
+                        return Mono.error(throwable);
+                    }
                     return Mono.error(new BusinessException(AppMessages.LOAN_UPDATE_ERROR));
                 });
     }
