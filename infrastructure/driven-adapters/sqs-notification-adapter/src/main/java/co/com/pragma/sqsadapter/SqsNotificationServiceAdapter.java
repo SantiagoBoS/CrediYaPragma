@@ -1,7 +1,7 @@
 package co.com.pragma.sqsadapter;
 
 import co.com.pragma.sqsadapter.config.SqsProperties;
-import co.com.pragma.model.loan.loannotification.gateways.NotificationServiceGateway;
+import co.com.pragma.model.sqsnotification.gateways.NotificationServiceGateway;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;

@@ -10,6 +10,7 @@ public final class SwaggerConstants {
     public static final String CREATE_CODE = "201";
     public static final String VALIDATION_CODE = "400";
     public static final String UNAUTHORIZED_CODE = "401";
+    public static final String NOT_FOUND = "404";
     public static final String CONFLICT_CODE = "409";
     public static final String INTERNAL_ERROR_CODE = "500";
 
@@ -17,6 +18,7 @@ public final class SwaggerConstants {
     public static final String VALIDATION_MESSAGE= "Error de validación en los datos de entrada";
     public static final String INTERNAL_ERROR_MESSAGE = "Error interno del servidor";
     public static final String TEXT_VALIDATION_CORRECT = "Respuesta exitosa";
+    public static final String TOKEN_DESCRIPTION =  "Bearer Authentication";
 
 
     //DOCUMENTATION USER
@@ -63,6 +65,14 @@ public final class SwaggerConstants {
     public static final String LOAN_ROUTER_SUMMARY = "Registrar una nueva solicitud de préstamo";
     public static final String LOAN_ROUTER_DESCRIPTION = "Permite registrar una solicitud de préstamo proporcionando documento del cliente, monto, plazo y tipo de préstamo";
     public static final String LOAN_ROUTER_REQUEST_DESCRIPTION = "Datos de la nueva solicitud de préstamo";
+
+    public static final String LOAN_PUT_OPERATION_ID = "updateLoanStatus";
+    public static final String LOAN_PUT_SUMMARY = "Actualizar estado de solicitud de préstamo";
+    public static final String LOAN_PUT_RB_DESCRIPTION = "Datos para actualizar el estado de la solicitud";
+    public static final String LOAN_PUT_DESCRIPTION = "Actualiza el estado de una solicitud de préstamo a APPROVED o REJECTED";
+    public static final String LOAN_PUT_PARAM_PUBLIC_ID = "UUID de la solicitud de préstamo";
+    public static final String LOAN_PUT_SUCCESS = "Solicitud actualizada exitosamente";
+    public static final String LOAN_NOT_FOUND = "Solicitud no encontrada";
 
 
     //DOCUMENTATION AUTH

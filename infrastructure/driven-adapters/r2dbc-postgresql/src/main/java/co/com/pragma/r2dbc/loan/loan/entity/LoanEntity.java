@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Table("loan_requests")
 public class LoanEntity {
     @Id
-    private Long id;
+    private String id;
 
     @Column(name = "client_document")
     private String clientDocument;
@@ -30,9 +30,15 @@ public class LoanEntity {
     @Column(name = "loan_type")
     private String loanType;
 
+    @Column(name = "advisor_id")
+    private String advisorId;
+
     @Column(name = "status")
     private RequestStatus status = RequestStatus.PENDING_REVIEW;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedDate;
 }

@@ -16,6 +16,7 @@ public enum ErrorCode {
     LOAN_CREATED("LN201.01"),
     LOAN_VALIDATION_ERROR("LN400.01"),
     LOAN_GENERAL_VALIDATION_ERROR("LN400.02"),
+    LOAN_SUCCESS("LN200.00"),
 
     //AUTH
     AUTH_CREATE_CODE("AU201.01"),
@@ -25,7 +26,7 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR("CO500.01"),
     VALIDATION_ERROR("CO400.01"),
     GENERAL_VALIDATION_ERROR("CO400.02"),
-    CONFLICT_CODE("CO409.01"),;
+    CONFLICT_CODE("CO409.01");
 
     private final String businessCode;
 }

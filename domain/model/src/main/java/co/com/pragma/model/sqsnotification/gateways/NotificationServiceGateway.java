@@ -1,4 +1,4 @@
-package co.com.pragma.model.loan.loannotification.gateways;
+package co.com.pragma.model.sqsnotification.gateways;
 
 import reactor.core.publisher.Mono;
 
