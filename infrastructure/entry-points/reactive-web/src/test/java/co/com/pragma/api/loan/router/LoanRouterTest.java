@@ -25,6 +25,7 @@ class LoanRouterTest {
     void setUp() {
         loanHandler = Mockito.mock(LoanHandler.class);
         loanListHandler = Mockito.mock(LoanListHandler.class);
+        loanUpdateHandler = Mockito.mock(LoanUpdateHandler.class);
 
         LoanRouter router = new LoanRouter();
         webTestClient = WebTestClient.bindToRouterFunction(router.loanRoutes(loanHandler, loanListHandler, loanUpdateHandler))
@@ -51,5 +52,15 @@ class LoanRouterTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(String.class).isEqualTo("list");
+    }
+
+    @Test
+    void shouldRouteToUpdateLoanStatus() {
+        when(loanUpdateHandler.updateLoanStatus(any())).thenReturn(ServerResponse.ok().bodyValue("updated"));
+        webTestClient.put()
+                .uri(BASE_URL_SOLICITUD + "/123e4567-e89b-12d3-a456-426614174000")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(String.class).isEqualTo("updated");
     }
 }

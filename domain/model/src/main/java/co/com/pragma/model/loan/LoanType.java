@@ -1,4 +1,4 @@
-package co.com.pragma.model.loan.loantype;
+package co.com.pragma.model.loan;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

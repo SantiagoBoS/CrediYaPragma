@@ -1,8 +1,7 @@
 package co.com.pragma.model.loan.gateways;
 
-import co.com.pragma.model.loan.loanlist.LoanList;
+import co.com.pragma.model.loan.LoanList;
 import co.com.pragma.model.loan.constants.RequestStatus;
-import co.com.pragma.model.loan.loanlist.gateways.LoanListRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

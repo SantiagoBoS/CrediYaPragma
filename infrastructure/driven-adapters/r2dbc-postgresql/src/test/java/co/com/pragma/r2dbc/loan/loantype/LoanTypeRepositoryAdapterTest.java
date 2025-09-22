@@ -1,8 +1,6 @@
 package co.com.pragma.r2dbc.loan.loantype;
 
-import co.com.pragma.model.loan.loantype.LoanType;
-import co.com.pragma.r2dbc.loan.loantype.LoanTypeReactiveRepository;
-import co.com.pragma.r2dbc.loan.loantype.LoanTypeRepositoryAdapter;
+import co.com.pragma.model.loan.LoanType;
 import co.com.pragma.r2dbc.loan.loantype.entity.LoanTypeEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

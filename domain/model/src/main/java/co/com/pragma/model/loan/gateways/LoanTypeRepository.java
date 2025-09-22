@@ -1,6 +1,6 @@
-package co.com.pragma.model.loan.loantype.gateways;
+package co.com.pragma.model.loan.gateways;
 
-import co.com.pragma.model.loan.loantype.LoanType;
+import co.com.pragma.model.loan.LoanType;
 import reactor.core.publisher.Mono;
 
 public interface LoanTypeRepository {

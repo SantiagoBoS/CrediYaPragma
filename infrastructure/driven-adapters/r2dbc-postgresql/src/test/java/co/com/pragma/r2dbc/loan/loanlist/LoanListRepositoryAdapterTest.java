@@ -1,9 +1,7 @@
 package co.com.pragma.r2dbc.loan.loanlist;
 
-import co.com.pragma.model.loan.loanlist.LoanList;
+import co.com.pragma.model.loan.LoanList;
 import co.com.pragma.model.loan.constants.RequestStatus;
-import co.com.pragma.r2dbc.loan.loanlist.LoanListReactiveRepository;
-import co.com.pragma.r2dbc.loan.loanlist.LoanListRepositoryAdapter;
 import co.com.pragma.r2dbc.loan.loanlist.entity.LoanListEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

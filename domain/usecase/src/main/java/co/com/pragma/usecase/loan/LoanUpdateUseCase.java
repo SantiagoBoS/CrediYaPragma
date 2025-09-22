@@ -1,8 +1,8 @@
 package co.com.pragma.usecase.loan;
 
 import co.com.pragma.model.constants.AppMessages;
-import co.com.pragma.model.loan.loanrequest.LoanRequest;
-import co.com.pragma.model.loan.loanupdate.gateways.LoanUpdateRepository;
+import co.com.pragma.model.loan.LoanRequest;
+import co.com.pragma.model.loan.gateways.LoanUpdateRepository;
 import co.com.pragma.model.sqsnotification.gateways.NotificationServiceGateway;
 import co.com.pragma.model.user.User;
 import co.com.pragma.model.user.gateways.UserRepository;

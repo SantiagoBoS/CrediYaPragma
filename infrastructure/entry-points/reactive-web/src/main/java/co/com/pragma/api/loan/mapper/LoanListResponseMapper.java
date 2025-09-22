@@ -1,7 +1,7 @@
 package co.com.pragma.api.loan.mapper;
 
 import co.com.pragma.api.loan.dto.LoanListResponseDTO;
-import co.com.pragma.model.loan.loanlist.LoanList;
+import co.com.pragma.model.loan.LoanList;
 
 public class LoanListResponseMapper {
     public static LoanListResponseDTO toDto(LoanList domain) {

@@ -1,6 +1,6 @@
 package co.com.pragma.r2dbc.loan.loanlist.mapper;
 
-import co.com.pragma.model.loan.loanlist.LoanList;
+import co.com.pragma.model.loan.LoanList;
 import co.com.pragma.model.loan.constants.RequestStatus;
 import co.com.pragma.r2dbc.loan.loanlist.entity.LoanListEntity;
 

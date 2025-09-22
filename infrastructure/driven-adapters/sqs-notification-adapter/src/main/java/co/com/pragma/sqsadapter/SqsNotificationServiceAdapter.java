@@ -23,7 +23,7 @@ public class SqsNotificationServiceAdapter implements NotificationServiceGateway
     private final SqsAsyncClient sqsAsyncClient;
 
     @Value("${aws.sqs.queue-url}")
-    private String sqsQueueUrl;
+    String sqsQueueUrl;
 
     private final ObjectMapper objectMapper;
     private final SqsProperties sqsProperties;

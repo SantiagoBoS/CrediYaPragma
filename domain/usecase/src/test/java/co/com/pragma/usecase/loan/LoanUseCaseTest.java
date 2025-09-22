@@ -1,12 +1,12 @@
 package co.com.pragma.usecase.loan;
 
-import co.com.pragma.model.loan.loanrequest.LoanRequest;
+import co.com.pragma.model.loan.LoanRequest;
 import co.com.pragma.model.constants.AppMessages;
-import co.com.pragma.model.loan.loantype.LoanType;
+import co.com.pragma.model.loan.LoanType;
 import co.com.pragma.model.loan.constants.RequestStatus;
 import co.com.pragma.model.exceptions.BusinessException;
-import co.com.pragma.model.loan.loanrequest.gateways.LoanRepository;
-import co.com.pragma.model.loan.loantype.gateways.LoanTypeRepository;
+import co.com.pragma.model.loan.gateways.LoanRepository;
+import co.com.pragma.model.loan.gateways.LoanTypeRepository;
 import co.com.pragma.model.user.gateways.UserDocumentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package co.com.pragma.model.loan.loanlist;
+package co.com.pragma.model.loan;
 
 import co.com.pragma.model.loan.constants.RequestStatus;
 import lombok.AllArgsConstructor;

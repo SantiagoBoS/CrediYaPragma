@@ -1,7 +1,7 @@
 package co.com.pragma.r2dbc.loan.loantype;
 
-import co.com.pragma.model.loan.loantype.LoanType;
-import co.com.pragma.model.loan.loantype.gateways.LoanTypeRepository;
+import co.com.pragma.model.loan.LoanType;
+import co.com.pragma.model.loan.gateways.LoanTypeRepository;
 import co.com.pragma.r2dbc.helper.ReactiveAdapterOperations;
 import co.com.pragma.r2dbc.loan.loantype.entity.LoanTypeEntity;
 import org.reactivecommons.utils.ObjectMapper;

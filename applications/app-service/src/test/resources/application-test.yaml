@@ -1,0 +1,47 @@
+spring:
+  r2dbc:
+    url: r2dbc:h2:mem:///testdb;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+
+  sql:
+    init:
+      mode: always
+
+  liquibase:
+    enabled: false
+
+  autoconfigure:
+    exclude:
+      - org.springframework.cloud.aws.autoconfigure.messaging.MessagingAutoConfiguration
+      - org.springframework.cloud.aws.autoconfigure.context.ContextInstanceDataAutoConfiguration
+
+# Deshabilita componentes de AWS
+cloud:
+  aws:
+    enabled: false
+
+# Deshabilita listeners específicos
+management:
+  health:
+    sqs:
+      enabled: false
+
+# Propiedades de base de datos
+DB_HOST: localhost
+DB_PORT: 5432
+DB_NAME: testdb
+DB_SCHEMA: public
+DB_USERNAME: sa
+DB_PASSWORD:
+
+# Configuración de JWT
+jwt:
+  secret: "test-jwt-secret-key-1234567890-abcdefghijklmnopqrstuvwxyz"
+  expiration-ms: 86400000
+
+JWT_SECRET: "test-jwt-secret-key-1234567890-abcdefghijklmnopqrstuvwxyz"
+JWT_EXPIRATION_MS: 86400000
+
+# Configuración adicional para H2
+spring.h2.console.enabled: true

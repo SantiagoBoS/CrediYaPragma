@@ -1,8 +1,8 @@
 package co.com.pragma.usecase.loan;
 
-import co.com.pragma.model.loan.loanlist.LoanList;
+import co.com.pragma.model.loan.LoanList;
 import co.com.pragma.model.loan.constants.RequestStatus;
-import co.com.pragma.model.loan.loanlist.gateways.LoanListRepository;
+import co.com.pragma.model.loan.gateways.LoanListRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

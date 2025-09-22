@@ -1,6 +1,6 @@
-package co.com.pragma.model.loan.loanlist.gateways;
+package co.com.pragma.model.loan.gateways;
 
-import co.com.pragma.model.loan.loanlist.LoanList;
+import co.com.pragma.model.loan.LoanList;
 import co.com.pragma.model.loan.constants.RequestStatus;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

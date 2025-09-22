@@ -25,7 +25,7 @@ public class LoanNotificationListener {
     private final EmailService emailService;
 
     @Value("${aws.sqs.queue-url}")
-    private String queueUrl;
+    String queueUrl;
 
     @PostConstruct
     public void startListener() {

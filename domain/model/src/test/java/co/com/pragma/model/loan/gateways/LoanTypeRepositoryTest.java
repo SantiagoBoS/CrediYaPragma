@@ -1,8 +1,7 @@
 package co.com.pragma.model.loan.gateways;
 
 
-import co.com.pragma.model.loan.loantype.LoanType;
-import co.com.pragma.model.loan.loantype.gateways.LoanTypeRepository;
+import co.com.pragma.model.loan.LoanType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
