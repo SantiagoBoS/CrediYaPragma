@@ -2,8 +2,6 @@ services:
   # Service Loan
   loan-service:
     build:
-      # context: .
-      # dockerfile: applications/app-service/Dockerfile
       context: ./applications/app-service
       dockerfile: Dockerfile
     container_name: crediya-loan-service
@@ -13,9 +11,9 @@ services:
       - SPRING_PROFILES_ACTIVE=loan,docker
       - SERVER_PORT=${LOAN_PORT}
       - AWS_REGION=us-east-1
-      - AWS_ACCESS_KEY_ID=fakeAccessKey
-      - AWS_SECRET_ACCESS_KEY=fakeSecretKey
-      - SQS_ENABLED=false
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - SQS_ENABLED=${SQS_ENABLED}
     env_file:
       - .env
     depends_on:
@@ -28,8 +26,6 @@ services:
   # Service User
   user-service:
     build:
-      # context: .
-      # dockerfile: applications/app-service/Dockerfile
       context: ./applications/app-service
       dockerfile: Dockerfile
     container_name: crediya-user-service
@@ -39,9 +35,9 @@ services:
       - SPRING_PROFILES_ACTIVE=user,docker
       - SERVER_PORT=${USER_PORT}
       - AWS_REGION=us-east-1
-      - AWS_ACCESS_KEY_ID=fakeAccessKey
-      - AWS_SECRET_ACCESS_KEY=fakeSecretKey
-      - SQS_ENABLED=false
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - SQS_ENABLED=${SQS_ENABLED}
     env_file:
       - .env
     depends_on:

@@ -3,5 +3,5 @@ package co.com.pragma.model.sqsnotification.gateways;
 import reactor.core.publisher.Mono;
 
 public interface NotificationServiceGateway {
-    Mono<Void> sendLoanStatusUpdateNotification(String loanRequestId, String newStatus, String userEmail);
+    Mono<Void> sendLoanStatusUpdateNotification(String loanRequestId, String newStatus, String userEmail, String loanType);
 }

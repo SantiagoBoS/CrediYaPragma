@@ -29,10 +29,10 @@ public class SqsNotificationServiceAdapter implements NotificationServiceGateway
     private final SqsProperties sqsProperties;
 
     @Override
-    public Mono<Void> sendLoanStatusUpdateNotification(String loanRequestId, String newStatus, String userEmail) {
+    public Mono<Void> sendLoanStatusUpdateNotification(String loanRequestId, String newStatus, String userEmail, String loanType) {
 
         if (!sqsProperties.isEnabled()) {
-            log.info("🚧 SQS está deshabilitado. Simulando envío de notificación para solicitud: {}, estado: {}, email: {}", loanRequestId, newStatus, userEmail);
+            log.info("SQS está deshabilitado. Simulando envío de notificación para solicitud: {}, estado: {}, email: {}", loanRequestId, newStatus, userEmail);
             return Mono.empty();
         }
 
@@ -40,7 +40,7 @@ public class SqsNotificationServiceAdapter implements NotificationServiceGateway
         messagePayload.put("loanRequestId", loanRequestId);
         messagePayload.put("newStatus", newStatus);
         messagePayload.put("userEmail", userEmail);
-        messagePayload.put("type", "LOAN_STATUS_UPDATE");
+        messagePayload.put("loanType", loanType);
 
         String messageBody;
         try {
@@ -57,8 +57,10 @@ public class SqsNotificationServiceAdapter implements NotificationServiceGateway
 
         return Mono.fromFuture(sqsAsyncClient.sendMessage(sendMessageRequest))
                 .subscribeOn(Schedulers.boundedElastic())
-                .doOnSuccess(response -> log.info("✅ Notificación enviada a SQS. MessageId: {}, para solicitud: {}", response.messageId(), loanRequestId))
-                .doOnError(error -> log.error("❌ Error enviando notificación a SQS para la solicitud: {}", loanRequestId, error))
+                .doOnSuccess(response -> log.info("Notificación enviada a SQS. MessageId: {}, solicitud: {}",
+                        response.messageId(), loanRequestId))
+                .doOnError(error -> log.error("Error enviando notificación a SQS. Solicitud: {}",
+                        loanRequestId, error))
                 .then();
     }
 }

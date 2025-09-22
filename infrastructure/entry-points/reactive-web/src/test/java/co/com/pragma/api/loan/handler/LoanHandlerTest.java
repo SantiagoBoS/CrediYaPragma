@@ -23,6 +23,7 @@ class LoanHandlerTest {
 
     private LoanUseCase loanUseCase;
     private LoanListHandler loanListHandler;
+    private LoanUpdateHandler loanUpdateHandler;
     private WebTestClient webTestClient;
 
     private LoanDTO dto;
@@ -36,9 +37,7 @@ class LoanHandlerTest {
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         LoanHandler loanHandler = new LoanHandler(loanUseCase, validator, null);
 
-        RouterFunction<ServerResponse> routerFunction =
-                new LoanRouter().loanRoutes(loanHandler, loanListHandler);
-
+        RouterFunction<ServerResponse> routerFunction = new LoanRouter().loanRoutes(loanHandler, loanListHandler, loanUpdateHandler);
         webTestClient = WebTestClient.bindToRouterFunction(routerFunction).build();
 
         dto = LoanDTO.builder()

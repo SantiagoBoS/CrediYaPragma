@@ -2,6 +2,7 @@ package co.com.pragma.api.loan.router;
 
 import co.com.pragma.api.loan.handler.LoanHandler;
 import co.com.pragma.api.loan.handler.LoanListHandler;
+import co.com.pragma.api.loan.handler.LoanUpdateHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -15,6 +16,7 @@ class LoanRouterTest {
 
     private LoanHandler loanHandler;
     private LoanListHandler loanListHandler;
+    private LoanUpdateHandler loanUpdateHandler;
     private WebTestClient webTestClient;
 
     private static final String BASE_URL_SOLICITUD = "/solicitud";
@@ -25,7 +27,7 @@ class LoanRouterTest {
         loanListHandler = Mockito.mock(LoanListHandler.class);
 
         LoanRouter router = new LoanRouter();
-        webTestClient = WebTestClient.bindToRouterFunction(router.loanRoutes(loanHandler, loanListHandler))
+        webTestClient = WebTestClient.bindToRouterFunction(router.loanRoutes(loanHandler, loanListHandler, loanUpdateHandler))
                 .configureClient()
                 .baseUrl("/api/v1")
                 .build();

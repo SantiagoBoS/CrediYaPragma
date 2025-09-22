@@ -12,3 +12,16 @@ spring:
 user:
   service:
     base-url: http://user-service:8081
+
+# AWS
+aws:
+  region: us-east-1
+  sqs:
+    queue-url: ${AWS_SQS_QUEUE_URL}
+  credentials:
+    access-key-id: ${AWS_ACCESS_KEY_ID}
+    secret-access-key: ${AWS_SECRET_ACCESS_KEY}
+
+app:
+  sqs:
+    enabled: true

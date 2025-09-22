@@ -1,4 +1,15 @@
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${GMAIL_USER_NAME}
+    password: ${GMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   application:
     name: "CrediYa"
   devtools:
@@ -27,16 +38,15 @@ management:
       probes:
         enabled: true
 
-# AWS config - DEBE ESTAR EN EL NIVEL RAIZ, no bajo management
+# AWS config
 aws:
-  region: us-east-1 # Para Colombia puedes usar us-east-1 o sa-east-1 (São Paulo)
+  region: us-east-1
   sqs:
     queue-url: ${AWS_SQS_QUEUE_URL:http://localhost:4566/000000000000/credinya-notifications}
   credentials:
     access-key-id: ${AWS_ACCESS_KEY_ID:fakeAccessKey}
     secret-access-key: ${AWS_SECRET_ACCESS_KEY:fakeSecretKey}
 
-# Esta propiedad también debe estar en el nivel raíz
 app:
   sqs:
     enabled: ${SQS_ENABLED:false}

@@ -32,6 +32,7 @@ public enum AppMessages {
     LOAN_UPDATE_ERROR("Error al actualizar la solicitud"),
     LOAN_NOT_FOUND("Solicitud no encontrada"),
     LOAN_STATUS_UPDATED("Estado de solicitud actualizado exitosamente"),
+    LOAN_EMAIL_NOT_FOUND("No se encontró email para el cliente con documento: "),
 
     //COMMON
     VALIDATION_MESSAGE("Error de validación en los datos de entrada."),
