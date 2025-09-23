@@ -4,6 +4,7 @@ import co.com.pragma.sqsadapter.config.SqsProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import reactor.test.StepVerifier;
 import software.amazon.awssdk.services.sqs.SqsAsyncClient;
 import software.amazon.awssdk.services.sqs.model.SendMessageResponse;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
@@ -11,6 +12,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.concurrent.CompletableFuture;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -26,7 +28,7 @@ class SqsNotificationServiceAdapterTest {
         sqsAsyncClient = mock(SqsAsyncClient.class);
         objectMapper = new ObjectMapper();
         sqsProperties = mock(SqsProperties.class);
-        when(sqsProperties.isEnabled()).thenReturn(true); // habilitamos SQS para el test
+        when(sqsProperties.isEnabled()).thenReturn(true);
 
         adapter = new SqsNotificationServiceAdapter(sqsAsyncClient, objectMapper, sqsProperties);
         adapter.sqsQueueUrl = "http://localhost:4566/queue/test";
@@ -47,10 +49,56 @@ class SqsNotificationServiceAdapterTest {
                 "CAR"
         );
 
-        // Forzar la ejecución de Mono
         result.block();
-
-        // Verificar que se llamó a sendMessage
         verify(sqsAsyncClient, times(1)).sendMessage(any(SendMessageRequest.class));
+    }
+
+    @Test
+    void testSqsDisabledDoesNotSendMessage() {
+        when(sqsProperties.isEnabled()).thenReturn(false);
+
+        Mono<Void> result = adapter.sendLoanStatusUpdateNotification("REQ123", "APPROVED", "test@example.com", "CAR");
+
+        result.block();
+        verify(sqsAsyncClient, never()).sendMessage((SendMessageRequest) any());
+    }
+
+    @Test
+    void testSerializationError() throws Exception {
+        ObjectMapper mockMapper = mock(ObjectMapper.class);
+        when(mockMapper.writeValueAsString(any())).thenThrow(new RuntimeException("error serializando"));
+
+        SqsNotificationServiceAdapter faultyAdapter = new SqsNotificationServiceAdapter(sqsAsyncClient, mockMapper, sqsProperties);
+        faultyAdapter.sqsQueueUrl = "http://localhost:4566/queue/test";
+
+        when(sqsProperties.isEnabled()).thenReturn(true);
+
+        assertThrows(RuntimeException.class, () ->
+                faultyAdapter.sendLoanStatusUpdateNotification("REQ1", "APPROVED", "x@y.com", "CAR").block()
+        );
+    }
+
+    @Test
+    void testSendMessageFailure() {
+        when(sqsProperties.isEnabled()).thenReturn(true);
+
+        // Simula un fallo en la llamada a SQS
+        when(sqsAsyncClient.sendMessage(any(SendMessageRequest.class)))
+                .thenReturn(CompletableFuture.failedFuture(new RuntimeException("SQS down")));
+
+        Mono<Void> result = adapter.sendLoanStatusUpdateNotification(
+                "REQ_FAIL",
+                "REJECTED",
+                "fail@example.com",
+                "CAR"
+        );
+
+        // Verificamos que el Mono propague el error
+        StepVerifier.create(result)
+                .expectErrorSatisfies(error -> {
+                    assertTrue(error instanceof RuntimeException);
+                    assertEquals("SQS down", error.getMessage());
+                })
+                .verify();
     }
 }

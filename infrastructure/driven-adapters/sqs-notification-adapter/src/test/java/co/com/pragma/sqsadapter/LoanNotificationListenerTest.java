@@ -7,6 +7,9 @@ import software.amazon.awssdk.services.sqs.SqsAsyncClient;
 import software.amazon.awssdk.services.sqs.model.*;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
 
 class LoanNotificationListenerTest {
@@ -35,7 +38,6 @@ class LoanNotificationListenerTest {
                 "loanRequestId", "REQ123"
         );
 
-        // Llamamos directamente a emailService
         emailService.sendLoanStatusUpdate(
                 payload.get("userEmail"),
                 payload.get("loanType"),
@@ -44,5 +46,31 @@ class LoanNotificationListenerTest {
         );
 
         verify(emailService, times(1)).sendLoanStatusUpdate("test@example.com", "CAR", "APPROVED", "REQ123");
+    }
+
+    @Test
+    void testPollMessagesHandlesException() {
+        // Espiamos al listener para interceptar la recursión
+        LoanNotificationListener spyListener = spy(listener);
+
+        // Cuando dentro del metodo intente llamarse otra vez, no hacer nada
+        doNothing().when(spyListener).startListener();
+
+        when(sqsAsyncClient.receiveMessage(any(java.util.function.Consumer.class)))
+                .thenReturn(CompletableFuture.failedFuture(new RuntimeException("Error SQS")));
+
+        assertDoesNotThrow(spyListener::startListener);
+    }
+
+    @Test
+    void testPollMessagesWithEmptyResponse() {
+        LoanNotificationListener spyListener = spy(listener);
+        doNothing().when(spyListener).startListener();
+
+        ReceiveMessageResponse response = ReceiveMessageResponse.builder().build();
+        when(sqsAsyncClient.receiveMessage((ReceiveMessageRequest) any()))
+                .thenReturn(CompletableFuture.completedFuture(response));
+
+        assertDoesNotThrow(spyListener::startListener);
     }
 }

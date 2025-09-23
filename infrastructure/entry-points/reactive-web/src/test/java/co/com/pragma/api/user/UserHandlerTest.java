@@ -159,4 +159,20 @@ class UserHandlerTest {
                 .expectStatus().isNotFound();
         verify(userRepository, times(1)).findByDocumentNumber("99999");
     }
+
+    @Test
+    void shouldTimeoutWhenUserRepositoryDoesNotRespond() {
+        when(userRepository.findByDocumentNumber("slow-user"))
+                .thenReturn(Mono.never());
+
+        UserHandler handler = new UserHandler(userUseCase, Validation.buildDefaultValidatorFactory().getValidator(), userRepository);
+        RouterFunction<ServerResponse> routerFunction = RouterFunctions.route()
+                .GET("/users/{documentNumber}", handler::getUserByDocument).build();
+        WebTestClient client = WebTestClient.bindToRouterFunction(routerFunction).build();
+
+        client.get()
+                .uri("/users/slow-user")
+                .exchange()
+                .expectStatus().is5xxServerError(); // el timeout se traduce en error
+    }
 }

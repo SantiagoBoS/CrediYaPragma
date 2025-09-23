@@ -70,4 +70,19 @@ class SqsConfigTest {
         assertNotNull(client);
         assertTrue(client instanceof SqsAsyncClient);
     }
+
+    @Test
+    void testSqsAsyncClientWithUnexpectedUrl() {
+        AwsProperties props = createBaseProperties(
+                "us-east-1",
+                "acc",
+                "sec",
+                "https://otro-endpoint.com/queue"
+        );
+
+        SqsConfig config = new SqsConfig(props);
+        SqsAsyncClient client = config.sqsAsyncClient();
+
+        assertNotNull(client);
+    }
 }

@@ -1,19 +1,13 @@
 package co.com.pragma.sqsadapter;
 
-import co.com.pragma.sqsadapter.config.SqsProperties;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
-import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 import software.amazon.awssdk.services.sqs.SqsAsyncClient;
-import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j

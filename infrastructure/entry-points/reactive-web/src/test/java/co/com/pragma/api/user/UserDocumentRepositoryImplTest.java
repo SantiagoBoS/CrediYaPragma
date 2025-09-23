@@ -77,4 +77,17 @@ class UserDocumentRepositoryImplTest {
                                 throwable.getMessage().equals(AppMessages.USER_NOT_EXIST.getMessage()))
                 .verify();
     }
+
+    @Test
+    void existsByDocumentShouldPropagateBusinessExceptionFromWebClient() {
+        UserServiceProperties props = mock(UserServiceProperties.class);
+        when(props.getBaseUrl()).thenReturn("http://localhost:9999"); // puerto inválido
+
+        UserDocumentRepositoryImpl repo = new UserDocumentRepositoryImpl(WebClient.builder(), props);
+
+        StepVerifier.create(repo.existsByDocument("nope"))
+                .expectErrorMatches(e -> e instanceof BusinessException &&
+                        e.getMessage().equals(AppMessages.USER_NOT_EXIST.getMessage()))
+                .verify();
+    }
 }

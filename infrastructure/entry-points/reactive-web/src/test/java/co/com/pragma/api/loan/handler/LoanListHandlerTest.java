@@ -75,4 +75,22 @@ class LoanListHandlerTest {
                 .expectNextMatches(r -> r != null)
                 .verifyComplete();
     }
+
+    @Test
+    void testGetLoanListWithStatusesParam() {
+        when(request.queryParam("statuses")).thenReturn(Optional.of("APPROVED,REJECTED"));
+        when(request.queryParam("page")).thenReturn(Optional.of("0"));
+        when(request.queryParam("size")).thenReturn(Optional.of("5"));
+
+        when(loanListUseCase.list(anyList(), anyInt(), anyInt()))
+                .thenReturn(Flux.empty());
+        when(loanListUseCase.countByStatuses(anyList()))
+                .thenReturn(Mono.just(0L));
+
+        Mono<ServerResponse> responseMono = loanListHandler.getLoanList(request);
+
+        StepVerifier.create(responseMono)
+                .expectNextMatches(r -> r != null)
+                .verifyComplete();
+    }
 }

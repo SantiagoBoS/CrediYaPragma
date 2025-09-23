@@ -1,6 +1,10 @@
 package co.com.pragma.api.loan.handler;
 
 import co.com.pragma.api.loan.dto.LoanStatusUpdateDTO;
+import co.com.pragma.model.exceptions.BusinessException;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
+import static org.mockito.ArgumentMatchers.any;
 import co.com.pragma.model.loan.LoanRequest;
 import co.com.pragma.usecase.loan.LoanUpdateUseCase;
 import jakarta.validation.Validation;
@@ -18,7 +22,6 @@ import reactor.test.StepVerifier;
 import java.util.Collections;
 import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 class LoanUpdateHandlerTest {
@@ -61,5 +64,50 @@ class LoanUpdateHandlerTest {
         StepVerifier.create(responseMono)
                 .expectNextMatches(r -> r != null)
                 .verifyComplete();
+    }
+
+    @Test
+    void testUpdateLoanStatusWhenUseCaseFails() {
+        LoanStatusUpdateDTO dto = new LoanStatusUpdateDTO();
+        dto.setStatus("APPROVED");
+
+        ServerRequest request = Mockito.mock(ServerRequest.class);
+        when(request.pathVariable("publicId")).thenReturn(UUID.randomUUID().toString());
+        when(request.bodyToMono(LoanStatusUpdateDTO.class)).thenReturn(Mono.just(dto));
+
+        when(loanUpdateUseCase.updateLoanStatus(any(), any(), any()))
+                .thenReturn(Mono.error(new RuntimeException("DB error")));
+
+        Mono<ServerResponse> responseMono = loanUpdateHandler.updateLoanStatus(request)
+                .contextWrite(ReactiveSecurityContextHolder.withAuthentication(
+                        new UsernamePasswordAuthenticationToken("advisor1", null, Collections.emptyList())
+                ));
+
+        StepVerifier.create(responseMono)
+                .expectError(RuntimeException.class)
+                .verify();
+    }
+
+    @Test
+    void testUpdateLoanStatusValidationFails() {
+        LoanStatusUpdateDTO invalidDto = new LoanStatusUpdateDTO();
+
+        ServerRequest request = Mockito.mock(ServerRequest.class);
+        when(request.pathVariable("publicId")).thenReturn(UUID.randomUUID().toString());
+        when(request.bodyToMono(LoanStatusUpdateDTO.class)).thenReturn(Mono.just(invalidDto));
+
+        when(loanUpdateUseCase.updateLoanStatus(any(), any(), any()))
+                .thenReturn(Mono.error(new BusinessException("Validación fallida")));
+
+        Mono<ServerResponse> responseMono = loanUpdateHandler.updateLoanStatus(request)
+                .contextWrite(ReactiveSecurityContextHolder.withAuthentication(
+                        new UsernamePasswordAuthenticationToken("advisor1", null, Collections.emptyList())
+                ));
+
+        StepVerifier.create(responseMono)
+                .expectError(BusinessException.class)
+                .verify();
+
+        verify(loanUpdateUseCase).updateLoanStatus(any(), any(), any());
     }
 }
