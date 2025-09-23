@@ -2,6 +2,7 @@ package co.com.pragma.usecase.loan;
 
 import co.com.pragma.model.constants.AppMessages;
 import co.com.pragma.model.loan.LoanRequest;
+import co.com.pragma.model.loan.constants.RequestStatus;
 import co.com.pragma.model.loan.gateways.LoanUpdateRepository;
 import co.com.pragma.model.sqsnotification.gateways.NotificationServiceGateway;
 import co.com.pragma.model.user.User;
@@ -19,7 +20,7 @@ public class LoanUpdateUseCase {
         return loanUpdateRepository.updateStatus(publicId, newStatus, advisorId)
                 .flatMap(updatedLoan -> {
                     // Solo enviar notificación para estados finales
-                    if ("APPROVED".equalsIgnoreCase(newStatus) || "REJECTED".equalsIgnoreCase(newStatus)) {
+                    if (RequestStatus.APPROVED.toString().equals(newStatus.toUpperCase()) || RequestStatus.REJECTED.toString().equalsIgnoreCase(newStatus.toUpperCase())) {
                         return getUserEmail(updatedLoan.getClientDocument())
                                 .flatMap(userEmail -> notificationServiceGateway
                                         .sendLoanStatusUpdateNotification(publicId, newStatus, userEmail, updatedLoan.getLoanType())
