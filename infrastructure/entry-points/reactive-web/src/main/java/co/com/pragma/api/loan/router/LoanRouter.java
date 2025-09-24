@@ -74,7 +74,7 @@ public class LoanRouter {
                 .route(POST(ApiPaths.LOAN_BASE), loanHandler::createLoan)
                 .andRoute(GET(ApiPaths.LOAN_BASE), loanListHandler::getLoanList)
                 .andRoute(PUT(ApiPaths.LOAN_BASE + "/{publicId}"), loanUpdateHandler::updateLoanStatus)
-                .andRoute(POST(ApiPaths.LOAN_BASE + "/{publicId}/status"), loanCapacityHandler::calculateCapacity);
+                .andRoute(POST(ApiPaths.CAPACITY_BASE), loanCapacityHandler::calculateCapacity);
     }
 
 }

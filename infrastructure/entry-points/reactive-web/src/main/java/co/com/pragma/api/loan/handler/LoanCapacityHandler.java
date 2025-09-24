@@ -10,6 +10,8 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
+
 @Component
 @RequiredArgsConstructor
 public class LoanCapacityHandler {
@@ -20,7 +22,7 @@ public class LoanCapacityHandler {
         return request.bodyToMono(LoanCapacityCalculationRequestDTO.class)
             .flatMap(dto -> loanCalculateCapacityUseCase.execute(
                     dto.getUserId(),
-                    dto.getIncome(),
+                    BigDecimal.valueOf(dto.getUserSalary().doubleValue()),
                     dto.getLoanAmount(),
                     dto.getAnnualInterestRate(),
                     dto.getTermInMonths()

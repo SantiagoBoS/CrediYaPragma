@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 @Data
 public class LoanCapacityCalculationRequestDTO {
     private String userId;
-    private BigDecimal income;
+    private BigDecimal userSalary;
     private Double loanAmount;
     private Double annualInterestRate;
     private Integer termInMonths;

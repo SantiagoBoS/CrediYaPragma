@@ -14,4 +14,7 @@ public final class ApiPaths {
 
     //AUTH
     public static final String AUTH_BASE = "/api/v1/login";
+
+    //CAPACITY
+    public static final String CAPACITY_BASE = "api/v1/calcular-capacidad";
 }

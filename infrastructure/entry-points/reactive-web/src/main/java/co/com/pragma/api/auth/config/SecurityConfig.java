@@ -22,10 +22,10 @@ public class SecurityConfig {
                 .pathMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/webjars/**").permitAll()
                 .pathMatchers(ApiPaths.AUTH_BASE).permitAll()
                 .pathMatchers(HttpMethod.GET, ApiPaths.USER_BASE + "/**").authenticated()
-                .pathMatchers(HttpMethod.GET, ApiPaths.LOAN_BASE + "/**").hasAnyRole(UserRoles.ADMIN, UserRoles.ASESOR)
                 .pathMatchers(HttpMethod.POST, ApiPaths.USER_BASE + "/**").hasAnyRole(UserRoles.ADMIN, UserRoles.ASESOR)
-                .pathMatchers(HttpMethod.POST, ApiPaths.LOAN_BASE + "/**").hasRole(UserRoles.CLIENTE)
+                .pathMatchers(HttpMethod.GET, ApiPaths.LOAN_BASE + "/**").hasAnyRole(UserRoles.ADMIN, UserRoles.ASESOR)
                 .pathMatchers(HttpMethod.PUT, ApiPaths.LOAN_BASE + "/**").hasAnyRole(UserRoles.ADMIN, UserRoles.ASESOR)
+                .pathMatchers(HttpMethod.POST, ApiPaths.CAPACITY_BASE + "/**").hasAnyRole(UserRoles.ADMIN, UserRoles.ASESOR)
                 .anyExchange().authenticated()
             )
             // Agrega el filtro JWT
