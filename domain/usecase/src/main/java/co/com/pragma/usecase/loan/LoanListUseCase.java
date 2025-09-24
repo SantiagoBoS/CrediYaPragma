@@ -15,7 +15,7 @@ public class LoanListUseCase {
     private final LoanListRepository repository;
     private final List<RequestStatus> listStatus= List.of(RequestStatus.PENDING_REVIEW, RequestStatus.REJECTED, RequestStatus.MANUAL_REVIEW);
 
-    public Flux<LoanList> list(List<RequestStatus> statuses, int page, int size) {
+    public Flux<LoanList> list(List<RequestStatus> statuses, Integer page, Integer size) {
         List<RequestStatus> finalStatuses = (statuses == null || statuses.isEmpty())
                 ? listStatus
                 : statuses;

@@ -10,6 +10,7 @@ import co.com.pragma.model.loan.gateways.LoanTypeRepository;
 import co.com.pragma.model.sqsnotification.gateways.NotificationServiceGateway;
 import co.com.pragma.model.user.gateways.UserDocumentRepository;
 import co.com.pragma.model.user.gateways.UserRepository;
+import co.com.pragma.usecase.loan.notification.LoanNotificationService;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
@@ -23,58 +24,47 @@ public class LoanUseCase {
     private final LoanTypeRepository loanTypeRepository;
     private final LoanCalculateCapacityUseCase loanCalculateCapacityUseCase;
     private final UserRepository userRepository;
-    private final NotificationServiceGateway notificationServiceGateway;
+    private final LoanNotificationService loanNotificationService;
 
     public Mono<LoanRequest> register(LoanRequest loanRequest, String token) {
         return userDocumentRepository.existsByDocumentToken(loanRequest.getClientDocument(), token)
-                .then(loanTypeRepository.findByCode(loanRequest.getLoanType())
-                        .switchIfEmpty(Mono.error(new BusinessException(AppMessages.LOAN_TYPE_INVALID.getMessage())))
-                        .flatMap(loanType -> {
-                            if (Boolean.TRUE.equals(loanType.getAutomaticValidation())) {
-                                // Flujo automático: calcular capacidad y enviar notificación
-                                return userRepository.findByDocumentNumber(loanRequest.getClientDocument())
-                                        .flatMap(user ->
-                                                loanCalculateCapacityUseCase.execute(
-                                                                loanRequest.getClientDocument(),
-                                                                user.getBaseSalary(),
-                                                                loanRequest.getAmount(),
-                                                                loanType.getInterestRate(),
-                                                                loanRequest.getTermMonths()
-                                                        )
-                                                        .flatMap(capacityResult -> {
-                                                            // Construir LoanRequest con estado calculado
-                                                            LoanRequest loanWithDecision = loanRequest.toBuilder()
-                                                                    .publicId(UUID.randomUUID())
-                                                                    .status(RequestStatus.valueOf(capacityResult.getDecision()))
-                                                                    .build();
-
-                                                            List<LoanInstallment> paymentPlan = capacityResult.getPaymentPlan();
-                                                            // Guardar solicitud
-                                                            return loanRepository.save(loanWithDecision)
-                                                                    .flatMap(savedLoan ->
-                                                                            // Enviar notificación con el resultado final
-                                                                            notificationServiceGateway.sendLoanStatusUpdateNotification(
-                                                                                            savedLoan.getPublicId().toString(),
-                                                                                            savedLoan.getStatus().toString(),
-                                                                                            user.getEmail(),
-                                                                                            loanType.getCode(),
-                                                                                            savedLoan.getAmount(),
-                                                                                            loanType.getInterestRate(),
-                                                                                            savedLoan.getTermMonths(),
-                                                                                            paymentPlan
-                                                                                    )
-                                                                                    .thenReturn(savedLoan)
-                                                                    );
-                                                        })
-                                        );
-                            } else {
-                                // Si no hay validación automática, solo asignar ID y guardar
-                                LoanRequest loanWithId = loanRequest.toBuilder()
+            .then(loanTypeRepository.findByCode(loanRequest.getLoanType())
+                .switchIfEmpty(Mono.error(new BusinessException(AppMessages.LOAN_TYPE_INVALID.getMessage())))
+                .flatMap(loanType -> {
+                    if (Boolean.TRUE.equals(loanType.getAutomaticValidation())) {
+                        return userRepository.findByDocumentNumber(loanRequest.getClientDocument())
+                            .flatMap(user -> loanCalculateCapacityUseCase.execute(
+                                    loanRequest.getClientDocument(),
+                                    user.getBaseSalary(),
+                                    loanRequest.getAmount(),
+                                    loanType.getInterestRate(),
+                                    loanRequest.getTermMonths()
+                                )
+                                .flatMap(capacityResult -> {
+                                    LoanRequest loanWithDecision = loanRequest.toBuilder()
                                         .publicId(UUID.randomUUID())
+                                        .status(RequestStatus.valueOf(capacityResult.getDecision()))
                                         .build();
-                                return loanRepository.save(loanWithId);
-                            }
-                        })
-                );
+
+                                    //Envio de la notificacion y guardado
+                                    return loanRepository.save(loanWithDecision)
+                                        .flatMap(savedLoan -> loanNotificationService.notifyApproved(
+                                                savedLoan,
+                                                user.getEmail(),
+                                                loanType.getCode(),
+                                                loanType.getInterestRate(),
+                                                capacityResult.getPaymentPlan()
+                                            ).thenReturn(savedLoan)
+                                        );
+                                })
+                            );
+                    } else {
+                        LoanRequest loanWithId = loanRequest.toBuilder()
+                            .publicId(UUID.randomUUID())
+                            .build();
+                        return loanRepository.save(loanWithId);
+                    }
+                })
+            );
     }
 }

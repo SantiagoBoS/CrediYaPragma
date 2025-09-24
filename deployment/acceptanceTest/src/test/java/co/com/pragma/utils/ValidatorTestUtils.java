@@ -21,7 +21,7 @@ public class ValidatorTestUtils {
   }
 
   public static ValidationReport validateResponseSchema(String oasUrl, String responseJson,
-      String path, String method, int status) {
+      String path, String method, Integer status) {
 
     OpenApiInteractionValidator validator = OpenApiInteractionValidator
         .createForSpecificationUrl(oasUrl).build();

@@ -23,7 +23,7 @@ public class LoanListRepositoryAdapter extends ReactiveAdapterOperations<LoanLis
     }
 
     @Override
-    public Flux<LoanList> findByStatuses(List<RequestStatus> statuses, int page, int size) {
+    public Flux<LoanList> findByStatuses(List<RequestStatus> statuses, Integer page, Integer size) {
         var statusNames = statuses.stream().map(Enum::name).toList();
         return repository.findByRequestStatusIn(statusNames)
                 .skip((long) page * size)

@@ -38,9 +38,9 @@ public class LoanNotificationListener {
                             String loanType = (String) payload.get("loanType");
                             String status = (String) payload.get("newStatus");
                             String loanRequestId = (String) payload.get("loanRequestId");
-                            Double amount = (Double) payload.get("amount");
-                            Double interestRate = (Double) payload.get("interestRate");
-                            Integer termMonths = (Integer) payload.get("termMonths");
+                            double amount = payload.get("amount") != null ? (Double) payload.get("amount") : 0.0;
+                            double interestRate = payload.get("interestRate") != null ? (Double) payload.get("interestRate") : 0.0;
+                            int termMonths = payload.get("termMonths") != null ? (Integer) payload.get("termMonths") : 0;
 
                             emailService.sendLoanStatusUpdate(
                                     email, loanType, status, loanRequestId, amount, interestRate, termMonths

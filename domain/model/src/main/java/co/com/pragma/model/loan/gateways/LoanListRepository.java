@@ -8,6 +8,6 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 public interface LoanListRepository {
-    Flux<LoanList> findByStatuses(List<RequestStatus> statuses, int page, int size);
+    Flux<LoanList> findByStatuses(List<RequestStatus> statuses, Integer page, Integer size);
     Mono<Long> countByStatuses(List<RequestStatus> statuses);
 }

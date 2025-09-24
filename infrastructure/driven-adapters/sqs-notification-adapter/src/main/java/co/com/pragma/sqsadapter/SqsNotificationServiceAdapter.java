@@ -15,6 +15,7 @@ import reactor.core.scheduler.Schedulers;
 import software.amazon.awssdk.services.sqs.SqsAsyncClient;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,22 +56,24 @@ public class SqsNotificationServiceAdapter implements NotificationServiceGateway
         }
 
         try {
-            Map<String, Object> messagePayload = Map.of(
-                    "loanRequestId", loanRequestId,
-                    "newStatus", newStatus,
-                    "userEmail", userEmail,
-                    "loanType", loanType,
-                    "amount", amount,
-                    "interestRate", interestRate,
-                    "termMonths", termMonths,
-                    "paymentPlan", paymentPlan.stream()
-                            .map(pi -> Map.of(
-                                    "month", pi.getMonth(),
-                                    "capitalPayment", pi.getCapitalPayment(),
-                                    "interestPayment", pi.getInterestPayment(),
-                                    "remainingBalance", pi.getRemainingBalance()
-                            ))
-                            .toList()
+            Map<String, Object> messagePayload = new HashMap<>();
+            messagePayload.put("loanRequestId", loanRequestId);
+            messagePayload.put("newStatus", newStatus);
+            messagePayload.put("userEmail", userEmail);
+            messagePayload.put("loanType", loanType);
+
+            if (amount != null) messagePayload.put("amount", amount);
+            if (interestRate != null) messagePayload.put("interestRate", interestRate);
+            if (termMonths != null) messagePayload.put("termMonths", termMonths);
+
+            messagePayload.put("paymentPlan", paymentPlan.stream()
+                    .map(pi -> Map.of(
+                            "month", pi.getMonth(),
+                            "capitalPayment", pi.getCapitalPayment(),
+                            "interestPayment", pi.getInterestPayment(),
+                            "remainingBalance", pi.getRemainingBalance()
+                    ))
+                    .toList()
             );
             String messageBody = objectMapper.writeValueAsString(messagePayload);
 

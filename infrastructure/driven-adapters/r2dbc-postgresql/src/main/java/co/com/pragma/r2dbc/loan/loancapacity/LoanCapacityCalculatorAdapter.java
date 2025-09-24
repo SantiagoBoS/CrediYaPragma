@@ -2,8 +2,8 @@ package co.com.pragma.r2dbc.loan.loancapacity;
 
 import co.com.pragma.model.loan.capacity.CapacityResult;
 import co.com.pragma.model.loan.capacity.LoanInstallment;
+import co.com.pragma.model.loan.constants.RequestStatus;
 import co.com.pragma.model.loan.gateways.LoanCapacityCalculatorService;
-import co.com.pragma.r2dbc.loan.loan.entity.LoanEntity;
 import co.com.pragma.r2dbc.loan.loanupdate.LoanUpdateReactiveRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -32,7 +32,9 @@ public class LoanCapacityCalculatorAdapter implements LoanCapacityCalculatorServ
             Integer termInMonths
     ) {
         return loanRepository.findAll() // Obtener todos los préstamos activos
-                .filter(loan -> loan.getClientDocument().equals(userId) && loan.getStatus().name().equals("APPROVED"))
+                .filter(loan -> loan.getClientDocument().equals(userId) &&
+                        loan.getStatus().name().equals(RequestStatus.APPROVED.toString())
+                )
                 .collectList()
                 .map(activeLoans -> {
                     double maxCapacity = income.doubleValue() * 0.35;
@@ -55,14 +57,14 @@ public class LoanCapacityCalculatorAdapter implements LoanCapacityCalculatorServ
                     //Decisión final
                     String decision;
                     if (newLoanPayment <= availableCapacity) {
-                        decision = (loanAmount > income.doubleValue() * 5) ? "MANUAL_REVIEW" : "APPROVED";
+                        decision = (loanAmount > income.doubleValue() * 5) ? RequestStatus.MANUAL_REVIEW.toString() : RequestStatus.APPROVED.toString();
                     } else {
-                        decision = "REJECTED";
+                        decision = RequestStatus.REJECTED.toString();
                     }
 
                     //Generar plan de pagos si aplica
                     List<LoanInstallment> paymentPlan = new ArrayList<>();
-                    if (decision.equals("APPROVED") || decision.equals("MANUAL_REVIEW")) {
+                    if (decision.equals(RequestStatus.APPROVED.toString()) || decision.equals(RequestStatus.MANUAL_REVIEW.toString())) {
                         paymentPlan = generatePaymentPlan(loanAmount, monthlyRate, termInMonths);
                     }
 

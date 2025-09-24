@@ -1,5 +1,6 @@
 package co.com.pragma.sqsadapter;
 
+import co.com.pragma.model.loan.constants.RequestStatus;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +51,7 @@ public class EmailService {
                     """.formatted(loanTypeInSpanish, statusInSpanish, statusInSpanish.toLowerCase(), loanRequestId));
 
             // Solo si fue aprobado, mostrar el plan de pagos
-            if ("APPROVED".equalsIgnoreCase(status)) {
+            if (RequestStatus.APPROVED.toString().equalsIgnoreCase(status)) {
                 contentBuilder.append("<h3>Plan de pagos:</h3>");
                 contentBuilder.append("<table border=\"1\" cellpadding=\"5\" cellspacing=\"0\">")
                         .append("<tr><th>Mes</th><th>Cuota</th><th>Intereses</th><th>Capital</th><th>Saldo Restante</th></tr>");

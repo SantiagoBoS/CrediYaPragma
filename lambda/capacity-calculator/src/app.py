@@ -34,7 +34,7 @@ def lambda_handler(event, context):
             result = calculator.calculate_capacity(message_body)
             logger.info(f"Capacity calculation completed: {result}")
 
-            # ✅ Encolar notificación para que notification-handler envíe el email
+            #Encolar notificación para que notification-handler envíe el email
             if result.get('decision') in ['APPROVED', 'REJECTED', 'MANUAL_REVIEW']:
                 notify_decision_via_sqs(sqs_client, notification_queue_url, result)
                 logger.info(f"Notificación encolada para loan: {result['loan_request_id']}")
