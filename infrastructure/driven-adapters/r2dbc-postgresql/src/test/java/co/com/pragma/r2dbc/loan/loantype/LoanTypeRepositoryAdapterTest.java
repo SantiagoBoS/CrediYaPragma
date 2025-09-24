@@ -36,33 +36,50 @@ class LoanTypeRepositoryAdapterTest {
         loanTypeEntity.setCode("HOME");
         loanTypeEntity.setDescription("Home Loan");
         loanTypeEntity.setInterestRate("12");
+        loanTypeEntity.setAutomaticValidation(true);
 
-        loanType = new LoanType();
-        loanType.setId(1L);
-        loanType.setCode("HOME");
-        loanType.setDescription("Home Loan");
+        // Creamos el LoanType usando el Builder
+        loanType = LoanType.builder()
+                .id(1L)
+                .code("HOME")
+                .description("Home Loan")
+                .interestRate(12.0)
+                .automaticValidation(true)
+                .build();
 
-        when(mapper.map(loanTypeEntity, LoanType.class)).thenReturn(loanType);
+        // Mock del mapBuilder para que retorne el Builder
+        when(mapper.mapBuilder(any(), eq(LoanType.LoanTypeBuilder.class)))
+                .thenAnswer(invocation -> LoanType.builder());
     }
 
     @Test
     void shouldFindByCodeSuccessfully() {
-        //Valida que se encuentre correctamente un LoanType por su código
         when(repository.findByCode("HOME")).thenReturn(Mono.just(loanTypeEntity));
+
         Mono<LoanType> result = repositoryAdapter.findByCode("HOME");
+
         StepVerifier.create(result)
-                .expectNextMatches(found -> found.getId().equals(1L) &&
-                        found.getCode().equals("HOME") && found.getDescription().equals("Home Loan"))
+                .expectNextMatches(found ->
+                        found.getId().equals(1L) &&
+                                found.getCode().equals("HOME") &&
+                                found.getDescription().equals("Home Loan") &&
+                                found.getInterestRate().equals(12.0) &&
+                                found.getAutomaticValidation()
+                )
                 .verifyComplete();
+
         verify(repository).findByCode("HOME");
     }
 
     @Test
     void shouldReturnEmptyWhenLoanTypeNotFound() {
-        //Valida que se retorne vacío cuando no se encuentra un LoanType por su código
         when(repository.findByCode("NOT_FOUND")).thenReturn(Mono.empty());
+
         Mono<LoanType> result = repositoryAdapter.findByCode("NOT_FOUND");
-        StepVerifier.create(result).verifyComplete();
+
+        StepVerifier.create(result)
+                .verifyComplete();
+
         verify(repository).findByCode("NOT_FOUND");
     }
 }

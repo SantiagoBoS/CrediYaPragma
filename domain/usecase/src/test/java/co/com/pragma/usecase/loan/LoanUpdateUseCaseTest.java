@@ -1,13 +1,13 @@
 package co.com.pragma.usecase.loan;
 
 import co.com.pragma.model.loan.LoanRequest;
+import co.com.pragma.model.loan.constants.RequestStatus;
+import co.com.pragma.model.loan.gateways.LoanTypeRepository;
 import co.com.pragma.model.loan.gateways.LoanUpdateRepository;
-import co.com.pragma.model.sqsnotification.gateways.NotificationServiceGateway;
-import co.com.pragma.model.user.User;
 import co.com.pragma.model.user.gateways.UserRepository;
+import co.com.pragma.usecase.loan.notification.LoanNotificationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -19,7 +19,8 @@ import static org.mockito.Mockito.*;
 class LoanUpdateUseCaseTest {
 
     private LoanUpdateRepository loanUpdateRepository;
-    private NotificationServiceGateway notificationServiceGateway;
+    private LoanNotificationService loanNotificationService;
+    private LoanTypeRepository loanTypeRepository;
     private UserRepository userRepository;
     private LoanCalculateCapacityUseCase loanCalculateCapacityUseCase;
     private LoanUpdateUseCase useCase;
@@ -28,66 +29,60 @@ class LoanUpdateUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        loanUpdateRepository = Mockito.mock(LoanUpdateRepository.class);
-        notificationServiceGateway = Mockito.mock(NotificationServiceGateway.class);
-        userRepository = Mockito.mock(UserRepository.class);
-        useCase = new LoanUpdateUseCase(loanUpdateRepository, notificationServiceGateway, userRepository, loanCalculateCapacityUseCase);
+        loanUpdateRepository = mock(LoanUpdateRepository.class);
+        loanNotificationService = mock(LoanNotificationService.class);
+        userRepository = mock(UserRepository.class);
+        loanCalculateCapacityUseCase = mock(LoanCalculateCapacityUseCase.class);
+        loanTypeRepository = mock(LoanTypeRepository.class);
 
-        publicId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
+        useCase = new LoanUpdateUseCase(
+                loanUpdateRepository,
+                loanTypeRepository,
+                loanNotificationService,
+                userRepository,
+                loanCalculateCapacityUseCase
+        );
+
+        publicId = UUID.randomUUID();
 
         loanRequest = LoanRequest.builder()
                 .publicId(publicId)
                 .clientDocument("CC123")
                 .loanType("PERSONAL")
+                .status(RequestStatus.PENDING_REVIEW)
+                .amount(1000000.0)
+                .termMonths(12)
                 .build();
     }
 
     @Test
-    void shouldSendNotificationWithLoanTypeWhenLoanIsApproved() {
-        //Para validar el envio de una notificacion con el tipo de prestamo cuando se apruebe
-        loanRequest.setLoanType("CAR");
-
-        when(loanUpdateRepository.updateStatus(anyString(), anyString(), anyString())).thenReturn(Mono.just(loanRequest));
-        when(userRepository.findByDocumentNumber("CC123")).thenReturn(Mono.just(User.builder().email("test@mail.com").build()));
-        when(notificationServiceGateway.sendLoanStatusUpdateNotification(anyString(), anyString(), anyString(), anyString())).thenReturn(Mono.empty());
-
-        Mono<LoanRequest> result = useCase.updateLoanStatus(publicId.toString(), "APPROVED", "advisor-1");
-
-        StepVerifier.create(result)
-                .expectNextMatches(lr -> lr.getLoanType().equals("CAR"))
-                .verifyComplete();
-
-        verify(notificationServiceGateway, times(1))
-                .sendLoanStatusUpdateNotification(publicId.toString(), "APPROVED", "test@mail.com", "CAR");
-    }
-
-    @Test
     void shouldNotSendNotificationWhenStatusIsPending() {
-        //Para que no se envie alguna notificacion con otro estado
-        when(loanUpdateRepository.updateStatus(anyString(), anyString(), anyString())).thenReturn(Mono.just(loanRequest));
-        Mono<LoanRequest> result = useCase.updateLoanStatus("123", "PENDING_REVIEW", "advisor-1");
+        when(loanUpdateRepository.updateStatus(anyString(), anyString(), anyString()))
+                .thenReturn(Mono.just(loanRequest));
+
+        Mono<LoanRequest> result = useCase.updateLoanStatus(publicId.toString(), "PENDING_REVIEW", "advisor-1");
 
         StepVerifier.create(result)
                 .expectNext(loanRequest)
                 .verifyComplete();
 
-        verify(notificationServiceGateway, never()).sendLoanStatusUpdateNotification(anyString(), anyString(), anyString(), anyString());
+        verify(loanNotificationService, never())
+                .notifyApproved(any(), anyString(), anyString(), anyDouble(), anyList());
     }
 
     @Test
     void shouldReturnErrorWhenUserNotFound() {
-        //Por si el usuario no se encuentra
-        loanRequest.setLoanType("MORTGAGE");
-
-        when(loanUpdateRepository.updateStatus(anyString(), anyString(), anyString())).thenReturn(Mono.just(loanRequest));
+        when(loanUpdateRepository.updateStatus(anyString(), anyString(), anyString()))
+                .thenReturn(Mono.just(loanRequest));
         when(userRepository.findByDocumentNumber("CC123")).thenReturn(Mono.empty());
+
         Mono<LoanRequest> result = useCase.updateLoanStatus(publicId.toString(), "APPROVED", "advisor-1");
+
         StepVerifier.create(result)
-                .expectErrorMatches(error ->
-                        error instanceof RuntimeException
-                                && error.getMessage().contains("LOAN_EMAIL_NOT_FOUND"))
+                .expectErrorMatches(e -> e instanceof RuntimeException
+                        && e.getMessage().contains("LOAN_EMAIL_NOT_FOUND"))
                 .verify();
 
-        verify(notificationServiceGateway, never()).sendLoanStatusUpdateNotification(anyString(), anyString(), anyString(), anyString());
+        verify(loanNotificationService, never()).notifyApproved(any(), anyString(), anyString(), anyDouble(), anyList());
     }
 }

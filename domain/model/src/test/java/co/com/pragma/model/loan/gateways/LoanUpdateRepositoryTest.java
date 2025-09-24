@@ -12,7 +12,7 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-class LoanUpdateRepositoryContractTest {
+class LoanUpdateRepositoryTest {
 
     private LoanUpdateRepository loanUpdateRepository;
 

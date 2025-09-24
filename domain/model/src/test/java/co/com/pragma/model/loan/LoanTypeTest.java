@@ -15,6 +15,8 @@ class LoanTypeTest {
                 .id(1L)
                 .code("PERSONAL")
                 .description("Préstamo personal")
+                .interestRate(5.0)
+                .automaticValidation(true)
                 .build();
     }
 
@@ -23,6 +25,8 @@ class LoanTypeTest {
         assertEquals(1L, baseType.getId());
         assertEquals("PERSONAL", baseType.getCode());
         assertEquals("Préstamo personal", baseType.getDescription());
+        assertEquals(5.0, baseType.getInterestRate());
+        assertTrue(baseType.getAutomaticValidation());
     }
 
     @Test
@@ -30,19 +34,25 @@ class LoanTypeTest {
         baseType.setId(2L);
         baseType.setCode("CAR");
         baseType.setDescription("Préstamo para vehículo");
+        baseType.setInterestRate(3.5);
+        baseType.setAutomaticValidation(false);
 
         assertEquals(2L, baseType.getId());
         assertEquals("CAR", baseType.getCode());
         assertEquals("Préstamo para vehículo", baseType.getDescription());
+        assertEquals(3.5, baseType.getInterestRate());
+        assertFalse(baseType.getAutomaticValidation());
     }
 
     @Test
     void shouldUseAllArgsConstructor() {
-        LoanType type = new LoanType(3L, "MORTGAGE", "Préstamo hipotecario");
+        LoanType type = new LoanType(3L, "MORTGAGE", "Préstamo hipotecario", 6.0, true);
 
         assertEquals(3L, type.getId());
         assertEquals("MORTGAGE", type.getCode());
         assertEquals("Préstamo hipotecario", type.getDescription());
+        assertEquals(6.0, type.getInterestRate());
+        assertTrue(type.getAutomaticValidation());
     }
 
     @Test
@@ -51,6 +61,8 @@ class LoanTypeTest {
                 .id(1L)
                 .code("PERSONAL")
                 .description("Préstamo personal")
+                .interestRate(5.0)
+                .automaticValidation(true)
                 .build();
 
         assertEquals(baseType, copy);
@@ -63,5 +75,7 @@ class LoanTypeTest {
         assertNotNull(toString);
         assertTrue(toString.contains("PERSONAL"));
         assertTrue(toString.contains("Préstamo personal"));
+        assertTrue(toString.contains("5.0"));
+        assertTrue(toString.contains("true"));
     }
 }

@@ -45,3 +45,6 @@ JWT_EXPIRATION_MS: 86400000
 
 # Configuración adicional para H2
 spring.h2.console.enabled: true
+
+#Dummy
+AWS_SQS_NOTIFICATION_QUEUE_URL: http://localhost/dummy

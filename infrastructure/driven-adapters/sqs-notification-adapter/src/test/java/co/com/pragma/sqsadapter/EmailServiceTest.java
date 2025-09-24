@@ -21,7 +21,7 @@ class EmailServiceTest {
     }
 
     @Test
-    void testSendLoanStatusUpdate_sendsEmail() throws Exception {
+    void testSendLoanStatusUpdate_sendsEmailApprovedWithPaymentPlan() throws Exception {
         MimeMessage mimeMessage = mock(MimeMessage.class);
         when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
 
@@ -29,14 +29,17 @@ class EmailServiceTest {
                 "test@example.com",
                 "CAR",
                 "APPROVED",
-                "REQ123"
+                "REQ123",
+                10000.0,
+                12.0,
+                6
         );
 
         verify(mailSender, times(1)).send(mimeMessage);
     }
 
     @Test
-    void testMapStatusAndLoanTypeToSpanish() {
+    void testSendLoanStatusUpdate_sendsEmailRejectedWithoutPaymentPlan() throws Exception {
         MimeMessage mimeMessage = mock(MimeMessage.class);
         when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
 
@@ -44,7 +47,10 @@ class EmailServiceTest {
                 "test@example.com",
                 "MORTGAGE",
                 "REJECTED",
-                "REQ999"
+                "REQ999",
+                5000.0,
+                10.0,
+                12
         );
 
         ArgumentCaptor<MimeMessage> captor = ArgumentCaptor.forClass(MimeMessage.class);
@@ -62,8 +68,17 @@ class EmailServiceTest {
         doThrow(new RuntimeException("Fallo interno")).when(sender).send(any(MimeMessage.class));
 
         EmailService service = new EmailService(sender);
+
         assertThrows(RuntimeException.class, () ->
-                service.sendLoanStatusUpdate("test@example.com", "CAR", "APPROVED", "REQ123")
+                service.sendLoanStatusUpdate(
+                        "test@example.com",
+                        "CAR",
+                        "APPROVED",
+                        "REQ123",
+                        1000.0,
+                        8.0,
+                        3
+                )
         );
     }
 }

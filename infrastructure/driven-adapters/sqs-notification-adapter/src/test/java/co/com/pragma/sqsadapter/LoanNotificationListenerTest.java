@@ -6,10 +6,9 @@ import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.services.sqs.SqsAsyncClient;
 import software.amazon.awssdk.services.sqs.model.*;
 
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
 
 class LoanNotificationListenerTest {
@@ -24,53 +23,76 @@ class LoanNotificationListenerTest {
         sqsAsyncClient = mock(SqsAsyncClient.class);
         objectMapper = new ObjectMapper();
         emailService = mock(EmailService.class);
-
         listener = new LoanNotificationListener(sqsAsyncClient, objectMapper, emailService);
-        listener.queueUrl = "http://localhost:4566/queue/test";
+        listener.queueUrl = "http://fake-queue-url";
     }
 
     @Test
-    void testEmailServiceDirectly() throws Exception {
-        Map<String, String> payload = Map.of(
-                "userEmail", "test@example.com",
-                "loanType", "CAR",
-                "newStatus", "APPROVED",
-                "loanRequestId", "REQ123"
-        );
+    void testPollMessages_processesValidMessage() throws Exception {
+        // Arrange
+        String body = """
+        {
+            "userEmail":"test@example.com",
+            "loanType":"CAR",
+            "newStatus":"APPROVED",
+            "loanRequestId":"REQ123",
+            "amount":15000.0,
+            "interestRate":7.5,
+            "termMonths":24
+        }
+        """;
 
-        emailService.sendLoanStatusUpdate(
-                payload.get("userEmail"),
-                payload.get("loanType"),
-                payload.get("newStatus"),
-                payload.get("loanRequestId")
-        );
+        Message message = Message.builder()
+                .body(body)
+                .receiptHandle("receipt-123")
+                .build();
 
-        verify(emailService, times(1)).sendLoanStatusUpdate("test@example.com", "CAR", "APPROVED", "REQ123");
+        ReceiveMessageResponse response = ReceiveMessageResponse.builder()
+                .messages(message)
+                .build();
+
+        //Primera vez → devuelve el mensaje válido, segunda vez → vacío
+        when(sqsAsyncClient.receiveMessage(any(Consumer.class)))
+                .thenReturn(CompletableFuture.completedFuture(response))
+                .thenReturn(CompletableFuture.completedFuture(ReceiveMessageResponse.builder().build()));
+
+        when(sqsAsyncClient.deleteMessage(any(Consumer.class))).thenReturn(CompletableFuture.completedFuture(DeleteMessageResponse.builder().build()));
+        listener.startListener();
+
+        verify(emailService, timeout(1000).times(1))
+                .sendLoanStatusUpdate(eq("test@example.com"), eq("CAR"), eq("APPROVED"),
+                        eq("REQ123"), eq(15000.0), eq(7.5), eq(24));
     }
 
     @Test
-    void testPollMessagesHandlesException() {
-        // Espiamos al listener para interceptar la recursión
-        LoanNotificationListener spyListener = spy(listener);
+    void testPollMessages_handlesInvalidJsonGracefully() throws Exception {
+        Message message = Message.builder()
+                .body("invalid-json")
+                .receiptHandle("receipt-456")
+                .build();
 
-        // Cuando dentro del metodo intente llamarse otra vez, no hacer nada
-        doNothing().when(spyListener).startListener();
+        ReceiveMessageResponse response = ReceiveMessageResponse.builder()
+                .messages(message)
+                .build();
 
-        when(sqsAsyncClient.receiveMessage(any(java.util.function.Consumer.class)))
-                .thenReturn(CompletableFuture.failedFuture(new RuntimeException("Error SQS")));
+        // Primera vez devuelve un mensaje inválido, segunda vez vacío → rompe el loop
+        when(sqsAsyncClient.receiveMessage(any(Consumer.class)))
+                .thenReturn(CompletableFuture.completedFuture(response))
+                .thenReturn(CompletableFuture.completedFuture(ReceiveMessageResponse.builder().build()));
+        listener.startListener();
 
-        assertDoesNotThrow(spyListener::startListener);
+        // Assert → EmailService nunca debe ser llamado
+        verify(emailService, timeout(1000).times(0))
+                .sendLoanStatusUpdate(any(), any(), any(), any(), anyDouble(), anyDouble(), anyInt());
     }
 
     @Test
-    void testPollMessagesWithEmptyResponse() {
-        LoanNotificationListener spyListener = spy(listener);
-        doNothing().when(spyListener).startListener();
-
+    void testPollMessages_handlesEmptyResponse() {
         ReceiveMessageResponse response = ReceiveMessageResponse.builder().build();
-        when(sqsAsyncClient.receiveMessage((ReceiveMessageRequest) any()))
-                .thenReturn(CompletableFuture.completedFuture(response));
+        when(sqsAsyncClient.receiveMessage(any(Consumer.class))).thenReturn(CompletableFuture.completedFuture(response));
+        listener.startListener();
 
-        assertDoesNotThrow(spyListener::startListener);
+        // Assert → No debe llamar a EmailService
+        verify(emailService, timeout(500).times(0)).sendLoanStatusUpdate(any(), any(), any(), any(), anyDouble(), anyDouble(), anyInt());
     }
 }

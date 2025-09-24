@@ -2,7 +2,6 @@ package co.com.pragma.api.loan.mapper;
 
 import co.com.pragma.api.loan.dto.LoanDTO;
 import co.com.pragma.model.loan.LoanRequest;
-import co.com.pragma.model.constants.AppMessages;
 import co.com.pragma.model.loan.constants.RequestStatus;
 import org.junit.jupiter.api.Test;
 
@@ -11,6 +10,7 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LoanMapperTest {
+
     @Test
     void shouldMapDtoToLoanRequest() {
         LocalDateTime now = LocalDateTime.now();
@@ -19,8 +19,8 @@ class LoanMapperTest {
                 .clientDocument("12345")
                 .amount(5000.0)
                 .termMonths(24)
-                .loanType(AppMessages.VALID_TYPE_LOAN_PERSONAL.getMessage())
-                .status(RequestStatus.PENDING_REVIEW)
+                .loanType("PERSONAL")
+                .status(RequestStatus.APPROVED)
                 .createdAt(now)
                 .build();
 
@@ -30,8 +30,8 @@ class LoanMapperTest {
         assertEquals("12345", result.getClientDocument());
         assertEquals(5000.0, result.getAmount());
         assertEquals(24, result.getTermMonths());
-        assertEquals(AppMessages.VALID_TYPE_LOAN_PERSONAL.getMessage(), result.getLoanType());
-        assertEquals(RequestStatus.PENDING_REVIEW, result.getStatus());
+        assertEquals("PERSONAL", result.getLoanType());
+        assertEquals(RequestStatus.APPROVED, result.getStatus());
         assertEquals(now, result.getCreatedAt());
     }
 
@@ -41,8 +41,38 @@ class LoanMapperTest {
     }
 
     @Test
-    void constructorShouldThrowException() {
-        Exception exception = assertThrows(UnsupportedOperationException.class, LoanMapper::new);
-        assertEquals(AppMessages.CLASS_SHOULD_NOT_BE_INSTANTIATED.getMessage(), exception.getMessage());
+    void shouldAssignDefaultStatusWhenDtoStatusIsNull() {
+        LoanDTO dto = LoanDTO.builder()
+                .clientDocument("99999")
+                .amount(10000.0)
+                .termMonths(12)
+                .loanType("MORTGAGE")
+                .status(null) // no se envía status
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        LoanRequest result = LoanMapper.toMain(dto);
+
+        assertNotNull(result);
+        assertEquals(RequestStatus.PENDING_REVIEW, result.getStatus());
+    }
+
+    @Test
+    void shouldAssignCurrentDateWhenCreatedAtIsNull() {
+        LoanDTO dto = LoanDTO.builder()
+                .clientDocument("88888")
+                .amount(7500.0)
+                .termMonths(36)
+                .loanType("CAR")
+                .status(RequestStatus.REJECTED)
+                .createdAt(null)
+                .build();
+
+        LoanRequest result = LoanMapper.toMain(dto);
+
+        assertNotNull(result);
+        assertNotNull(result.getCreatedAt());
+        assertEquals("88888", result.getClientDocument());
+        assertEquals(RequestStatus.REJECTED, result.getStatus());
     }
 }

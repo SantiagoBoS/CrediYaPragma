@@ -4,6 +4,7 @@ import co.com.pragma.api.loan.dto.LoanDTO;
 import co.com.pragma.api.loan.router.LoanRouter;
 import co.com.pragma.model.exceptions.BusinessException;
 import co.com.pragma.model.loan.LoanRequest;
+import co.com.pragma.model.user.gateways.UserDocumentRepository;
 import co.com.pragma.usecase.loan.LoanUseCase;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -30,6 +31,8 @@ class LoanHandlerTest {
     private LoanUseCase loanUseCase;
     private LoanListHandler loanListHandler;
     private LoanUpdateHandler loanUpdateHandler;
+    private LoanCapacityHandler loanCapacityHandler;
+    private UserDocumentRepository userDocumentRepository;
     private WebTestClient webTestClient;
 
     private LoanDTO dto;
@@ -37,14 +40,18 @@ class LoanHandlerTest {
 
     @BeforeEach
     void setUp() {
-        loanUseCase = Mockito.mock(LoanUseCase.class);
-        loanListHandler = Mockito.mock(LoanListHandler.class);
-        loanUpdateHandler = Mockito.mock(LoanUpdateHandler.class);
+        loanUseCase = mock(LoanUseCase.class);
+        loanListHandler = mock(LoanListHandler.class);
+        loanUpdateHandler = mock(LoanUpdateHandler.class);
+        loanCapacityHandler = mock(LoanCapacityHandler.class);
+        userDocumentRepository = mock(UserDocumentRepository.class);
 
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        LoanHandler loanHandler = new LoanHandler(loanUseCase, validator, null);
+        LoanHandler loanHandler = new LoanHandler(loanUseCase, validator, userDocumentRepository);
 
-        RouterFunction<ServerResponse> routerFunction = new LoanRouter().loanRoutes(loanHandler, loanListHandler, loanUpdateHandler);
+        RouterFunction<ServerResponse> routerFunction =
+                new LoanRouter().loanRoutes(loanHandler, loanListHandler, loanUpdateHandler, loanCapacityHandler);
+
         webTestClient = WebTestClient.bindToRouterFunction(routerFunction).build();
 
         dto = LoanDTO.builder()
@@ -65,7 +72,6 @@ class LoanHandlerTest {
     void testCreateLoanRejectsIfDifferentClientDocument() {
         dto.setClientDocument("99999");
 
-        // Evitar que el mock devuelva null
         when(loanUseCase.register(any(), any())).thenReturn(Mono.just(savedLoan));
 
         ServerRequest request = MockServerRequest.builder()
@@ -75,7 +81,7 @@ class LoanHandlerTest {
         LoanHandler handler = new LoanHandler(
                 loanUseCase,
                 Validation.buildDefaultValidatorFactory().getValidator(),
-                null
+                userDocumentRepository
         );
 
         Mono<ServerResponse> responseMono = handler.createLoan(request)
@@ -102,7 +108,7 @@ class LoanHandlerTest {
         LoanHandler handler = new LoanHandler(
                 loanUseCase,
                 Validation.buildDefaultValidatorFactory().getValidator(),
-                null
+                userDocumentRepository
         );
 
         Mono<ServerResponse> responseMono = handler.createLoan(request)
