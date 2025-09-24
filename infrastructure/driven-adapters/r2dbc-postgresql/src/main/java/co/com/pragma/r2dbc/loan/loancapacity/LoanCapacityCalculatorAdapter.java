@@ -50,21 +50,27 @@ public class LoanCapacityCalculatorAdapter implements LoanCapacityCalculatorServ
 
                     //Capacidad disponible
                     double availableCapacity = maxCapacity - currentDebt;
+                    log.info("maxCapacity: {}", maxCapacity);
+                    log.info("currentDebt: {}", currentDebt);
+                    log.info("availableCapacity: {}", availableCapacity);
 
                     //Cuota del nuevo préstamo
                     double newLoanPayment = calculateLoanPayment(loanAmount, monthlyRate, termInMonths);
+                    log.info("newLoanPayment: {}", newLoanPayment);
 
                     //Decisión final
                     String decision;
+                    log.info("loanAmount > income.doubleValue() * 5: {}", loanAmount > income.doubleValue() * 5);
                     if (newLoanPayment <= availableCapacity) {
                         decision = (loanAmount > income.doubleValue() * 5) ? RequestStatus.MANUAL_REVIEW.toString() : RequestStatus.APPROVED.toString();
                     } else {
                         decision = RequestStatus.REJECTED.toString();
                     }
+                    log.info("decision {}", decision);
 
                     //Generar plan de pagos si aplica
                     List<LoanInstallment> paymentPlan = new ArrayList<>();
-                    if (decision.equals(RequestStatus.APPROVED.toString()) || decision.equals(RequestStatus.MANUAL_REVIEW.toString())) {
+                    if (decision.equals(RequestStatus.APPROVED.toString())) {
                         paymentPlan = generatePaymentPlan(loanAmount, monthlyRate, termInMonths);
                     }
 

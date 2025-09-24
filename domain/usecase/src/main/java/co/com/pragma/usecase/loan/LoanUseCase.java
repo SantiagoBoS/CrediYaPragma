@@ -48,14 +48,26 @@ public class LoanUseCase {
 
                                     //Envio de la notificacion y guardado
                                     return loanRepository.save(loanWithDecision)
-                                        .flatMap(savedLoan -> loanNotificationService.notifyApproved(
-                                                savedLoan,
-                                                user.getEmail(),
-                                                loanType.getCode(),
-                                                loanType.getInterestRate(),
-                                                capacityResult.getPaymentPlan()
-                                            ).thenReturn(savedLoan)
-                                        );
+                                        .flatMap(savedLoan -> {
+                                            // Solo enviar correo si es APPROVED o REJECTED
+                                            if (RequestStatus.valueOf(capacityResult.getDecision()) == RequestStatus.APPROVED) {
+                                                return loanNotificationService.notifyApproved(
+                                                        savedLoan,
+                                                        user.getEmail(),
+                                                        loanType.getCode(),
+                                                        loanType.getInterestRate(),
+                                                        capacityResult.getPaymentPlan()
+                                                ).thenReturn(savedLoan);
+                                            } else if (RequestStatus.valueOf(capacityResult.getDecision()) == RequestStatus.REJECTED) {
+                                                return loanNotificationService.notifyRejected(
+                                                        savedLoan,
+                                                        user.getEmail(),
+                                                        loanType.getCode()
+                                                ).thenReturn(savedLoan);
+                                            } else {
+                                                return Mono.just(savedLoan);
+                                            }
+                                        });
                                 })
                             );
                     } else {
