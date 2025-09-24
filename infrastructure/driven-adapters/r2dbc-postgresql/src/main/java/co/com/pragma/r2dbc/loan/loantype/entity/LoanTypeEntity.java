@@ -19,4 +19,7 @@ public class LoanTypeEntity {
 
     @Column("interest_rate")
     private String interestRate;
+
+    @Column("automatic_validation")
+    private Boolean automaticValidation;
 }

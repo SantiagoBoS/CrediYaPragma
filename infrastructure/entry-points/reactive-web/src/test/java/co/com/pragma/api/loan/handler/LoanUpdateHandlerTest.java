@@ -3,7 +3,6 @@ package co.com.pragma.api.loan.handler;
 import co.com.pragma.api.loan.dto.LoanStatusUpdateDTO;
 import co.com.pragma.model.exceptions.BusinessException;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.never;
 import static org.mockito.ArgumentMatchers.any;
 import co.com.pragma.model.loan.LoanRequest;
 import co.com.pragma.usecase.loan.LoanUpdateUseCase;

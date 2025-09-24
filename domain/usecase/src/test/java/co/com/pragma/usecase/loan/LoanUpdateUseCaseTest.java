@@ -21,6 +21,7 @@ class LoanUpdateUseCaseTest {
     private LoanUpdateRepository loanUpdateRepository;
     private NotificationServiceGateway notificationServiceGateway;
     private UserRepository userRepository;
+    private LoanCalculateCapacityUseCase loanCalculateCapacityUseCase;
     private LoanUpdateUseCase useCase;
     private UUID publicId;
     private LoanRequest loanRequest;
@@ -30,7 +31,7 @@ class LoanUpdateUseCaseTest {
         loanUpdateRepository = Mockito.mock(LoanUpdateRepository.class);
         notificationServiceGateway = Mockito.mock(NotificationServiceGateway.class);
         userRepository = Mockito.mock(UserRepository.class);
-        useCase = new LoanUpdateUseCase(loanUpdateRepository, notificationServiceGateway, userRepository);
+        useCase = new LoanUpdateUseCase(loanUpdateRepository, notificationServiceGateway, userRepository, loanCalculateCapacityUseCase);
 
         publicId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
 

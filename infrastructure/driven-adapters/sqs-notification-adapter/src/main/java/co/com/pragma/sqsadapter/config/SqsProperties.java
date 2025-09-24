@@ -10,4 +10,5 @@ import org.springframework.context.annotation.Configuration;
 public class SqsProperties {
     // Deshabilitado por defecto
     private boolean enabled = false;
+    private String capacityQueueUrl;
 }

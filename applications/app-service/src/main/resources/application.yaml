@@ -43,6 +43,8 @@ aws:
   region: us-east-1
   sqs:
     queue-url: ${AWS_SQS_QUEUE_URL:http://localhost:4566/000000000000/credinya-notifications}
+    notification-queue-url: ${AWS_SQS_NOTIFICATION_QUEUE_URL}
+    capacity-queue-url: ${AWS_SQS_CAPACITY_QUEUE_URL}
   credentials:
     access-key-id: ${AWS_ACCESS_KEY_ID:fakeAccessKey}
     secret-access-key: ${AWS_SECRET_ACCESS_KEY:fakeSecretKey}

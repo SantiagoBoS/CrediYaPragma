@@ -1,0 +1,7 @@
+﻿{
+  "Records": [
+    {
+      "body": "{\"type\": \"CAPACITY_CALCULATION\", \"loan_request_id\": \"123\", \"user_id\": \"456\", \"loan_amount\": 50000000, \"loan_term\": 12, \"interest_rate\": 1.5, \"user_salary\": 3000000, \"user_email\": \"cliente@ejemplo.com\"}"
+    }
+  ]
+}

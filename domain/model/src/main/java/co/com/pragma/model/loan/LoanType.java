@@ -13,4 +13,6 @@ public class LoanType {
     private Long id;
     private String code;
     private String description;
+    private Double interestRate;
+    private Boolean automaticValidation;
 }

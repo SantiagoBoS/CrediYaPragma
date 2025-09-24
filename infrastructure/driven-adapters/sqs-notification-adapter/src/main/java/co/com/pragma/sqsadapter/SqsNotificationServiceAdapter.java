@@ -1,5 +1,7 @@
 package co.com.pragma.sqsadapter;
 
+import co.com.pragma.model.loan.capacity.LoanInstallment;
+import co.com.pragma.model.user.gateways.UserRepository;
 import co.com.pragma.sqsadapter.config.SqsProperties;
 import co.com.pragma.model.sqsnotification.gateways.NotificationServiceGateway;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -13,54 +15,81 @@ import reactor.core.scheduler.Schedulers;
 import software.amazon.awssdk.services.sqs.SqsAsyncClient;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @Repository
 @RequiredArgsConstructor
 public class SqsNotificationServiceAdapter implements NotificationServiceGateway {
+
     private final SqsAsyncClient sqsAsyncClient;
-
-    @Value("${aws.sqs.queue-url}")
-    String sqsQueueUrl;
-
+    private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
     private final SqsProperties sqsProperties;
 
+    // Cola de NOTIFICACIONES (estado del préstamo)
+    @Value("${aws.sqs.notification-queue-url}")
+    private String notificationQueueUrl;
+
     @Override
-    public Mono<Void> sendLoanStatusUpdateNotification(String loanRequestId, String newStatus, String userEmail, String loanType) {
+    public Mono<Void> sendLoanStatusUpdateNotification(
+            String loanRequestId,
+            String newStatus,
+            String userEmail,
+            String loanType,
+            Double amount,
+            Double interestRate,
+            Integer termMonths,
+            List<LoanInstallment> paymentPlan
+    ) {
 
         if (!sqsProperties.isEnabled()) {
             log.info("SQS está deshabilitado. Simulando envío de notificación para solicitud: {}, estado: {}, email: {}", loanRequestId, newStatus, userEmail);
             return Mono.empty();
         }
 
-        Map<String, String> messagePayload = new HashMap<>();
-        messagePayload.put("loanRequestId", loanRequestId);
-        messagePayload.put("newStatus", newStatus);
-        messagePayload.put("userEmail", userEmail);
-        messagePayload.put("loanType", loanType);
+        if (notificationQueueUrl == null || notificationQueueUrl.isEmpty()) {
+            log.error("URL de notificaciones no configurada");
+            return Mono.error(new RuntimeException("URL de cola de notificaciones no configurada"));
+        }
 
-        String messageBody;
         try {
-            messageBody = objectMapper.writeValueAsString(messagePayload);
+            Map<String, Object> messagePayload = Map.of(
+                    "loanRequestId", loanRequestId,
+                    "newStatus", newStatus,
+                    "userEmail", userEmail,
+                    "loanType", loanType,
+                    "amount", amount,
+                    "interestRate", interestRate,
+                    "termMonths", termMonths,
+                    "paymentPlan", paymentPlan.stream()
+                            .map(pi -> Map.of(
+                                    "month", pi.getMonth(),
+                                    "capitalPayment", pi.getCapitalPayment(),
+                                    "interestPayment", pi.getInterestPayment(),
+                                    "remainingBalance", pi.getRemainingBalance()
+                            ))
+                            .toList()
+            );
+            String messageBody = objectMapper.writeValueAsString(messagePayload);
+
+            SendMessageRequest sendMessageRequest = SendMessageRequest.builder()
+                    .queueUrl(notificationQueueUrl)
+                    .messageBody(messageBody)
+                    .build();
+
+            return Mono.fromFuture(sqsAsyncClient.sendMessage(sendMessageRequest))
+                    .subscribeOn(Schedulers.boundedElastic())
+                    .doOnSuccess(response -> log.info("Notificación enviada a SQS. MessageId: {}, Loan: {}",
+                            response.messageId(), loanRequestId))
+                    .doOnError(error -> log.error("Error enviando notificación. Loan: {}, URL: {}",
+                            loanRequestId, notificationQueueUrl, error))
+                    .then();
+
         } catch (JsonProcessingException e) {
             log.error("Error serializando mensaje para SQS", e);
             return Mono.error(e);
         }
-
-        SendMessageRequest sendMessageRequest = SendMessageRequest.builder()
-                .queueUrl(sqsQueueUrl)
-                .messageBody(messageBody)
-                .build();
-
-        return Mono.fromFuture(sqsAsyncClient.sendMessage(sendMessageRequest))
-                .subscribeOn(Schedulers.boundedElastic())
-                .doOnSuccess(response -> log.info("Notificación enviada a SQS. MessageId: {}, solicitud: {}",
-                        response.messageId(), loanRequestId))
-                .doOnError(error -> log.error("Error enviando notificación a SQS. Solicitud: {}",
-                        loanRequestId, error))
-                .then();
     }
 }

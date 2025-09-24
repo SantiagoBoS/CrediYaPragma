@@ -38,7 +38,13 @@ public class LoanNotificationListener {
                             String loanType = (String) payload.get("loanType");
                             String status = (String) payload.get("newStatus");
                             String loanRequestId = (String) payload.get("loanRequestId");
-                            emailService.sendLoanStatusUpdate(email, loanType, status, loanRequestId);
+                            Double amount = (Double) payload.get("amount");
+                            Double interestRate = (Double) payload.get("interestRate");
+                            Integer termMonths = (Integer) payload.get("termMonths");
+
+                            emailService.sendLoanStatusUpdate(
+                                    email, loanType, status, loanRequestId, amount, interestRate, termMonths
+                            );
 
                             // Borrar el mensaje de la cola después de procesar
                             sqsAsyncClient.deleteMessage(b -> b.queueUrl(queueUrl).receiptHandle(msg.receiptHandle()));

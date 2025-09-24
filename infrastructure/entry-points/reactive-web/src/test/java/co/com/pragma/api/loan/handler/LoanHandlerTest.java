@@ -2,7 +2,6 @@ package co.com.pragma.api.loan.handler;
 
 import co.com.pragma.api.loan.dto.LoanDTO;
 import co.com.pragma.api.loan.router.LoanRouter;
-import co.com.pragma.model.constants.ApiPaths;
 import co.com.pragma.model.exceptions.BusinessException;
 import co.com.pragma.model.loan.LoanRequest;
 import co.com.pragma.usecase.loan.LoanUseCase;
@@ -11,7 +10,6 @@ import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.http.MediaType;
 import org.springframework.mock.web.reactive.function.server.MockServerRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;

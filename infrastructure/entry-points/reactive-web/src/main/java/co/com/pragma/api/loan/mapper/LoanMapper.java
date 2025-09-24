@@ -8,10 +8,6 @@ import co.com.pragma.model.loan.constants.RequestStatus;
 import java.time.LocalDateTime;
 
 public class LoanMapper {
-    LoanMapper() {
-        throw new UnsupportedOperationException(String.valueOf(AppMessages.CLASS_SHOULD_NOT_BE_INSTANTIATED.getMessage()));
-    }
-
     public static LoanRequest toMain(LoanDTO dto) {
         if (dto == null) {
             return null;

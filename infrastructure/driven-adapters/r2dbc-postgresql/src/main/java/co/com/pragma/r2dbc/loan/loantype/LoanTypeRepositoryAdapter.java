@@ -12,7 +12,13 @@ import reactor.core.publisher.Mono;
 public class LoanTypeRepositoryAdapter extends ReactiveAdapterOperations<LoanType, LoanTypeEntity, Long, LoanTypeReactiveRepository> implements LoanTypeRepository {
 
     public LoanTypeRepositoryAdapter(LoanTypeReactiveRepository repository, ObjectMapper mapper) {
-        super(repository, mapper, d -> mapper.map(d, LoanType.class));
+        super(repository, mapper, d -> mapper.mapBuilder(d, LoanType.LoanTypeBuilder.class)
+                .id(d.getId())
+                .code(d.getCode())
+                .description(d.getDescription())
+                .interestRate(Double.valueOf(d.getInterestRate()))
+                .automaticValidation(d.getAutomaticValidation())
+                .build());
         this.repository = repository;
     }
 

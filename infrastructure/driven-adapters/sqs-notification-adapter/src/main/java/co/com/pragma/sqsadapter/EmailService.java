@@ -8,20 +8,34 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmailService {
-    private final JavaMailSender mailSender;
 
-    public void sendLoanStatusUpdate(String to, String loanType, String status, String loanRequestId) {
-        //Para el envio del correo electronico, su estrcutura
+    private final JavaMailSender mailSender;
+    /**
+     * Envía la actualización de estado del préstamo al usuario.
+     * Solo se genera el plan de pagos si el préstamo fue aprobado.
+     */
+    public void sendLoanStatusUpdate(
+            String to,
+            String loanType,
+            String status,
+            String loanRequestId,
+            double amount,
+            double annualInterestRate,
+            int termMonths
+    ) {
         try {
             String statusInSpanish = mapStatusToSpanish(status);
             String loanTypeInSpanish = mapLoanTypeToSpanish(loanType);
 
             String subject = "Actualización de tu préstamo";
-            String content = """
+            StringBuilder contentBuilder = new StringBuilder("""
                     <html>
                         <body style="font-family: Arial, sans-serif; color: #333;">
                             <h2 style="color: #2C3E50;">Tu préstamo <span style="color:#27AE60;">%s</span></h2>
@@ -33,6 +47,22 @@ public class EmailService {
                                 este código: <strong style="color:#E74C3C;">%s</strong>,
                                 o escríbenos en nuestra página web.
                             </p>
+                    """.formatted(loanTypeInSpanish, statusInSpanish, statusInSpanish.toLowerCase(), loanRequestId));
+
+            // Solo si fue aprobado, mostrar el plan de pagos
+            if ("APPROVED".equalsIgnoreCase(status)) {
+                contentBuilder.append("<h3>Plan de pagos:</h3>");
+                contentBuilder.append("<table border=\"1\" cellpadding=\"5\" cellspacing=\"0\">")
+                        .append("<tr><th>Mes</th><th>Cuota</th><th>Intereses</th><th>Capital</th><th>Saldo Restante</th></tr>");
+
+                for (String row : generatePaymentPlan(amount, annualInterestRate, termMonths)) {
+                    contentBuilder.append(row);
+                }
+
+                contentBuilder.append("</table>");
+            }
+
+            contentBuilder.append("""
                             <p style="font-size: 12px; color: #7f8c8d;">
                                 <br>
                                 Gracias por confiar en CrediYa
@@ -40,14 +70,14 @@ public class EmailService {
                             </p>
                         </body>
                     </html>
-                    """.formatted(loanTypeInSpanish, statusInSpanish, statusInSpanish.toLowerCase(), loanRequestId);
+                    """);
 
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
 
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setText(content, true);
+            helper.setText(contentBuilder.toString(), true);
 
             mailSender.send(mimeMessage);
             log.info("Correo enviado a {}", to);
@@ -55,6 +85,33 @@ public class EmailService {
         } catch (MessagingException e) {
             log.error("Error enviando correo a {}: {}", to, e.getMessage(), e);
         }
+    }
+
+    private List<String> generatePaymentPlan(double amount, double annualRate, int termMonths) {
+        List<String> rows = new ArrayList<>();
+        double monthlyRate = annualRate / 12.0 / 100.0; // Convertir % anual a decimal mensual
+        double remainingBalance = amount;
+
+        for (int month = 1; month <= termMonths; month++) {
+            double monthlyPayment = (amount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -termMonths));
+            double interest = remainingBalance * monthlyRate;
+            double principal = monthlyPayment - interest;
+            remainingBalance -= principal;
+
+            if (remainingBalance < 0) remainingBalance = 0;
+
+            rows.add("""
+                    <tr>
+                        <td>%d</td>
+                        <td>%.2f</td>
+                        <td>%.2f</td>
+                        <td>%.2f</td>
+                        <td>%.2f</td>
+                    </tr>
+                    """.formatted(month, monthlyPayment, interest, principal, remainingBalance));
+        }
+
+        return rows;
     }
 
     private String mapStatusToSpanish(String status) {

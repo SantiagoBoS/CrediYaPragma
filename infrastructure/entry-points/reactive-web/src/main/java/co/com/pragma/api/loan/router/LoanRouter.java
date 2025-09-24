@@ -2,6 +2,7 @@ package co.com.pragma.api.loan.router;
 
 import co.com.pragma.api.loan.dto.LoanListResponseDTO;
 import co.com.pragma.api.loan.dto.LoanStatusUpdateDTO;
+import co.com.pragma.api.loan.handler.LoanCapacityHandler;
 import co.com.pragma.api.loan.handler.LoanHandler;
 import co.com.pragma.api.loan.dto.LoanDTO;
 import co.com.pragma.api.loan.handler.LoanListHandler;
@@ -66,12 +67,14 @@ public class LoanRouter {
     public RouterFunction<ServerResponse> loanRoutes(
             LoanHandler loanHandler,
             LoanListHandler loanListHandler,
-            LoanUpdateHandler loanUpdateHandler
+            LoanUpdateHandler loanUpdateHandler,
+            LoanCapacityHandler loanCapacityHandler
     ){
         return RouterFunctions
                 .route(POST(ApiPaths.LOAN_BASE), loanHandler::createLoan)
                 .andRoute(GET(ApiPaths.LOAN_BASE), loanListHandler::getLoanList)
-                .andRoute(PUT(ApiPaths.LOAN_BASE + "/{publicId}"), loanUpdateHandler::updateLoanStatus);
+                .andRoute(PUT(ApiPaths.LOAN_BASE + "/{publicId}"), loanUpdateHandler::updateLoanStatus)
+                .andRoute(POST(ApiPaths.LOAN_BASE + "/{publicId}/status"), loanCapacityHandler::calculateCapacity);
     }
 
 }
