@@ -30,7 +30,7 @@ public class SqsNotificationServiceAdapter implements NotificationServiceGateway
     private final SqsProperties sqsProperties;
 
     // Cola de NOTIFICACIONES (estado del préstamo)
-    @Value("${aws.sqs.notification-queue-url}")
+    @Value("${aws.sqs.notification-queue-url:}")
     private String notificationQueueUrl;
 
     @Override

@@ -4,6 +4,7 @@ import co.com.pragma.model.loan.LoanRequest;
 import co.com.pragma.model.loan.LoanType;
 import co.com.pragma.model.loan.capacity.CapacityResult;
 import co.com.pragma.model.loan.constants.RequestStatus;
+import co.com.pragma.model.reports.gateways.ReportRepository;
 import co.com.pragma.model.user.User;
 import co.com.pragma.model.constants.AppMessages;
 import co.com.pragma.model.exceptions.BusinessException;
@@ -14,12 +15,10 @@ import co.com.pragma.model.user.gateways.UserRepository;
 import co.com.pragma.usecase.loan.notification.LoanNotificationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -34,6 +33,7 @@ class LoanUseCaseTest {
     private UserRepository userRepository;
     private LoanNotificationService loanNotificationService;
     private LoanCalculateCapacityUseCase loanCalculateCapacityUseCase;
+    private ReportRepository reportRepository;
 
     private LoanUseCase loanUseCase;
     private LoanRequest loanRequest;
@@ -48,6 +48,7 @@ class LoanUseCaseTest {
         userRepository = mock(UserRepository.class);
         loanNotificationService = mock(LoanNotificationService.class);
         loanCalculateCapacityUseCase = mock(LoanCalculateCapacityUseCase.class);
+        reportRepository = mock(ReportRepository.class);
 
         loanUseCase = new LoanUseCase(
                 loanRepository,
@@ -55,7 +56,8 @@ class LoanUseCaseTest {
                 loanTypeRepository,
                 loanCalculateCapacityUseCase,
                 userRepository,
-                loanNotificationService
+                loanNotificationService,
+                reportRepository
         );
 
         loanRequest = LoanRequest.builder()
@@ -79,7 +81,6 @@ class LoanUseCaseTest {
 
     @Test
     void shouldRegisterLoanWithAutomaticValidationApproved() {
-        // Mock servicios
         when(userDocumentRepository.existsByDocumentToken("12345", token)).thenReturn(Mono.just(true));
         when(loanTypeRepository.findByCode("PERSONAL")).thenReturn(Mono.just(loanType));
         when(userRepository.findByDocumentNumber("12345"))
@@ -87,12 +88,15 @@ class LoanUseCaseTest {
                         .email("test@mail.com")
                         .baseSalary(BigDecimal.valueOf(5000))
                         .build()));
+
         CapacityResult mockCapacity = mock(CapacityResult.class);
         when(mockCapacity.getDecision()).thenReturn("APPROVED");
         when(mockCapacity.getPaymentPlan()).thenReturn(List.of());
         when(loanCalculateCapacityUseCase.execute(anyString(), any(), anyDouble(), anyDouble(), anyInt()))
                 .thenReturn(Mono.just(mockCapacity));
+
         when(loanRepository.save(any())).thenReturn(Mono.just(loanRequest));
+        when(reportRepository.incrementCounter()).thenReturn(Mono.empty());
         when(loanNotificationService.notifyApproved(any(), anyString(), anyString(), anyDouble(), anyList()))
                 .thenReturn(Mono.empty());
 
@@ -102,6 +106,7 @@ class LoanUseCaseTest {
                 .expectNextMatches(lr -> lr.getClientDocument().equals("12345"))
                 .verifyComplete();
 
+        verify(reportRepository).incrementCounter();
         verify(loanNotificationService).notifyApproved(any(), anyString(), anyString(), anyDouble(), anyList());
     }
 

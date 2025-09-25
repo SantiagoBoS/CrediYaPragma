@@ -20,8 +20,8 @@ public class ReportSqsListener {
     private final ObjectMapper objectMapper;
     private final ReportRepository reportRepository; // Contador en DynamoDB
 
-    @Value("${aws.sqs.reports-queue-url}")
-    private String queueUrl;
+    @Value("${aws.sqs.reports-queue-url:}")
+    String queueUrl;
 
     @PostConstruct
     public void startListener() {

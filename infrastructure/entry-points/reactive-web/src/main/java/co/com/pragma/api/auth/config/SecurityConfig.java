@@ -26,7 +26,7 @@ public class SecurityConfig {
                 .pathMatchers(HttpMethod.GET, ApiPaths.LOAN_BASE + "/**").hasAnyRole(UserRoles.ADMIN, UserRoles.ASESOR)
                 .pathMatchers(HttpMethod.PUT, ApiPaths.LOAN_BASE + "/**").hasAnyRole(UserRoles.ADMIN, UserRoles.ASESOR)
                 .pathMatchers(HttpMethod.POST, ApiPaths.CAPACITY_BASE + "/**").hasAnyRole(UserRoles.ADMIN, UserRoles.ASESOR)
-                .pathMatchers(HttpMethod.POST, ApiPaths.REPORT_BASE + "/**").hasRole(UserRoles.ADMIN)
+                .pathMatchers(HttpMethod.GET, ApiPaths.REPORT_BASE + "/**").hasRole(UserRoles.ADMIN)
                 .anyExchange().authenticated()
             )
             // Agrega el filtro JWT

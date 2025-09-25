@@ -4,6 +4,7 @@ import co.com.pragma.model.loan.LoanRequest;
 import co.com.pragma.model.loan.constants.RequestStatus;
 import co.com.pragma.model.loan.gateways.LoanTypeRepository;
 import co.com.pragma.model.loan.gateways.LoanUpdateRepository;
+import co.com.pragma.model.reports.gateways.ReportRepository;
 import co.com.pragma.model.user.gateways.UserRepository;
 import co.com.pragma.usecase.loan.notification.LoanNotificationService;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -23,6 +26,7 @@ class LoanUpdateUseCaseTest {
     private LoanTypeRepository loanTypeRepository;
     private UserRepository userRepository;
     private LoanCalculateCapacityUseCase loanCalculateCapacityUseCase;
+    private ReportRepository reportRepository;
     private LoanUpdateUseCase useCase;
     private UUID publicId;
     private LoanRequest loanRequest;
@@ -34,13 +38,15 @@ class LoanUpdateUseCaseTest {
         userRepository = mock(UserRepository.class);
         loanCalculateCapacityUseCase = mock(LoanCalculateCapacityUseCase.class);
         loanTypeRepository = mock(LoanTypeRepository.class);
+        reportRepository = mock(ReportRepository.class);
 
         useCase = new LoanUpdateUseCase(
                 loanUpdateRepository,
                 loanTypeRepository,
                 loanNotificationService,
                 userRepository,
-                loanCalculateCapacityUseCase
+                loanCalculateCapacityUseCase,
+                reportRepository
         );
 
         publicId = UUID.randomUUID();
@@ -52,13 +58,16 @@ class LoanUpdateUseCaseTest {
                 .status(RequestStatus.PENDING_REVIEW)
                 .amount(1000000.0)
                 .termMonths(12)
+                .advisorId("advisor-1")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
     }
 
     @Test
     void shouldNotSendNotificationWhenStatusIsPending() {
         when(loanUpdateRepository.updateStatus(anyString(), anyString(), anyString()))
-                .thenReturn(Mono.just(loanRequest));
+                .thenAnswer(invocation -> Mono.just(loanRequest));
 
         Mono<LoanRequest> result = useCase.updateLoanStatus(publicId.toString(), "PENDING_REVIEW", "advisor-1");
 
@@ -73,7 +82,7 @@ class LoanUpdateUseCaseTest {
     @Test
     void shouldReturnErrorWhenUserNotFound() {
         when(loanUpdateRepository.updateStatus(anyString(), anyString(), anyString()))
-                .thenReturn(Mono.just(loanRequest));
+                .thenAnswer(invocation -> Mono.just(loanRequest));
         when(userRepository.findByDocumentNumber("CC123")).thenReturn(Mono.empty());
 
         Mono<LoanRequest> result = useCase.updateLoanStatus(publicId.toString(), "APPROVED", "advisor-1");

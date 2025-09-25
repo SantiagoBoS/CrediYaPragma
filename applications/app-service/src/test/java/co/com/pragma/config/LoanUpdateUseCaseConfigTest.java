@@ -2,6 +2,7 @@ package co.com.pragma.config;
 
 import co.com.pragma.model.loan.gateways.LoanTypeRepository;
 import co.com.pragma.model.loan.gateways.LoanUpdateRepository;
+import co.com.pragma.model.reports.gateways.ReportRepository;
 import co.com.pragma.model.user.gateways.UserRepository;
 import co.com.pragma.usecase.loan.LoanCalculateCapacityUseCase;
 import co.com.pragma.usecase.loan.LoanUpdateUseCase;
@@ -52,6 +53,11 @@ class LoanUpdateUseCaseConfigTest {
         @Bean
         public LoanCalculateCapacityUseCase loanCalculateCapacityUseCase() {
             return mock(LoanCalculateCapacityUseCase.class);
+        }
+
+        @Bean
+        public ReportRepository reportRepository() {
+            return mock(ReportRepository.class);
         }
     }
 }

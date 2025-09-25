@@ -40,11 +40,18 @@ jwt:
   secret: "test-jwt-secret-key-1234567890-abcdefghijklmnopqrstuvwxyz"
   expiration-ms: 86400000
 
-JWT_SECRET: "test-jwt-secret-key-1234567890-abcdefghijklmnopqrstuvwxyz"
-JWT_EXPIRATION_MS: 86400000
+#AWS
+aws:
+  region: us-east-1
+  access-key-id: test
+  secret-access-key: test
+  sqs:
+    notification-queue-url: "http://localhost:4566/000000000000/test-notifications-queue"
+    reports-queue-url: "http://localhost:4566/000000000000/test-reports-queue"
+  dynamodb:
+    endpoint: http://localhost:8000
 
 # Configuración adicional para H2
 spring.h2.console.enabled: true
 
-#Dummy
-AWS_SQS_NOTIFICATION_QUEUE_URL: http://localhost/dummy
+AWS_SQS_REPORTS_QUEUE_URL: "http://localhost:4566/000000000000/test-queue"
