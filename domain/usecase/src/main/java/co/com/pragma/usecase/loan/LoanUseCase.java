@@ -7,6 +7,7 @@ import co.com.pragma.model.loan.capacity.LoanInstallment;
 import co.com.pragma.model.loan.constants.RequestStatus;
 import co.com.pragma.model.loan.gateways.LoanRepository;
 import co.com.pragma.model.loan.gateways.LoanTypeRepository;
+import co.com.pragma.model.reports.gateways.ReportRepository;
 import co.com.pragma.model.sqsnotification.gateways.NotificationServiceGateway;
 import co.com.pragma.model.user.gateways.UserDocumentRepository;
 import co.com.pragma.model.user.gateways.UserRepository;
@@ -25,6 +26,7 @@ public class LoanUseCase {
     private final LoanCalculateCapacityUseCase loanCalculateCapacityUseCase;
     private final UserRepository userRepository;
     private final LoanNotificationService loanNotificationService;
+    private final ReportRepository reportRepository;
 
     public Mono<LoanRequest> register(LoanRequest loanRequest, String token) {
         return userDocumentRepository.existsByDocumentToken(loanRequest.getClientDocument(), token)
@@ -51,13 +53,17 @@ public class LoanUseCase {
                                         .flatMap(savedLoan -> {
                                             // Solo enviar correo si es APPROVED o REJECTED
                                             if (RequestStatus.valueOf(capacityResult.getDecision()) == RequestStatus.APPROVED) {
-                                                return loanNotificationService.notifyApproved(
+                                                //Para guardar en Dynamo
+                                                return reportRepository.incrementCounter()
+                                                    //Realizar la notifiacion
+                                                    .then(loanNotificationService.notifyApproved(
                                                         savedLoan,
                                                         user.getEmail(),
                                                         loanType.getCode(),
                                                         loanType.getInterestRate(),
                                                         capacityResult.getPaymentPlan()
-                                                ).thenReturn(savedLoan);
+                                                    ))
+                                                    .thenReturn(savedLoan);
                                             } else if (RequestStatus.valueOf(capacityResult.getDecision()) == RequestStatus.REJECTED) {
                                                 return loanNotificationService.notifyRejected(
                                                         savedLoan,

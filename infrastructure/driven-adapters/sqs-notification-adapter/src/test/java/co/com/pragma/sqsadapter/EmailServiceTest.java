@@ -1,5 +1,6 @@
 package co.com.pragma.sqsadapter;
 
+import co.com.pragma.sqsadapter.notification.EmailService;
 import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

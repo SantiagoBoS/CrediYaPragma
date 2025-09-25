@@ -3,6 +3,7 @@ package co.com.pragma.r2dbc.loan.loan;
 import co.com.pragma.model.loan.LoanRequest;
 import co.com.pragma.model.constants.AppMessages;
 import co.com.pragma.model.exceptions.BusinessException;
+import co.com.pragma.model.loan.constants.RequestStatus;
 import co.com.pragma.model.loan.gateways.LoanRepository;
 import co.com.pragma.r2dbc.loan.loan.entity.LoanEntity;
 import co.com.pragma.r2dbc.helper.ReactiveAdapterOperations;

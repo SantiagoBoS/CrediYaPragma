@@ -5,6 +5,7 @@ import co.com.pragma.model.loan.LoanRequest;
 import co.com.pragma.model.loan.constants.RequestStatus;
 import co.com.pragma.model.loan.gateways.LoanTypeRepository;
 import co.com.pragma.model.loan.gateways.LoanUpdateRepository;
+import co.com.pragma.model.reports.gateways.ReportRepository;
 import co.com.pragma.model.user.gateways.UserRepository;
 import co.com.pragma.usecase.loan.notification.LoanNotificationService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ public class LoanUpdateUseCase {
     private final LoanNotificationService loanNotificationService;
     private final UserRepository userRepository;
     private final LoanCalculateCapacityUseCase loanCalculateCapacityUseCase;
-
+    private final ReportRepository reportRepository;
 
     public Mono<LoanRequest> updateLoanStatus(String publicId, String newStatus, String advisorId) {
         return loanUpdateRepository.updateStatus(publicId, newStatus, advisorId)
@@ -30,13 +31,15 @@ public class LoanUpdateUseCase {
                         .flatMap(user -> loanTypeRepository.findByCode(updatedLoan.getLoanType())
                             .flatMap(loanType -> {
                                 if (RequestStatus.APPROVED.toString().equalsIgnoreCase(newStatus)) {
-                                    return loanCalculateCapacityUseCase.execute(
+                                    //Para validar en Dynamo
+                                    return reportRepository.incrementCounter()
+                                        .then(loanCalculateCapacityUseCase.execute(
                                             updatedLoan.getClientDocument(),
                                             user.getBaseSalary(),
                                             updatedLoan.getAmount(),
                                             loanType.getInterestRate(),
                                             updatedLoan.getTermMonths()
-                                        )
+                                        ))
                                         .flatMap(capacityResult ->
                                             loanNotificationService.notifyApproved(
                                                 updatedLoan,

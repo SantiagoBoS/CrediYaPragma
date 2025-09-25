@@ -3,6 +3,7 @@ package co.com.pragma.sqsadapter;
 import co.com.pragma.model.loan.capacity.LoanInstallment;
 import co.com.pragma.model.user.gateways.UserRepository;
 import co.com.pragma.sqsadapter.config.SqsProperties;
+import co.com.pragma.sqsadapter.notification.SqsNotificationServiceAdapter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

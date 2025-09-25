@@ -2,6 +2,7 @@ package co.com.pragma.config;
 
 import co.com.pragma.model.loan.gateways.LoanRepository;
 import co.com.pragma.model.loan.gateways.LoanTypeRepository;
+import co.com.pragma.model.reports.gateways.ReportRepository;
 import co.com.pragma.model.sqsnotification.gateways.NotificationServiceGateway;
 import co.com.pragma.model.user.gateways.UserDocumentRepository;
 import co.com.pragma.model.user.gateways.UserRepository;
@@ -22,7 +23,8 @@ public class LoanUseCaseConfig {
             LoanTypeRepository loanTypeRepository,
             LoanCalculateCapacityUseCase loanCalculateCapacityUseCase,
             UserRepository userRepository,
-            LoanNotificationService loanNotificationService
+            LoanNotificationService loanNotificationService,
+            ReportRepository reportRepository
     ) {
         return new LoanUseCase(
                 loanRepository,
@@ -30,7 +32,8 @@ public class LoanUseCaseConfig {
                 loanTypeRepository,
                 loanCalculateCapacityUseCase,
                 userRepository,
-                loanNotificationService
+                loanNotificationService,
+                reportRepository
         );
     }
 }

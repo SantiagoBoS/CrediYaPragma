@@ -1,5 +1,6 @@
 dependencies {
     implementation project(':model')
+    implementation project(':r2dbc-postgresql')
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -18,6 +19,9 @@ dependencies {
     //AWS
     implementation 'software.amazon.awssdk:auth:2.20.0'
     implementation 'software.amazon.awssdk:sqs:2.20.0'
+
+    implementation 'software.amazon.awssdk:dynamodb:2.21.0'
+    implementation 'software.amazon.awssdk:core:2.21.0'
 
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 }

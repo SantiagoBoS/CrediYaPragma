@@ -1,4 +1,4 @@
-package co.com.pragma.sqsadapter;
+package co.com.pragma.sqsadapter.notification;
 
 import co.com.pragma.model.loan.capacity.LoanInstallment;
 import co.com.pragma.model.user.gateways.UserRepository;

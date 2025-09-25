@@ -7,6 +7,17 @@ dependencies {
     implementation 'org.reactivecommons.utils:object-mapper-api:0.1.0'
     implementation 'org.springframework.security:spring-security-crypto'
 
+    // AWS SDK v2 para DynamoDB
+    implementation platform('software.amazon.awssdk:bom:2.26.0')
+    implementation 'software.amazon.awssdk:dynamodb'
+    implementation 'software.amazon.awssdk:netty-nio-client'
+
+    // Jackson para parsear JSON de SQS
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+    // Reactor y Spring WebFlux ya deben estar
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
     testImplementation 'org.reactivecommons.utils:object-mapper:0.1.0'
 }
 

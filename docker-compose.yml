@@ -46,6 +46,27 @@ services:
       - ${NETWORK}
     restart: unless-stopped
 
+  # Service Reports
+  reports-service:
+    build:
+      context: ./applications/app-service
+      dockerfile: Dockerfile
+    container_name: crediya-reports-service
+    ports:
+      - ${REPORT_SERVICE_PORT}
+    environment:
+      - SPRING_PROFILES_ACTIVE=reports,docker
+      - SERVER_PORT=${REPORT_PORT}
+      - AWS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - SQS_ENABLED=${SQS_ENABLED}
+    env_file:
+      - .env
+    networks:
+      - ${NETWORK}
+    restart: unless-stopped
+
   # BD
   postgres-db:
     image: postgres:13-alpine
@@ -75,10 +96,13 @@ services:
       - postgres-db
     networks:
       - ${NETWORK}
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
     restart: unless-stopped
 
 volumes:
   postgres-data:
+  pgadmin-data:
 
 networks:
   crediya-network:

@@ -1,5 +1,7 @@
 package co.com.pragma.sqsadapter;
 
+import co.com.pragma.sqsadapter.notification.EmailService;
+import co.com.pragma.sqsadapter.notification.LoanNotificationListener;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

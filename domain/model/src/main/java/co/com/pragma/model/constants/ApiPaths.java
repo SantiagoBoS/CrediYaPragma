@@ -1,10 +1,6 @@
 package co.com.pragma.model.constants;
 
 public final class ApiPaths {
-    private ApiPaths() {
-        throw new UnsupportedOperationException(AppMessages.CLASS_SHOULD_NOT_BE_INSTANTIATED.getMessage());
-    }
-
     //USER
     public static final String USER_BASE = "/api/v1/usuarios";
     public static final String USER_BY_DOCUMENT = USER_BASE + "/{documentNumber}";
@@ -17,4 +13,7 @@ public final class ApiPaths {
 
     //CAPACITY
     public static final String CAPACITY_BASE = "api/v1/calcular-capacidad";
+
+    //REPORTS
+    public static final String REPORT_BASE = "/api/v1/reportes";
 }

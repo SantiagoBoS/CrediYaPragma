@@ -1,4 +1,4 @@
-package co.com.pragma.sqsadapter;
+package co.com.pragma.sqsadapter.notification;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;

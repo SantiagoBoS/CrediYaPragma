@@ -1,11 +1,10 @@
 package co.com.pragma;
 
-import co.com.pragma.sqsadapter.SqsNotificationServiceAdapter;
+import co.com.pragma.sqsadapter.notification.SqsNotificationServiceAdapter;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest
 @ActiveProfiles("test")

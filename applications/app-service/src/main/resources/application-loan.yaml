@@ -20,6 +20,7 @@ aws:
     queue-url: ${AWS_SQS_QUEUE_URL}
     notification-queue-url: ${AWS_SQS_NOTIFICATION_QUEUE_URL}
     capacity-queue-url: ${AWS_SQS_CAPACITY_QUEUE_URL}
+    reports-queue-url: ${AWS_SQS_REPORTS_QUEUE_URL}
   credentials:
     access-key-id: ${AWS_ACCESS_KEY_ID}
     secret-access-key: ${AWS_SECRET_ACCESS_KEY}
