@@ -21,28 +21,56 @@ class ReportUseCaseTest {
     }
 
     @Test
-    void shouldReturnTotalApprovedLoans() {
+    void shouldReturnTotalApprovedLoansAndAmount() {
         when(reportRepository.getTotalApprovedLoans()).thenReturn(Mono.just(5L));
+        when(reportRepository.getTotalApprovedAmount()).thenReturn(Mono.just(1000.0));
 
         Mono<ReportResponse> result = reportUseCase.getTotalApprovedLoans();
 
         StepVerifier.create(result)
-                .expectNextMatches(response -> response.getTotalApprovedLoans() == 5L)
+                .expectNextMatches(response ->
+                        response.getTotalApprovedLoans() == 5L &&
+                                response.getTotalApprovedAmount() == 1000.0
+                )
                 .verifyComplete();
 
         verify(reportRepository).getTotalApprovedLoans();
+        verify(reportRepository).getTotalApprovedAmount();
     }
 
     @Test
     void shouldReturnZeroWhenRepositoryFails() {
         when(reportRepository.getTotalApprovedLoans()).thenReturn(Mono.error(new RuntimeException("DB error")));
+        when(reportRepository.getTotalApprovedAmount()).thenReturn(Mono.error(new RuntimeException("DB error")));
 
         Mono<ReportResponse> result = reportUseCase.getTotalApprovedLoans();
 
         StepVerifier.create(result)
-                .expectNextMatches(response -> response.getTotalApprovedLoans() == 0L)
+                .expectNextMatches(response ->
+                        response.getTotalApprovedLoans() == 0L &&
+                                response.getTotalApprovedAmount() == 0.0
+                )
                 .verifyComplete();
 
         verify(reportRepository).getTotalApprovedLoans();
+        verify(reportRepository).getTotalApprovedAmount();
+    }
+
+    @Test
+    void shouldReturnZeroForAmountWhenAmountFails() {
+        when(reportRepository.getTotalApprovedLoans()).thenReturn(Mono.just(5L));
+        when(reportRepository.getTotalApprovedAmount()).thenReturn(Mono.error(new RuntimeException("Amount DB error")));
+
+        Mono<ReportResponse> result = reportUseCase.getTotalApprovedLoans();
+
+        StepVerifier.create(result)
+                .expectNextMatches(response ->
+                        response.getTotalApprovedLoans() == 0L &&
+                                response.getTotalApprovedAmount() == 0.0
+                )
+                .verifyComplete();
+
+        verify(reportRepository).getTotalApprovedLoans();
+        verify(reportRepository).getTotalApprovedAmount();
     }
 }

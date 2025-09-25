@@ -26,7 +26,7 @@ class ReportHandlerTest {
 
     @Test
     void testGetTotalApprovedLoansReturnsValue() {
-        ReportResponse expected = new ReportResponse(5L);
+        ReportResponse expected = new ReportResponse(5L, 1100.0);
         when(reportUseCase.getTotalApprovedLoans()).thenReturn(Mono.just(expected));
         Mono<ServerResponse> responseMono = reportHandler.getTotalApprovedLoans(serverRequest);
         ServerResponse response = responseMono.block();

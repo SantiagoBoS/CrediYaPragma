@@ -10,11 +10,8 @@ class ReportResponseTest {
     void shouldSetAndGetTotalApprovedLoans() {
         ReportResponse response = new ReportResponse();
         response.setTotalApprovedLoans(10L);
-
         assertEquals(10L, response.getTotalApprovedLoans());
-
-        // También podemos probar el constructor con parámetros
-        ReportResponse response2 = new ReportResponse(20L);
+        ReportResponse response2 = new ReportResponse(20L, 155.00);
         assertEquals(20L, response2.getTotalApprovedLoans());
     }
 }

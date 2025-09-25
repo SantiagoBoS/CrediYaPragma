@@ -18,7 +18,7 @@ import software.amazon.awssdk.services.sqs.model.Message;
 public class ReportSqsListener {
     private final SqsAsyncClient sqsAsyncClient;
     private final ObjectMapper objectMapper;
-    private final ReportRepository reportRepository; // Contador en DynamoDB
+    private final ReportRepository reportRepository;
 
     @Value("${aws.sqs.reports-queue-url:}")
     String queueUrl;

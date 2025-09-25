@@ -36,4 +36,25 @@ class ReportRepositoryTest {
 
         verify(reportRepository).incrementCounter();
     }
+
+    @Test
+    void shouldAddApprovedAmount() {
+        when(reportRepository.addApprovedAmount(1000.0)).thenReturn(Mono.empty());
+
+        StepVerifier.create(reportRepository.addApprovedAmount(1000.0))
+                .verifyComplete();
+
+        verify(reportRepository).addApprovedAmount(1000.0);
+    }
+
+    @Test
+    void shouldReturnTotalApprovedAmount() {
+        when(reportRepository.getTotalApprovedAmount()).thenReturn(Mono.just(5000.0));
+
+        StepVerifier.create(reportRepository.getTotalApprovedAmount())
+                .expectNext(5000.0)
+                .verifyComplete();
+
+        verify(reportRepository).getTotalApprovedAmount();
+    }
 }

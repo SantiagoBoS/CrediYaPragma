@@ -97,6 +97,7 @@ class LoanUseCaseTest {
 
         when(loanRepository.save(any())).thenReturn(Mono.just(loanRequest));
         when(reportRepository.incrementCounter()).thenReturn(Mono.empty());
+        when(reportRepository.addApprovedAmount(anyDouble())).thenReturn(Mono.empty());
         when(loanNotificationService.notifyApproved(any(), anyString(), anyString(), anyDouble(), anyList()))
                 .thenReturn(Mono.empty());
 
@@ -107,6 +108,7 @@ class LoanUseCaseTest {
                 .verifyComplete();
 
         verify(reportRepository).incrementCounter();
+        verify(reportRepository).addApprovedAmount(loanRequest.getAmount());
         verify(loanNotificationService).notifyApproved(any(), anyString(), anyString(), anyDouble(), anyList());
     }
 
@@ -124,6 +126,8 @@ class LoanUseCaseTest {
                 .expectNextMatches(lr -> lr.getClientDocument().equals("12345"))
                 .verifyComplete();
 
+        verify(reportRepository, never()).incrementCounter();
+        verify(reportRepository, never()).addApprovedAmount(anyDouble());
         verify(loanNotificationService, never()).notifyApproved(any(), anyString(), anyString(), anyDouble(), anyList());
         verify(loanRepository).save(any());
     }
