@@ -16,6 +16,6 @@ public class ReportHandler {
     public Mono<ServerResponse> getTotalApprovedLoans(ServerRequest request) {
         return reportUseCase.getTotalApprovedLoans()
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
-                .onErrorResume(e -> ServerResponse.ok().bodyValue(new ReportResponse(0L)));
+                .onErrorResume(e -> ServerResponse.ok().bodyValue(new ReportResponse(0L, 0.0)));
     }
 }

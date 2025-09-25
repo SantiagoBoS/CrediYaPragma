@@ -60,4 +60,42 @@ public class ReportRepositoryAdapter implements ReportRepository {
                 .doOnError(e -> log.error("Error incrementando contador en DynamoDB", e))
                 .then();
     }
+
+    @Override
+    public Mono<Void> addApprovedAmount(Double amount) {
+        UpdateItemRequest request = UpdateItemRequest.builder()
+                .tableName(tableName)
+                .key(Map.of("id", AttributeValue.builder().s(counterKey).build()))
+                .updateExpression("SET #totalAmount = if_not_exists(#totalAmount, :zero) + :amount")
+                .expressionAttributeNames(Map.of("#totalAmount", "totalAmount"))
+                .expressionAttributeValues(Map.of(
+                        ":amount", AttributeValue.builder().n(amount.toString()).build(),
+                        ":zero", AttributeValue.builder().n("0").build()
+                ))
+                .build();
+        log.info("Request addApprovedAmount {}", request);
+        return Mono.fromFuture(() -> dynamoDbAsyncClient.updateItem(request))
+                .doOnSuccess(v -> log.info("Monto total actualizado en DynamoDB"))
+                .doOnError(e -> log.error("Error actualizando monto total en DynamoDB", e))
+                .then();
+    }
+
+    @Override
+    public Mono<Double> getTotalApprovedAmount() {
+        GetItemRequest request = GetItemRequest.builder()
+                .tableName(tableName)
+                .key(Map.of("id", AttributeValue.builder().s(counterKey).build()))
+                .build();
+
+        log.info("Request getTotalApprovedAmount {}", request);
+        return Mono.fromFuture(() -> dynamoDbAsyncClient.getItem(request))
+                .map(response -> {
+                    if (response.item() == null || !response.item().containsKey("totalAmount")) {
+                        return 0.0;
+                    }
+                    log.info("Response getTotalApprovedAmount {}", response);
+                    return Double.parseDouble(response.item().get("totalAmount").n());
+                })
+                .onErrorReturn(0.0);
+    }
 }

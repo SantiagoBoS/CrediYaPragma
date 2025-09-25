@@ -38,8 +38,10 @@ public class ReportSqsListener {
                             LoanEvent event = objectMapper.readValue(msg.body(), LoanEvent.class);
 
                             if (RequestStatus.APPROVED.toString().equals(event.getStatus())) {
-                                reportRepository.incrementCounter()
-                                        .subscribe();
+                                reportRepository.incrementCounter().subscribe();
+                                if (event.getAmount() != null) {
+                                    reportRepository.addApprovedAmount(event.getAmount()).subscribe();
+                                }
                             }
 
                             sqsAsyncClient.deleteMessage(b -> b.queueUrl(queueUrl)

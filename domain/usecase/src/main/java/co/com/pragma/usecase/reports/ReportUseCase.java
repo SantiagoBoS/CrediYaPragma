@@ -12,8 +12,11 @@ public class ReportUseCase {
 
     // Obtener total de préstamos aprobados
     public Mono<ReportResponse> getTotalApprovedLoans() {
-        return reportRepository.getTotalApprovedLoans()
-                .map(ReportResponse::new)
-                .onErrorResume(e -> Mono.just(new ReportResponse(0L)));
+        Mono<Long> totalLoans = reportRepository.getTotalApprovedLoans();
+        Mono<Double> totalAmount = reportRepository.getTotalApprovedAmount();
+
+        return Mono.zip(totalLoans, totalAmount)
+                .map(tuple -> new ReportResponse(tuple.getT1(), tuple.getT2()))
+                .onErrorResume(e -> Mono.just(new ReportResponse(0L, 0.0)));
     }
 }

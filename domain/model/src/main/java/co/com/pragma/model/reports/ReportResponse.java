@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ReportResponse {
     private Long totalApprovedLoans;
+    private Double totalApprovedAmount;
 }

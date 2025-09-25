@@ -33,6 +33,7 @@ public class LoanUpdateUseCase {
                                 if (RequestStatus.APPROVED.toString().equalsIgnoreCase(newStatus)) {
                                     //Para validar en Dynamo
                                     return reportRepository.incrementCounter()
+                                        .then(reportRepository.addApprovedAmount(updatedLoan.getAmount()))
                                         .then(loanCalculateCapacityUseCase.execute(
                                             updatedLoan.getClientDocument(),
                                             user.getBaseSalary(),

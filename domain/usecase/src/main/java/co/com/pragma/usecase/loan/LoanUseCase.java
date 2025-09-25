@@ -55,6 +55,7 @@ public class LoanUseCase {
                                             if (RequestStatus.valueOf(capacityResult.getDecision()) == RequestStatus.APPROVED) {
                                                 //Para guardar en Dynamo
                                                 return reportRepository.incrementCounter()
+                                                    .then(reportRepository.addApprovedAmount(loanWithDecision.getAmount()))
                                                     //Realizar la notifiacion
                                                     .then(loanNotificationService.notifyApproved(
                                                         savedLoan,
