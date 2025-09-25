@@ -91,4 +91,11 @@ public final class SwaggerConstants {
     public static final String AUTH_PATH_OPERATION_DESCRIPTION = "Permite iniciar sesión proporcionando las credenciales de acceso";
     public static final String AUTH_PATH_REQUEST_BODY_DESCRIPTION = "Credenciales de acceso del usuario";
 
+    //REPORTS
+    public static final String REPORT_PATH_OPERATION_ID = "getTotalApprovedLoans";
+    public static final String REPORT_PATH_OPERATION_SUMMARY = "Obtener total de préstamos aprobados";
+    public static final String REPORT_PATH_OPERATION_DESCRIPTION = "Retorna el número total de préstamos que han sido aprobados";
+    public static final String REPORT_PATH_REQUEST_BODY_DESCRIPTION = "Número total de préstamos aprobados";
+    public static final String REPORT_INTERNAL_ERROR_VALUE =  "{\"error\": \"No se pudo obtener el total de préstamos aprobados\"}";
+
 }
